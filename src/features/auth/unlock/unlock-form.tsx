@@ -51,7 +51,6 @@ export const UnlockForm = ({ identity, error, className = '', onSubmit }: Unlock
           <Input
             id="password"
             type="password"
-            fullWidth
             registration={register("password")}
           />
           <Error>{errors.password?.message}</Error>
