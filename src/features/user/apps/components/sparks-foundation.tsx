@@ -3,22 +3,20 @@ import { Button, Card, H5, P } from "sparks-ui"
 // @ts-ignore
 import { useUser } from "@stores/user"
 import { useState } from "react"
-import { Identity, forge, PostMessage } from 'sparks-sdk'
+import { Identity, PostMessage, Ed25519, X25519SalsaPoly, Blake3, Random } from "sparks-sdk"
 
 export const SparksFoundation = () => {
     const { user } = useUser(state => ({ user: state.user }))
     const [connected, setConnected] = useState(false)
     async function launch() {
-        const identity = new Identity()
-        identity.incept({ keyPairs: forge.random(), nextKeyPairs: forge.random() })
-        const channel = identity.addConnection(PostMessage)
+        const identity = Identity(Ed25519, X25519SalsaPoly, Blake3, Random, PostMessage)
+        identity.incept()
+        const channel = identity.postMessage()
         const url = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : 'https://sparks.foundation'
         await channel.connect({ url })
-        console.log(channel)
         if (channel && !!user?.name) {
             setConnected(true)
             channel.on('disconnected', () => {
-                console.log('what')
                 setConnected(false)
             })
             channel.send({
