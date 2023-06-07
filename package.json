@@ -34,7 +34,7 @@
     "react-html-props": "^2.0.2",
     "react-router-dom": "^6.11.2",
     "scrypt-pbkdf": "^1.1.1",
-    "sparks-sdk": "link:../sparks-sdk",
+    "sparks-sdk": "github:sparksfoundation/sparks-sdk",
     "sparks-ui": "github:sparksfoundation/sparks-ui",
     "tailwind-merge": "^1.12.0",
     "tweetnacl": "^1.0.3",
