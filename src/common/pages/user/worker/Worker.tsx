@@ -1,9 +1,6 @@
 import { Button, Card, P } from "sparks-ui";
-// @ts-ignore
 import DHT from '@hyperswarm/dht-relay';
-// @ts-ignore
 import Stream from '@hyperswarm/dht-relay/ws';
-// @ts-ignore
 import * as SDK from 'hyper-sdk';
 import { Buffer } from 'buffer'
 import util from "tweetnacl-util";

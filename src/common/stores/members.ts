@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { create } from 'zustand';
 
 export type Member = {
-  nonce: string;
+  salt: string;
   name: string;
   data: string
 }
@@ -12,7 +12,7 @@ export interface MemberStore {
   members: Member[];
   getMembers: (state: MemberStore) => Member[];
   addMember: (member: Member) => void;
-  removeMember: (nonce: string) => void;
+  removeMember: (salt: string) => void;
 }
 
 export const useMembers = create<MemberStore>()(
@@ -22,12 +22,12 @@ export const useMembers = create<MemberStore>()(
     addMember: (member: Member) => {  
       set({ members: [...get().members, member] })
     },
-    removeMember: (nonce: string) => {
-      set({ members: get().members.filter(m => m.nonce !== nonce) })
+    removeMember: (salt: string) => {
+      set({ members: get().members.filter(m => m.salt !== salt) })
     }
   }), {
     name: 'members',
-    version: 1,
+    version: 0,
     storage: createJSONStorage(() => storage),
   })
 );

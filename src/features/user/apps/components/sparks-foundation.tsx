@@ -1,17 +1,13 @@
 import sparksfoundation from '../assets/covers/sparksfoundation.png'
 import { Button, Card, H5, P } from "sparks-ui"
-// @ts-ignore
 import { useUser } from "@stores/user"
 import { useState } from "react"
-import { Identity, PostMessage, Ed25519, X25519SalsaPoly, Blake3, Random } from "sparks-sdk"
 
 export const SparksFoundation = () => {
     const { user } = useUser(state => ({ user: state.user }))
     const [connected, setConnected] = useState(false)
     async function launch() {
-        const identity = Identity(Ed25519, X25519SalsaPoly, Blake3, Random, PostMessage)
-        identity.incept()
-        const channel = identity.postMessage()
+        const channel = user.postMessage()
         const url = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : 'https://sparks.foundation'
         await channel.connect({ url })
         if (channel && !!user?.name) {

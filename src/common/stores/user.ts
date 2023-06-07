@@ -1,20 +1,18 @@
-import { TIdentity } from '@features/identity';
+import { Identity } from '@features/identity';
 import { create } from 'zustand';
 
 export type User = {
-  user: TIdentity
+  user: typeof Identity
 }
 
 export interface UserStore {
-  user: TIdentity | undefined;
-  login: (state?: TIdentity) => void;
+  user: typeof Identity | undefined;
+  login: (state?: typeof Identity) => void;
   logout: () => void;
 }
 
 export const useUser = create<UserStore>((set) => ({
   user: undefined,
-  login: (user) => {
-    return set({ user })
-  },
+  login: (user) => set({ user }),
   logout: () => set({ user: undefined }),
 }))
