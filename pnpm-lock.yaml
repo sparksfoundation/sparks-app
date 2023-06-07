@@ -69,7 +69,7 @@ dependencies:
     specifier: ^1.1.1
     version: 1.1.1
   sparks-sdk:
-    specifier: github:sparksfoundation/sparks-sdk
+    specifier: github:sparksfoundation/sparks-sdk#0a4cf3ac641f445e28cdc2b451a8e8f3e87dce1e
     version: github.com/sparksfoundation/sparks-sdk/0a4cf3ac641f445e28cdc2b451a8e8f3e87dce1e
   sparks-ui:
     specifier: github:sparksfoundation/sparks-ui
