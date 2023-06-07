@@ -1,14 +1,16 @@
 import { DivProps } from "react-html-props";
 import { Member, useMembers } from "@stores/members";
-import { Button, Card, H3, P, clsxm } from "sparks-ui"
+import { Button, Card, H3, P, clsxm } from "sparks-ui";
 import { Buffer } from "buffer";
-import { Identity } from "@features/identity";
 import { useState } from "react";
 import { UnlockForm } from "./unlock-form";
 import { useUser } from "@stores/user";
+import { Identity } from "@features/identity";
 
 type onSubmitTypes = {
-  identity?: string | undefined;
+  name?: string | undefined;
+  salt?: string | undefined;
+  data?: string | undefined;
   password?: string | undefined;
 }
 
@@ -20,12 +22,11 @@ export const UnlockIdentity = ({ className = '' }: DivProps) => {
 
   async function onSubmit(args: onSubmitTypes) {
     try {
-    const { identity, password } = args
-    if (!identity || !password) throw new Error('missing data or password')
-    const user = new Identity()
-    await user.import({ identity, password })
-    return login(user)
-    } catch(e: any) {
+      const { name, data, salt, password } = args
+      const user = new Identity({ name })
+      await user.import({ data: data, salt: salt, password })
+      return login(user)
+    } catch (e: any) {
       setError(e.message)
     }
   }
@@ -41,7 +42,7 @@ export const UnlockIdentity = ({ className = '' }: DivProps) => {
             Choose an identity to unlock. You will be prompted for your master password you used to create the identity.
           </P>
           {members.map((member) => (
-            <div key={`unlock-member-${member.nonce}`}>
+            <div key={`unlock-member-${member.salt}`}>
               <Button onClick={() => setUnlocking(member)} className="my-2" fullWidth>
                 {Buffer.from(member.name, 'base64').toString('utf-8')}
               </Button>

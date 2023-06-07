@@ -34,13 +34,12 @@ export const CreateIdentity = ({ className = '' }: DivProps) => {
   }
 
   async function createUser({ name, password }: { name: string, password: string }) {
-    const identity = new Identity()
-    await identity.create({ name, password })
+    const identity = new Identity({ name })
+    await identity.incept({ password })
     const b64Name = Buffer.from(name).toString('base64')
-    const b64Nonce = identity.nonce
-    const b64Data = identity.export()
-    if (!b64Nonce || !b64Data || !b64Name) throw new Error('failed to create identity')
-    addMember({ name: b64Name, nonce: b64Nonce, data: b64Data })
+    const { salt, data } = await identity.export()
+    if (!b64Name || !salt || !data) throw new Error('failed to create identity')
+    addMember({ name: b64Name, salt, data })
     navigate('/auth/unlock')
   }
 
