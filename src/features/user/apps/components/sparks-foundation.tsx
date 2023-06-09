@@ -13,7 +13,7 @@ export const SparksFoundation = () => {
     const url = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : 'https://sparks.foundation'
     user.postMessage.open({
       target: url,
-      onOpen: (id: string, conn: any) => {
+      onOpen: ({}: any, conn: any) => {
         conn.message({ name: user?.name }).then((signature: string) => {
           const { cid, message } = user.verify({ signature, publicKey: conn.publicKeys.signing })
           // confirm that the message intented was recieved, by the right user, on the right channel
@@ -23,7 +23,7 @@ export const SparksFoundation = () => {
         })
         setConnected(true)
       },
-      onClose: (id: string) => {
+      onClose: () => {
         setVerified(false)
         setConnected(false)
       }
