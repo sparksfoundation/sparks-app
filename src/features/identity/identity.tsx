@@ -13,7 +13,7 @@ const User = (Base: any) => class User extends Base {
 User.type = 'agent'
 
 export const Identity = CastingAgent({
-  agents: [User],
+  agents: [ User ],
   sign: Ed25519,
   encrypt: X25519SalsaPoly,
   hash: Blake3,

@@ -34,7 +34,7 @@ export const CreateIdentity = ({ className = '' }: DivProps) => {
   }
 
   async function createUser({ name, password }: { name: string, password: string }) {
-    const identity = new Identity({ name })
+    const identity = new (Identity as any)({ name })
     await identity.incept({ password })
     const b64Name = Buffer.from(name).toString('base64')
     const { salt, data } = await identity.export()

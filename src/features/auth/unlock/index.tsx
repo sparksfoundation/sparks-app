@@ -23,7 +23,7 @@ export const UnlockIdentity = ({ className = '' }: DivProps) => {
   async function onSubmit(args: onSubmitTypes) {
     try {
       const { name, data, salt, password } = args
-      const user = new Identity({ name })
+      const user = new (Identity as any)({ name })
       await user.import({ data: data, salt: salt, password })
       return login(user)
     } catch (e: any) {

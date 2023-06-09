@@ -28,7 +28,7 @@ function classNames(...classes: any) {
 }
 
 export const PrivateLayout = () => {
-  const { user, logout } = useUser(state => ({ user: state.user, logout: state.logout }))
+  const { user, logout } = useUser(state => ({ user: state.user as any, logout: state.logout }))
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (

@@ -124,12 +124,15 @@ devDependencies:
   tailwindcss:
     specifier: ^3.3.2
     version: 3.3.2
+  terser:
+    specifier: ^5.17.7
+    version: 5.17.7
   typescript:
     specifier: ^5.0.2
     version: 5.1.3
   vite:
     specifier: ^4.3.2
-    version: 4.3.9
+    version: 4.3.9(terser@5.17.7)
   vite-plugin-node-polyfills:
     specifier: ^0.8.2
     version: 0.8.2(rollup@2.79.1)(vite@4.3.9)
@@ -2223,7 +2226,7 @@ packages:
       vite: ^4
     dependencies:
       '@swc/core': 1.3.62
-      vite: 4.3.9
+      vite: 4.3.9(terser@5.17.7)
     transitivePeerDependencies:
       - '@swc/helpers'
     dev: true
@@ -5664,7 +5667,7 @@ packages:
     dependencies:
       '@rollup/plugin-inject': 5.0.3(rollup@2.79.1)
       node-stdlib-browser: 1.2.0
-      vite: 4.3.9
+      vite: 4.3.9(terser@5.17.7)
     transitivePeerDependencies:
       - rollup
     dev: true
@@ -5679,7 +5682,7 @@ packages:
       debug: 4.3.4
       fast-glob: 3.2.12
       pretty-bytes: 6.1.0
-      vite: 4.3.9
+      vite: 4.3.9(terser@5.17.7)
       workbox-build: 6.6.0
       workbox-window: 6.6.1
     transitivePeerDependencies:
@@ -5697,13 +5700,13 @@ packages:
       debug: 4.3.4
       globrex: 0.1.2
       tsconfck: 2.1.1(typescript@5.1.3)
-      vite: 4.3.9
+      vite: 4.3.9(terser@5.17.7)
     transitivePeerDependencies:
       - supports-color
       - typescript
     dev: true
 
-  /vite@4.3.9:
+  /vite@4.3.9(terser@5.17.7):
     resolution: {integrity: sha512-qsTNZjO9NoJNW7KnOrgYwczm0WctJ8m/yqYAMAK9Lxt4SoySUfS5S8ia9K7JHpa3KEeMfyF8LoJ3c5NeBJy6pg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -5731,6 +5734,7 @@ packages:
       esbuild: 0.17.19
       postcss: 8.4.24
       rollup: 3.23.1
+      terser: 5.17.7
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
