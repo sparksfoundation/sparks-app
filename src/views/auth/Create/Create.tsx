@@ -7,7 +7,7 @@ import { ConfirmPassword } from "./ConfirmPassword";
 import { Identity } from "@libs/identity";
 import { useMembers } from "@stores/members";
 import { Buffer } from "buffer";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type onSubmitTypes = {
   name?: string | undefined;
@@ -17,6 +17,8 @@ type onSubmitTypes = {
 
 export const Create = ({ className = '' }: DivProps) => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const successUrl = location.state?.hre || '/auth/unlock'
   const [name, setName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmed, setConfirmed] = useState(false);
@@ -40,7 +42,7 @@ export const Create = ({ className = '' }: DivProps) => {
     const { salt, data } = await identity.export()
     if (!b64Name || !salt || !data) throw new Error('failed to create identity')
     addMember({ name: b64Name, salt, data })
-    navigate('/auth/unlock')
+    navigate(successUrl)
   }
 
   useEffect(() => {
