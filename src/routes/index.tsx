@@ -28,10 +28,10 @@ const routes = [
           },
           {
             element: <PrivateLayout />, children: [
-              { path: '/user', element: <Forward Component={Dashboard} membersTo='/auth/unlock' /> },
-              { path: '/user/apps', element: <Forward Component={Apps} membersTo='/auth/unlock' /> },
-              { path: '/user/apps/:id', element: <Forward Component={Landing} membersTo='/auth/unlock' /> },
-              { path: '/user/worker', element: <Forward Component={() => <Worker />} membersTo='/auth/unlock' /> },
+              { path: '/user', element: <Forward Component={Dashboard} guestsTo='/auth/create' membersTo='/auth/unlock' /> },
+              { path: '/user/apps', element: <Forward Component={Apps} guestsTo='/auth/create' membersTo='/auth/unlock' /> },
+              { path: '/user/apps/:id', element: <Forward Component={Landing} guestsTo='/auth/create' membersTo='/auth/unlock' /> },
+              { path: '/user/worker', element: <Forward Component={() => <Worker />} guestsTo='/auth/create' membersTo='/auth/unlock' /> },
             ]
           }
         ]

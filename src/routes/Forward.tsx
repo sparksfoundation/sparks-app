@@ -22,19 +22,19 @@ export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProp
   const redirectUser = usersTo && isUser && !matchPath(usersTo, location.pathname)
   const redirectMember = membersTo && isMember && !matchPath(membersTo, location.pathname)
   const redirectGuest = guestsTo && isGuest && !matchPath(guestsTo, location.pathname)
+
+  let state = location.state
+  if (location.pathname.startsWith('/user/apps')) {
+    state = { prev: { pathname: location.pathname, params } }
+  }
   
   if (redirectUser) {
-    const prevPath = location?.state?.prev?.pathname
-    const prevState = location?.state || {}
-    let userPath = prevPath || usersTo
-    if (userPath.startsWith('/user/apps')) {
-      userPath = usersTo
-    }
-    return <Navigate to={usersTo} state={prevState} />
+    const userPath = state.prev?.pathname || usersTo
+    return <Navigate to={userPath} state={state} />
   } else if (redirectMember) {
-    return <Navigate to={membersTo} state={{ prev: { pathname: location.pathname, params } }} />
+    return <Navigate to={membersTo} state={state} />
   } else if (redirectGuest) {
-    return <Navigate to={guestsTo} state={{ prev: { pathname: location.pathname, params } }} />
+    return <Navigate to={guestsTo} state={state} />
   }
   
   return <Component />
