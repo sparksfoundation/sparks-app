@@ -1,17 +1,16 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useUser } from "@stores/user"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CheckBadgeIcon } from '@heroicons/react/24/solid'
 
-export const SparksFoundation = () => {
+export const SparksFoundation = ({ connectionWaiting = false }) => {
   const { user } = useUser(state => ({ user: state.user as any }))
   const [connected, setConnected] = useState(false)
   const [verified, setVerified] = useState(false)
 
-  async function launch() {
-    const url = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : 'https://sparks.foundation'
+  async function connect({ target }: { target?: string }) {
     user.postMessage.open({
-      target: url,
+      target,
       onOpen: ({}: any, conn: any) => {
         conn.message({ name: user?.name }).then((signature: string) => {
           const { cid, message } = user.verify({ signature, publicKey: conn.publicKeys.signing })
@@ -28,6 +27,17 @@ export const SparksFoundation = () => {
       }
     })
   }
+
+  async function launch() {
+    const url = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : 'https://sparks.foundation'
+    connect({ target: url })
+  }
+
+  useEffect(() => {
+    if (connectionWaiting) {
+      connect({})
+    }
+  }, [])
 
   return (
     <Card className="p-0 max-w-sm" shade='light'>

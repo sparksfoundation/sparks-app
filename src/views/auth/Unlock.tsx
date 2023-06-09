@@ -95,7 +95,7 @@ export const Unlock = ({ className = '' }: DivProps) => {
       const { name, data, salt, password } = args
       const user = new (Identity as any)({ name })
       await user.import({ data: data, salt: salt, password })
-      return login(user)
+      login(user)
     } catch (e: any) {
       setError(e.message)
     }
