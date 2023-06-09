@@ -27,8 +27,7 @@ export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProp
     const prevPath = location?.state?.prev?.pathname
     const prevState = location?.state || {}
     let userPath = prevPath || usersTo
-    // todo improve this handling
-    if (!userPath.includes('/user/apps')) {
+    if (userPath.startsWith('/user/apps')) {
       userPath = usersTo
     }
     return <Navigate to={usersTo} state={prevState} />
