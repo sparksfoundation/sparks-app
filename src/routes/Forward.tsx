@@ -16,26 +16,25 @@ export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProp
   const params = Object.fromEntries(useSearchParams()[0].entries())
 
   const isUser = !!user
-  const isMember = !user && members.length > 0
-  const isGuest = !user && members.length === 0
+  const isMember = !isUser && members.length > 0
+  const isGuest = !isMember && members.length === 0
 
   const redirectUser = usersTo && isUser && !matchPath(usersTo, location.pathname)
   const redirectMember = membersTo && isMember && !matchPath(membersTo, location.pathname)
   const redirectGuest = guestsTo && isGuest && !matchPath(guestsTo, location.pathname)
 
+  let state = location.state || {}
+  if (location.pathname.startsWith('/user/apps')) {
+    state = { prev: { pathname: location.pathname, params } }
+  }
+  
   if (redirectUser) {
-    const prevPath = location?.state?.prev?.pathname
-    const prevState = location?.state || {}
-    const userPath = prevPath || usersTo
-    return <Navigate to={userPath} state={prevState} />
-  }
-
-  if (redirectMember) {
-    return <Navigate to={membersTo} state={{ prev: { pathname: location.pathname, params } }} />
-  }
-
-  if (redirectGuest) {
-    return <Navigate to={guestsTo} state={{ prev: { pathname: location.pathname, params } }} />
+    const userPath = state?.prev?.pathname || usersTo
+    return <Navigate to={userPath} state={state} />
+  } else if (redirectMember) {
+    return <Navigate to={membersTo} state={state} />
+  } else if (redirectGuest) {
+    return <Navigate to={guestsTo} state={state} />
   }
   
   return <Component />
