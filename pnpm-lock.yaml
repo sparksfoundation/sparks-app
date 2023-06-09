@@ -69,8 +69,8 @@ dependencies:
     specifier: ^1.1.1
     version: 1.1.1
   sparks-sdk:
-    specifier: link:../sparks-sdk
-    version: link:../sparks-sdk
+    specifier: github:sparksfoundation/sparks-sdk#007eeae144af109fbc323d815d74273f168c3802
+    version: github.com/sparksfoundation/sparks-sdk/007eeae144af109fbc323d815d74273f168c3802
   sparks-ui:
     specifier: github:sparksfoundation/sparks-ui
     version: github.com/sparksfoundation/sparks-ui/763e274dd7d817436d09184b32e2f8f8ddb11537(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
@@ -124,12 +124,15 @@ devDependencies:
   tailwindcss:
     specifier: ^3.3.2
     version: 3.3.2
+  terser:
+    specifier: ^5.17.7
+    version: 5.17.7
   typescript:
     specifier: ^5.0.2
     version: 5.1.3
   vite:
     specifier: ^4.3.2
-    version: 4.3.9
+    version: 4.3.9(terser@5.17.7)
   vite-plugin-node-polyfills:
     specifier: ^0.8.2
     version: 0.8.2(rollup@2.79.1)(vite@4.3.9)
@@ -1774,6 +1777,11 @@ packages:
     resolution: {integrity: sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==}
     dev: false
 
+  /@noble/hashes@1.3.1:
+    resolution: {integrity: sha512-EbqwksQwz9xDRGfDST86whPBgM65E0OH/pCgqW0GBVzO22bNE+NuIbeTb714+IfSjU3aRk47EUvXIb5bTsenKA==}
+    engines: {node: '>= 16'}
+    dev: false
+
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -2218,7 +2226,7 @@ packages:
       vite: ^4
     dependencies:
       '@swc/core': 1.3.62
-      vite: 4.3.9
+      vite: 4.3.9(terser@5.17.7)
     transitivePeerDependencies:
       - '@swc/helpers'
     dev: true
@@ -5659,7 +5667,7 @@ packages:
     dependencies:
       '@rollup/plugin-inject': 5.0.3(rollup@2.79.1)
       node-stdlib-browser: 1.2.0
-      vite: 4.3.9
+      vite: 4.3.9(terser@5.17.7)
     transitivePeerDependencies:
       - rollup
     dev: true
@@ -5674,7 +5682,7 @@ packages:
       debug: 4.3.4
       fast-glob: 3.2.12
       pretty-bytes: 6.1.0
-      vite: 4.3.9
+      vite: 4.3.9(terser@5.17.7)
       workbox-build: 6.6.0
       workbox-window: 6.6.1
     transitivePeerDependencies:
@@ -5692,13 +5700,13 @@ packages:
       debug: 4.3.4
       globrex: 0.1.2
       tsconfck: 2.1.1(typescript@5.1.3)
-      vite: 4.3.9
+      vite: 4.3.9(terser@5.17.7)
     transitivePeerDependencies:
       - supports-color
       - typescript
     dev: true
 
-  /vite@4.3.9:
+  /vite@4.3.9(terser@5.17.7):
     resolution: {integrity: sha512-qsTNZjO9NoJNW7KnOrgYwczm0WctJ8m/yqYAMAK9Lxt4SoySUfS5S8ia9K7JHpa3KEeMfyF8LoJ3c5NeBJy6pg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -5726,6 +5734,7 @@ packages:
       esbuild: 0.17.19
       postcss: 8.4.24
       rollup: 3.23.1
+      terser: 5.17.7
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
@@ -6010,6 +6019,17 @@ packages:
     dependencies:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  github.com/sparksfoundation/sparks-sdk/007eeae144af109fbc323d815d74273f168c3802:
+    resolution: {tarball: https://codeload.github.com/sparksfoundation/sparks-sdk/tar.gz/007eeae144af109fbc323d815d74273f168c3802}
+    name: sparks-sdk
+    version: 0.0.1
+    dependencies:
+      '@noble/hashes': 1.3.1
+      scrypt-pbkdf: 1.1.1
+      tweetnacl: 1.0.3
+      tweetnacl-util: 0.15.1
     dev: false
 
   github.com/sparksfoundation/sparks-ui/763e274dd7d817436d09184b32e2f8f8ddb11537(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2):

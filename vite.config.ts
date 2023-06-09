@@ -5,10 +5,10 @@ import react from '@vitejs/plugin-react-swc'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 const ALL_NODE_MODULES = [
-  'assert', 'buffer', 'child_process', 'cluster', 'console', 'constants', 'crypto', 'dgram', 
-  'dns', 'domain', 'events', 'fs', 'http', 'https', 'http2', 'module', 'net', 'os', 'path', 
-  'punycode', 'process', 'querystring', 'readline', 'repl', 'stream', '_stream_duplex', 
-  '_stream_passthrough', '_stream_readable', '_stream_transform', '_stream_writable', 'string_decoder', 
+  'assert', 'buffer', 'child_process', 'cluster', 'console', 'constants', 'crypto', 'dgram',
+  'dns', 'domain', 'events', 'fs', 'http', 'https', 'http2', 'module', 'net', 'os', 'path',
+  'punycode', 'process', 'querystring', 'readline', 'repl', 'stream', '_stream_duplex',
+  '_stream_passthrough', '_stream_readable', '_stream_transform', '_stream_writable', 'string_decoder',
   'sys', 'timers/promises', 'timers', 'tls', 'tty', 'url', 'util', 'vm', 'zlib',
 ];
 
@@ -23,10 +23,10 @@ export default defineConfig({
     nodePolyfills({
       protocolImports: false,
       exclude: [
-        'assert', 'child_process', 'cluster', 'console', 'constants', 'crypto', 'dgram', 
-        'dns', 'domain', 'events', 'fs', 'http', 'https', 'http2', 'module', 'net', 'os', 'path', 
-        'punycode', 'process', 'querystring', 'readline', 'repl', 'stream', '_stream_duplex', 
-        '_stream_passthrough', '_stream_readable', '_stream_transform', '_stream_writable', 'string_decoder', 
+        'assert', 'child_process', 'cluster', 'console', 'constants', 'crypto', 'dgram',
+        'dns', 'domain', 'events', 'fs', 'http', 'https', 'http2', 'module', 'net', 'os', 'path',
+        'punycode', 'process', 'querystring', 'readline', 'repl', 'stream', '_stream_duplex',
+        '_stream_passthrough', '_stream_readable', '_stream_transform', '_stream_writable', 'string_decoder',
         'sys', 'timers/promises', 'timers', 'tls', 'tty', 'url', 'util', 'vm', 'zlib',
       ]
     }),
@@ -72,5 +72,11 @@ export default defineConfig({
       }
     }),
     tsconfigPaths(),
-  ]
+  ],
+  build: {
+    minify: "terser",
+    terserOptions: {
+      keep_fnames: true,
+    },
+  },
 })
