@@ -1,38 +1,11 @@
 import { useNavigate } from "react-router-dom"
-import { Card, H3, clsxm, Button, H1, P, Triangle } from 'sparks-ui'
+import { Button, H1, P, Triangle } from 'sparks-ui'
+import { IntroCard } from "@components/IntroCard"
 import { ThemeSwitcher } from "@components/ThemeSwitcher"
-import { CheckIcon } from "@heroicons/react/20/solid";
-import { ReactNode } from "react";
-
-type IntroCardProps = {
-  footer?: ReactNode,
-  title: string,
-  className?: string,
-  description: string,
-  items: string[],
-  highlighted?: boolean,
-}
-
-const IntroCard = ({ className = '', footer, title, description, items, highlighted = false }: IntroCardProps) => (
-  <Card className={clsxm("w-64", className)}>
-    <H3 className={clsxm('text-center', highlighted && 'text-primary-600 dark:text-primary-600')}>{title}</H3>
-    <P className="mt-2 mb-6 text-center">
-      {description}
-    </P>
-    <ul role="list" className={clsxm("space-y-3 leading-6 text-inherit", footer && 'mb-8')}>
-      {items.map ((item, index) => (
-          <li key={index} className="flex gap-x-3 text-inherit items-center">
-            <CheckIcon className={clsxm("h-5 w-5 flex-none text-fg-800 dark:text-fg-200", highlighted && 'text-primary-600 dark:text-primary-600')} aria-hidden="true" />
-            <P>{item}</P>
-          </li>
-        ))}
-    </ul>
-    {footer ? footer : <></>}
-  </Card>
-)
 
 export const Landing = () => {
   const navigate = useNavigate()
+
   return (
     <>
       <ThemeSwitcher className="absolute top-4 right-4" />
