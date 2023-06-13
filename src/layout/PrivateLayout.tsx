@@ -1,14 +1,11 @@
-import { useUser } from "@stores/user"
 import { Fragment, useState } from 'react'
-import { Dialog, Menu, Transition } from '@headlessui/react'
-import {
-  Bars3Icon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
-import { Cog6ToothIcon, HomeModernIcon, IdentificationIcon, PuzzlePieceIcon, TicketIcon } from "@heroicons/react/24/solid"
-import { H4, Logo, NoiseBackground, } from "sparks-ui"
+import { Dialog, Transition } from '@headlessui/react'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { HomeModernIcon, IdentificationIcon, PuzzlePieceIcon, TicketIcon } from "@heroicons/react/24/solid"
+import { ProfileMenu } from "@components/ProfileMenu"
 import { ThemeSwitcher } from "@components/ThemeSwitcher"
+import { H4, Logo, NoiseBackground, } from "sparks-ui"
 import { Link, Outlet } from "react-router-dom";
 
 const navigation = [
@@ -18,17 +15,11 @@ const navigation = [
   { name: 'Watch Events', href: '/user/worker', icon: TicketIcon, current: false },
 ]
 
-const userNavigation = [
-  { name: 'Your profile', href: '#' },
-  { name: 'Sign out', href: '#' },
-]
-
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
 export const PrivateLayout = () => {
-  const { user, logout } = useUser(state => ({ user: state.user as any, logout: state.logout }))
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
@@ -104,13 +95,7 @@ export const PrivateLayout = () => {
                           </ul>
                         </li>
                         <li className="mt-auto">
-                          <Link
-                            to="#"
-                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-slate-800 dark:text-slate-200 hover:bg-slate-400/20 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-50"
-                          >
-                            <Cog6ToothIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
-                            Settings
-                          </Link>
+                          <ProfileMenu />
                         </li>
                       </ul>
                     </nav>
@@ -152,13 +137,7 @@ export const PrivateLayout = () => {
                   </ul>
                 </li>
                 <li className="mt-auto">
-                  <Link
-                    to="#"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-slate-800 dark:text-slate-200 hover:bg-slate-400/20 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-50"
-                  >
-                    <Cog6ToothIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
-                    Settings
-                  </Link>
+                  <ProfileMenu />
                 </li>
               </ul>
             </nav>
@@ -192,57 +171,8 @@ export const PrivateLayout = () => {
                   name="search"
                 />
               </form>
-              <div className="flex items-center gap-x-4 lg:gap-x-6">
+              <div className="flex items-center">
                 <ThemeSwitcher className="relative top-auto left-auto" />
-
-                {/* Separator */}
-                <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-900/10" aria-hidden="true" />
-
-                {/* Profile dropdown */}
-                <Menu as="div" className="relative">
-                  <Menu.Button className="-m-1.5 flex items-center p-1.5">
-                    <span className="sr-only">Open user menu</span>
-                    <img
-                      className="h-8 w-8 rounded-full bg-gray-50"
-                      src={user?.avatar as string}
-                      alt=""
-                    />
-                    <span className="hidden lg:flex lg:items-center">
-                      <span className="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
-                        {user?.name as string}
-                      </span>
-                      <ChevronDownIcon className="ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
-                    </span>
-                  </Menu.Button>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-slate-50 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                      {userNavigation.map((item) => (
-                        <Menu.Item key={item.name}>
-                          {({ active }) => (
-                            <Link
-                              to={item.href}
-                              className={classNames(
-                                active ? 'bg-slate-50' : '',
-                                'block px-3 py-1 text-sm leading-6 text-gray-900'
-                              )}
-                              onClick={item.name === 'Sign out' ? logout : undefined}
-                            >
-                              {item.name}
-                            </Link>
-                          )}
-                        </Menu.Item>
-                      ))}
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
               </div>
             </div>
           </div>
