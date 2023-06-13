@@ -5,17 +5,18 @@ import { Menu, Transition } from "@headlessui/react"
 import { ArrowRightOnRectangleIcon, ChevronDownIcon, Cog6ToothIcon } from "@heroicons/react/20/solid"
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
+import { AUTH_UNLOCK_PATH, USER_SETTINGS_PATH } from "@utils/routeHelpers"
 
-const options = [
+const OPTIONS = [
   {
     name: "Identity Settings",
     icon: Cog6ToothIcon,
-    path: "/user/settings"
+    path: USER_SETTINGS_PATH
   },
   {
     name: "Log out",
     icon: ArrowRightOnRectangleIcon,
-    path: "/auth/unlock"
+    path: AUTH_UNLOCK_PATH
   },
 ]
 
@@ -54,22 +55,24 @@ export const ProfileMenu = () => {
             "focus:outline-none bottom-full w-full"
           )}
         >
-          {options.map((item) => (
-            <Menu.Item key={item.name}>
-              <Link
-                to={item.path}
-                className={clsxm(
-                  "text-slate-800 dark:text-slate-200",
-                  "hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-400/20 dark:hover:bg-slate-800/50",
-                  "cursor-pointer group flex gap-x-3 p-2 text-sm leading-6 font-semibold"
-                )}
-                onClick={item.name === 'Log out' ? logout : undefined}
-              >
-                <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
-                {item.name}
-              </Link>
-            </Menu.Item>
-          ))}
+          {
+            OPTIONS.map((item) => (
+              <Menu.Item key={item.name}>
+                <Link
+                  to={item.path}
+                  className={clsxm(
+                    "text-slate-800 dark:text-slate-200",
+                    "hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-400/20 dark:hover:bg-slate-800/50",
+                    "cursor-pointer group flex gap-x-3 p-2 text-sm leading-6 font-semibold"
+                  )}
+                  onClick={item.name === 'Log out' ? logout : undefined}
+                >
+                  <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+                  {item.name}
+                </Link>
+              </Menu.Item>
+            ))
+          }
         </Menu.Items>
       </Transition>
     </Menu>

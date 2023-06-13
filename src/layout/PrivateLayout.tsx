@@ -1,23 +1,20 @@
-import { Fragment, useState } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { Fragment, useState } from "react"
+import { Dialog, Transition } from "@headlessui/react"
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"
 import { HomeModernIcon, IdentificationIcon, PuzzlePieceIcon, TicketIcon } from "@heroicons/react/24/solid"
 import { ProfileMenu } from "@components/ProfileMenu"
 import { ThemeSwitcher } from "@components/ThemeSwitcher"
-import { H4, Logo, NoiseBackground, } from "sparks-ui"
+import { H4, Logo, NoiseBackground, clsxm } from "sparks-ui"
 import { Link, Outlet } from "react-router-dom";
+import { USER_APPS_PATH, USER_PATH, USER_WORKER_PATH } from  "@utils/routeHelpers"
 
 const navigation = [
-  { name: 'Dashboard', href: '/user', icon: HomeModernIcon, current: true },
-  { name: 'Credentials', href: '#', icon: IdentificationIcon, current: false },
-  { name: 'Applications', href: '/user/apps', icon: PuzzlePieceIcon, current: false },
-  { name: 'Watch Events', href: '/user/worker', icon: TicketIcon, current: false },
+  { name: "Dashboard", href: USER_PATH, icon: HomeModernIcon, current: true },
+  { name: "Credentials", href: "#", icon: IdentificationIcon, current: false },
+  { name: "Applications", href: USER_APPS_PATH, icon: PuzzlePieceIcon, current: false },
+  { name: "Watch Events", href: USER_WORKER_PATH, icon: TicketIcon, current: false },
 ]
-
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(' ')
-}
 
 export const PrivateLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -80,11 +77,11 @@ export const PrivateLayout = () => {
                               <li key={item.name}>
                                 <Link
                                   to={item.href}
-                                  className={classNames(
+                                  className={clsxm(
                                     item.current
-                                      ? 'dark:bg-slate-800/50 bg-slate-400/20 text-slate-800 dark:text-slate-200'
-                                      : 'text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-400/20 dark:hover:bg-slate-800/50',
-                                    'cursor-pointer group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                      ? "dark:bg-slate-800/50 bg-slate-400/20 text-slate-800 dark:text-slate-200"
+                                      : "text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-400/20 dark:hover:bg-slate-800/50",
+                                    "cursor-pointer group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                   )}
                                 >
                                   <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
@@ -122,11 +119,11 @@ export const PrivateLayout = () => {
                       <li key={item.name}>
                         <Link
                           to={item.href}
-                          className={classNames(
+                          className={clsxm(
                             item.current
-                              ? 'dark:bg-slate-800/50 bg-slate-400/20 text-slate-800 dark:text-slate-200'
-                              : 'text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-400/20 dark:hover:bg-slate-800/50',
-                            'cursor-pointer group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                              ? "dark:bg-slate-800/50 bg-slate-400/20 text-slate-800 dark:text-slate-200"
+                              : "text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-400/20 dark:hover:bg-slate-800/50",
+                            "cursor-pointer group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                           )}
                         >
                           <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
