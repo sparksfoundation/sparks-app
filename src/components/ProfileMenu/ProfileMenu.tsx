@@ -2,14 +2,13 @@
 import { Fragment } from "react"
 import { useUser } from "@stores/user"
 import { Menu, Transition } from "@headlessui/react"
-import { ArrowRightOnRectangleIcon, ChevronDownIcon } from "@heroicons/react/20/solid"
-import { Cog6ToothIcon } from "@heroicons/react/24/solid"
+import { ArrowRightOnRectangleIcon, ChevronDownIcon, Cog6ToothIcon } from "@heroicons/react/20/solid"
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 
 const options = [
   {
-    name: "Settings",
+    name: "Identity Settings",
     icon: Cog6ToothIcon,
     path: "/user/settings"
   },

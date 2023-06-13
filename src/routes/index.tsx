@@ -9,6 +9,7 @@ import { PublicLayout, PrivateLayout } from '@layout';
 import { Landing } from '@views';
 import { Create, Import, Unlock } from '@views/auth';
 import { Apps, Dashboard } from '@views/user';
+import { Settings } from '@views/user/settings'
 import { Worker } from '@views/user/worker';
 
 const routes = [
@@ -31,6 +32,7 @@ const routes = [
               { path: '/user', element: <Forward Component={Dashboard} guestsTo='/auth/create' membersTo='/auth/unlock' /> },
               { path: '/user/apps', element: <Forward Component={Apps} guestsTo='/auth/create' membersTo='/auth/unlock' /> },
               { path: '/user/apps/:id', element: <Forward Component={Landing} guestsTo='/auth/create' membersTo='/auth/unlock' /> },
+              { path: '/user/settings', element: <Forward Component={Settings} guestsTo='/auth/create' membersTo='/auth/unlock' /> },
               { path: '/user/worker', element: <Forward Component={() => <Worker />} guestsTo='/auth/create' membersTo='/auth/unlock' /> },
             ]
           }
