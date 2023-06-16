@@ -9,29 +9,36 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
   const [waiting, setWaiting] = useState(false)
   const [request, setRequest] = useState(connectionWaiting) as any
 
-  async function connect({ url }: { url?: string }) {
+  async function connect({ url }: { url: string }) {
     if (!user) return
-    const target = request && window.opener ? window.opener : undefined;
-    user.postMessage.open({
-      url,
-      target,
-      onOpen: ({ }: any, conn: any) => {
-        setWaiting(false)
-        setConnection(conn)
-        conn.message({ name: user?.name }).then((signature: string) => {
-          const { cid, message } = user.verify({ signature, publicKey: conn.publicKeys.signing })
-          // confirm that the message intented was recieved, by the right user, on the right channel
-          if (cid === conn.cid && message.name === user.name) {
-            setVerified(true)
-          }
-        })
-      },
-      onClose: () => {
-        setWaiting(false)
-        setVerified(false)
-        setConnection(null)
-      }
+    const source = request && window.opener ? window.opener : window.open(url, '_blank');
+    const origin = new URL(url).origin;
+    const channel = new user.channels.PostMessage({
+      source,
+      origin,
     })
+
+    setTimeout(async () => {
+      await channel.open()
+      setWaiting(false)
+      setConnection(channel)
+      const receipt = await channel.send({ name: user.agents.user.name })
+  
+      try {
+        const opened = await user.signer.verify({ signature: receipt.signature, publicKey: channel.publicKeys.signing });
+        const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedKey });
+        console.log(decrypted)
+        setVerified(!!decrypted)
+      } catch (e) {
+        setVerified(false)
+      }
+  
+      channel.onclose = () => {
+        setWaiting(false)
+        setConnection(null)
+        setVerified(false)
+      }
+    }, 2000)
   }
 
   async function disconnect() {

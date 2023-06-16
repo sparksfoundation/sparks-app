@@ -93,9 +93,11 @@ export const Unlock = ({ className = '' }: DivProps) => {
   async function onSubmit(args: onSubmitTypes) {
     try {
       const { name, data, salt, password } = args
-      const user = new (Identity as any)({ name })
-      await user.import({ data: data, salt: salt, password })
-      login(user)
+      const identity = Identity;
+      const utf8Name = Buffer.from(name as string, 'base64').toString('utf-8');
+      identity.agents.user.name = utf8Name as string;
+      await identity.controller.import({ data: data, password, salt } as any);
+      login(identity)
     } catch (e: any) {
       setError(e.message)
     }
