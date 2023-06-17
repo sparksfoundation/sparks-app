@@ -32,6 +32,12 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
       } catch (e) {
         setVerified(false)
       }
+
+      channel.onerror = () => {
+        setWaiting(false)
+        setConnection(null)
+        setVerified(false)
+      }
   
       channel.onclose = () => {
         setWaiting(false)
