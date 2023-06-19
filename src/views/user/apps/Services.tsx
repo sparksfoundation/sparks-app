@@ -1,6 +1,7 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useUser } from "@stores/user"
 import { useState } from "react"
+import { PostMessage, Spark } from "sparks-sdk"
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
   const { user } = useUser(state => ({ user: state.user as any }))
@@ -12,10 +13,12 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
   async function connect({ url }: { url: string }) {
     if (!user) return
     const source = request && window.opener ? window.opener : window.open(url, '_blank');
+    if (!source) return;
     const origin = new URL(url).origin;
-    const channel = new user.channels.PostMessage({
-      source,
+    const channel = new PostMessage({
+      source: source as Window,
       origin,
+      spark: user as Spark,
     })
 
     setTimeout(async () => {
@@ -25,8 +28,8 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
       const receipt = await channel.send({ name: user.agents.user.name })
   
       try {
-        const opened = await user.signer.verify({ signature: receipt.signature, publicKey: channel.publicKeys.signing });
-        const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedKey });
+        const opened = await user.signer.verify({ signature: receipt, publicKey: channel.publicSigningKey });
+        const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedEncryptionKey });
         console.log(decrypted)
         setVerified(!!decrypted)
       } catch (e) {

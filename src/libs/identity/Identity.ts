@@ -28,5 +28,4 @@ export const Identity = new Spark({
   cipher: X25519SalsaPoly,
   hasher: Blake3,
   controller: Password, 
-  channels: [PostMessage],
-}) as Spark & { agents: { user: User }, controller: Password }
+}) as Spark & { agents: { user: User }, controller: Password };
