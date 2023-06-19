@@ -14,7 +14,7 @@ interface IState {
   waiting: boolean;
 }
 
-export class Worker extends React.Component<IProps, IState>  {
+export class RelayService extends React.Component<IProps, IState>  {
   constructor(props: ReactPropTypes) {
     super(props);
     this.state = {
@@ -34,6 +34,8 @@ export class Worker extends React.Component<IProps, IState>  {
     this.setState({ waiting: true })
     const socket = new WebSocket(import.meta.env.SPARKS_WATCHER_RELAY)
     const dht = new DHT(new Stream(true, socket))
+
+    console.log('creating sdk')
     const sdk = await SDK.create({
       storage: false,
       autoJoin: false,
@@ -41,8 +43,12 @@ export class Worker extends React.Component<IProps, IState>  {
         dht,
         maxPeers: 5,
       }
+    }).catch((err: any) => {
+      console.log(err)
     })
+
     const topic = Buffer.alloc(32).fill('trial')
+    console.log('discovering getting topic')
     const discovery = await sdk.get(topic)
     discovery.on('peer-add', (peerInfo: any) => {
       const pub = util.encodeBase64(peerInfo.remotePublicKey)
@@ -52,6 +58,7 @@ export class Worker extends React.Component<IProps, IState>  {
         peers: [...this.state.peers, pub]
       })
     })
+
     discovery.on('peer-remove', (peerInfo: any) => {
       const pub = util.encodeBase64(peerInfo.remotePublicKey)
       if (!this.state.peers.includes(pub)) return
@@ -60,7 +67,10 @@ export class Worker extends React.Component<IProps, IState>  {
         peers: [...this.state.peers.filter(p => p !== pub)]
       })
     })
+
+    console.log('joining core')
     sdk.joinCore(discovery).then(() => {
+      console.log('cooor')
       this.setState({
         ...this.state,
         waiting: false,
@@ -77,25 +87,23 @@ export class Worker extends React.Component<IProps, IState>  {
 
   render() {
     return (
-      <>
+      <Card>
         {this.state.sdk ? (
           <Button onClick={this.stop} disabled={this.state.waiting}>{this.state.waiting ? 'please wait' : 'stop watching'}</Button>
         ) : (
           <Button onClick={this.start} disabled={this.state.waiting}>{this.state.waiting ? 'please wait' : 'start watching'}</Button>
         )}
-        <Card className="mt-5">
-          {this.state.sdk && this.state.peers.length === 0 ? (
-            <P className="text-sm">waiting for peers</P>
-          ) : this.state.sdk ? (
-            <>
-              <P className="text-sm">connected peers:</P>
-              <P>
-                {this.state.peers.map(id => <div key={id}>{id}</div>)}
-              </P>
-            </>
-          ) : <P className="text-sm">not connected</P>}
-        </Card>
-      </>
+        {this.state.sdk && this.state.peers.length === 0 ? (
+          <P className="text-sm">waiting for peers</P>
+        ) : this.state.sdk ? (
+          <>
+            <P className="text-sm">connected peers:</P>
+            <P>
+              {this.state.peers.map(id => <div key={id}>{id}</div>)}
+            </P>
+          </>
+        ) : <P className="text-sm">not connected</P>}
+      </Card>
     )
   }
 }

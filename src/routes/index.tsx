@@ -9,17 +9,16 @@ import { PublicLayout, PrivateLayout } from '@layout';
 import { Landing } from '@views';
 import { Create, Import, Unlock } from '@views/auth';
 import { Apps, Dashboard } from '@views/user';
-import { Settings } from '@views/user/settings'
-import { Worker } from '@views/user/worker';
+import { Settings } from '@views/user/settings';
+import { SandBox } from '@views/user/SandBox/SandBox';
 
 import {
   AUTH_CREATE_PATH,
   AUTH_UNLOCK_PATH,
   AUTH_IMPORT_PATH,
   USER_PATH,
-  USER_APPS_PATH,
   USER_SETTINGS_PATH,
-  USER_WORKER_PATH
+  USER_SANDBOX_PATH
 } from '@utils/routeHelpers'
 
 const routes = [
@@ -40,10 +39,8 @@ const routes = [
           {
             element: <PrivateLayout />, children: [
               { path: USER_PATH, element: <Forward Component={Dashboard} guestsTo={AUTH_CREATE_PATH} membersTo={AUTH_UNLOCK_PATH} /> },
-              { path: USER_APPS_PATH, element: <Forward Component={Apps} guestsTo={AUTH_CREATE_PATH} membersTo={AUTH_UNLOCK_PATH} /> },
-              { path: '/user/apps/:id', element: <Forward Component={Landing} guestsTo={AUTH_CREATE_PATH} membersTo={AUTH_UNLOCK_PATH} /> },
               { path: USER_SETTINGS_PATH, element: <Forward Component={Settings} guestsTo={AUTH_CREATE_PATH} membersTo={AUTH_UNLOCK_PATH} /> },
-              { path: USER_WORKER_PATH, element: <Forward Component={() => <Worker />} guestsTo={AUTH_CREATE_PATH} membersTo={AUTH_UNLOCK_PATH} /> },
+              { path: USER_SANDBOX_PATH, element: <Forward Component={() => <SandBox />} guestsTo={AUTH_CREATE_PATH} membersTo={AUTH_UNLOCK_PATH} /> },
             ]
           }
         ]
