@@ -95,8 +95,8 @@ export const Unlock = ({ className = '' }: DivProps) => {
       const { name, data, salt, password } = args
       const identity = Identity;
       const utf8Name = Buffer.from(name as string, 'base64').toString('utf-8');
-      identity.agents.user.name = utf8Name as string;
-      await identity.controller.import({ data: data, password, salt } as any);
+      identity.user.name = utf8Name as string;
+      await identity.import({ data: data, password, salt } as any);
       login(identity)
     } catch (e: any) {
       setError(e.message)

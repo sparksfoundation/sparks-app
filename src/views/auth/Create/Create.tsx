@@ -38,9 +38,9 @@ export const Create = ({ className = '' }: DivProps) => {
   async function createUser({ name, password }: { name: string, password: string }) {
     const identity = Identity;
     // todo: fix types inference with module augmentation
-    await identity.controller.incept({ password } as any) 
+    await identity.incept({ password } as any) 
     const b64Name = Buffer.from(name).toString('base64')
-    const { salt, data } = await identity.controller.export()
+    const { salt, data } = await identity.export()
     if (!b64Name || !salt || !data) throw new Error('failed to create identity')
     addMember({ name: b64Name, salt, data })
     navigate(successUrl)

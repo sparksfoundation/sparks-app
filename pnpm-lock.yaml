@@ -70,7 +70,7 @@ dependencies:
     version: 1.1.1
   sparks-sdk:
     specifier: github:sparksfoundation/sparks-sdk
-    version: github.com/sparksfoundation/sparks-sdk/1e33c9e00e991e52d18878fdc315ae11ab517e94
+    version: github.com/sparksfoundation/sparks-sdk/0dc9fe19d680f27d75f0b7eff5a23b664f648b4f
   sparks-ui:
     specifier: github:sparksfoundation/sparks-ui
     version: github.com/sparksfoundation/sparks-ui/763e274dd7d817436d09184b32e2f8f8ddb11537(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
@@ -6025,8 +6025,8 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/sparksfoundation/sparks-sdk/1e33c9e00e991e52d18878fdc315ae11ab517e94:
-    resolution: {tarball: https://codeload.github.com/sparksfoundation/sparks-sdk/tar.gz/1e33c9e00e991e52d18878fdc315ae11ab517e94}
+  github.com/sparksfoundation/sparks-sdk/0dc9fe19d680f27d75f0b7eff5a23b664f648b4f:
+    resolution: {tarball: https://codeload.github.com/sparksfoundation/sparks-sdk/tar.gz/0dc9fe19d680f27d75f0b7eff5a23b664f648b4f}
     name: sparks-sdk
     version: 0.0.1
     dependencies:
