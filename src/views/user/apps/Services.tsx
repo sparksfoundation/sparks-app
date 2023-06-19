@@ -1,6 +1,7 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useUser } from "@stores/user"
 import { useState } from "react"
+import { PostMessage, Spark } from "sparks-sdk"
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
   const { user } = useUser(state => ({ user: state.user as any }))
@@ -9,29 +10,44 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
   const [waiting, setWaiting] = useState(false)
   const [request, setRequest] = useState(connectionWaiting) as any
 
-  async function connect({ url }: { url?: string }) {
+  async function connect({ url }: { url: string }) {
     if (!user) return
-    const target = request && window.opener ? window.opener : undefined;
-    user.postMessage.open({
-      url,
-      target,
-      onOpen: ({ }: any, conn: any) => {
-        setWaiting(false)
-        setConnection(conn)
-        conn.message({ name: user?.name }).then((signature: string) => {
-          const { cid, message } = user.verify({ signature, publicKey: conn.publicKeys.signing })
-          // confirm that the message intented was recieved, by the right user, on the right channel
-          if (cid === conn.cid && message.name === user.name) {
-            setVerified(true)
-          }
-        })
-      },
-      onClose: () => {
-        setWaiting(false)
-        setVerified(false)
-        setConnection(null)
-      }
+    const source = request && window.opener ? window.opener : window.open(url, '_blank');
+    if (!source) return;
+    const origin = new URL(url).origin;
+    const channel = new PostMessage({
+      source: source as Window,
+      origin,
+      spark: user as Spark,
     })
+
+    setTimeout(async () => {
+      await channel.open()
+      setWaiting(false)
+      setConnection(channel)
+      const receipt = await channel.send({ name: user.agents.user.name })
+  
+      try {
+        const opened = await user.signer.verify({ signature: receipt, publicKey: channel.publicSigningKey });
+        const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedEncryptionKey });
+        console.log(decrypted)
+        setVerified(!!decrypted)
+      } catch (e) {
+        setVerified(false)
+      }
+
+      channel.onerror = () => {
+        setWaiting(false)
+        setConnection(null)
+        setVerified(false)
+      }
+  
+      channel.onclose = () => {
+        setWaiting(false)
+        setConnection(null)
+        setVerified(false)
+      }
+    }, 2000)
   }
 
   async function disconnect() {

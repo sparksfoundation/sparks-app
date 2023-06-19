@@ -27,7 +27,7 @@ export const useMembers = create<MemberStore>()(
     }
   }), {
     name: 'members',
-    version: 0,
+    version: 1,
     storage: createJSONStorage(() => storage),
   })
 );
