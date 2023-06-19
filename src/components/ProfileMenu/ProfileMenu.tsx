@@ -32,7 +32,7 @@ export const ProfileMenu = () => {
           src={user?.agents.user.avatar as string}
           alt={`${user?.agents.user.name} avatar`}
         />
-        <div className="hidden lg:flex lg:items-center flex justify-between w-full">
+        <div className="flex lg:flex lg:items-center justify-between w-full">
           <div className="ml-4 text-sm font-semibold leading-6 text-slate-800 dark:text-slate-200" aria-hidden="true">
             {user?.agents.user.name as string}
           </div>
