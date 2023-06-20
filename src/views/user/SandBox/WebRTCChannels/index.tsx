@@ -1,10 +1,9 @@
 import { LinkIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useUser } from "@stores/user";
 import { useEffect, useState } from "react";
-import { Button, Card, Input, NoiseBackground, clsxm } from "sparks-ui";
+import { Button, Card, Input, clsxm } from "sparks-ui";
 import { WebRTC } from "sparks-sdk";
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
-import { useTheme } from "@stores/theme";
 
 export const WebRTCChannels = () => {
   const user = useUser(state => state.user);
@@ -12,13 +11,7 @@ export const WebRTCChannels = () => {
   const [waiting, setWaiting] = useState(false) as any
   const [message, setMessage] = useState("") as any
   const [messages, setMessages] = useState([]) as any
-  const [receiving, setReceiving] = useState(false) as any
   const [connection, setConnection] = useState(null) as any
-  const theme = useTheme(state => state.theme);
-
-  async function allowConnections() {
-
-  }
 
   async function connectToPeer() {
     console.log('connecting to peer', peerId)
@@ -62,7 +55,7 @@ export const WebRTCChannels = () => {
       <div className="flex flex-col h-full gap-4">
         <Card className="w-full h-full" shade="light">
           {connection ? (
-              messages.map((({ message, receipt, mine }: { message: string, receipt: string, mine: boolean }, index: number) => (
+              messages.map((({ message, mine }: { message: string, receipt?: string, mine: boolean }, index: number) => (
                 <div className={clsxm("dark:bg-bg-200 dark:text-fg-900 bg-bg-900 text-fg-200 p-3 rounded-lg mb-4", !mine && "bg-primary-500 text-fg-200 dark:bg-primary-500 dark:text-fg-200 text-right")} key={index}>
                   {message}
                 </div>

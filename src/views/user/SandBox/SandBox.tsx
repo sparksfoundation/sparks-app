@@ -1,12 +1,10 @@
-import { useUser } from "@stores/user"
-import { ReactComponentElement, useState } from "react";
+import { useState } from "react";
 import { RelayService } from "./Workbench/RelayService";
 import { WebsiteChannels } from "./WebsiteChannels";
 import { WebRTCChannels } from "./WebRTCChannels";
 import { clsxm, P } from "sparks-ui";
 
 export const SandBox = () => {
-  const user = useUser(state => state.user);
   const [tab, setTab] = useState(0);
   const tabs = [
     { label: 'Website Channels', component: WebsiteChannels },
