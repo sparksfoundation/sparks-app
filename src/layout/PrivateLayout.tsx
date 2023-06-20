@@ -8,6 +8,7 @@ import { ThemeSwitcher } from "@components/ThemeSwitcher"
 import { H4, Logo, NoiseBackground, clsxm } from "sparks-ui"
 import { Link, Outlet } from "react-router-dom";
 import { USER_PATH, USER_SANDBOX_PATH } from  "@utils/routeHelpers"
+import { useTheme } from "@stores/theme"
 
 const navigation = [
   { name: "Dashboard", href: USER_PATH, icon: HomeModernIcon, current: true },
@@ -17,13 +18,14 @@ const navigation = [
 
 export const PrivateLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const theme = useTheme(state => state.theme)
 
   return (
     <>
       <div className="h-full">
         <NoiseBackground />
         <Transition.Root show={sidebarOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
+          <Dialog as="div" className="relative z-40 lg:hidden" onClose={setSidebarOpen}>
             <Transition.Child
               as={Fragment}
               enter="transition-opacity ease-linear duration-300"
@@ -33,7 +35,7 @@ export const PrivateLayout = () => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 bg-slate-900/80" />
+              <div className="fixed inset-0 bg-bg-900/80" />
             </Transition.Child>
 
             <div className="fixed inset-0 flex">
@@ -59,16 +61,18 @@ export const PrivateLayout = () => {
                     <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
                       <button type="button" className="-m-2.5 p-2.5" onClick={() => setSidebarOpen(false)}>
                         <span className="sr-only">Close sidebar</span>
-                        <XMarkIcon className="h-6 w-6 text-slate-800 dark:text-slate-200" aria-hidden="true" />
+                        <XMarkIcon className="h-6 w-6 text-slate-300 dark:text-slate-200" aria-hidden="true" />
                       </button>
                     </div>
                   </Transition.Child>
                   {/* Sidebar component, swap this element with another sidebar if you like */}
-                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-slate-900 px-6 pb-4 ring-1 ring-slate-300/5">
-                    <div className="flex h-16 shrink-0 items-center">
-                      <Logo className="h-6 w-6" /><H4 className="ml-2">SPARKS</H4>
+                  <div className={"flex grow z-50 flex-col gap-y-5 overflow-y-auto bg-slate-200 dark:bg-slate-900 px-6 pb-4 ring-1 ring-slate-300/5 " + theme}>
+                    <NoiseBackground />
+                    <div className="flex h-16 shrink-0 items-center relative">
+                      <Logo className="h-6 w-6" />
+                      <H4 className="ml-2">SPARKS</H4>
                     </div>
-                    <nav className="flex flex-1 flex-col">
+                    <nav className="flex flex-1 flex-col relative">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">

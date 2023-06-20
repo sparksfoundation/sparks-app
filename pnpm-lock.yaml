@@ -73,7 +73,7 @@ dependencies:
     version: github.com/sparksfoundation/sparks-sdk/5f939238bc72528c4caa2676de876bf183e84bee
   sparks-ui:
     specifier: github:sparksfoundation/sparks-ui
-    version: github.com/sparksfoundation/sparks-ui/e40f7360190e3b27603863010043e88b8f43aeec(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
+    version: github.com/sparksfoundation/sparks-ui/972ef1c3d93c20e5837b53e6faf4f864a56e8dfb(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
   tailwind-merge:
     specifier: ^1.12.0
     version: 1.12.0
@@ -6097,9 +6097,9 @@ packages:
       tweetnacl-util: 0.15.1
     dev: false
 
-  github.com/sparksfoundation/sparks-ui/e40f7360190e3b27603863010043e88b8f43aeec(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2):
-    resolution: {tarball: https://codeload.github.com/sparksfoundation/sparks-ui/tar.gz/e40f7360190e3b27603863010043e88b8f43aeec}
-    id: github.com/sparksfoundation/sparks-ui/e40f7360190e3b27603863010043e88b8f43aeec
+  github.com/sparksfoundation/sparks-ui/972ef1c3d93c20e5837b53e6faf4f864a56e8dfb(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2):
+    resolution: {tarball: https://codeload.github.com/sparksfoundation/sparks-ui/tar.gz/972ef1c3d93c20e5837b53e6faf4f864a56e8dfb}
+    id: github.com/sparksfoundation/sparks-ui/972ef1c3d93c20e5837b53e6faf4f864a56e8dfb
     name: sparks-ui
     version: 0.0.1
     dependencies:
