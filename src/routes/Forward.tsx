@@ -24,7 +24,7 @@ export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProp
   const redirectGuest = guestsTo && isGuest && !matchPath(guestsTo, location.pathname)
 
   let state = location.state || {}
-  if (location.pathname.startsWith('/user/apps')) {
+  if (location.pathname.startsWith('/user/sandbox')) {
     state = { prev: { pathname: location.pathname, params } }
   }
   
