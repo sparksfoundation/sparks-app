@@ -73,7 +73,7 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
 
   async disconnect(initiated = true) {
     if (!this.state.connection) return
-    
+
     if (initiated) {
       this.setState({ waiting: true })
       await this.state.connection.close()
@@ -116,33 +116,31 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
       <Card className="h-full">
         <div className="flex flex-col h-full gap-4">
           <Card className="w-full max-h-full" shade="light">
-            <div className="overflow-y-auto overflow-hidden h-full">
-              {this.state.connection && this.state.stream ? (
-                <div className="flex flex-col gap-2 items-stretch">
-                  <video className="w-full" ref={this.videoRef} autoPlay />
-                  <Button disabled={this.state.waiting} onClick={() => this.disconnect()}>disconnect</Button>
-                </div>
-              ) : (
-                <>
-                  {this.helpMsgs.map(({ message }: { message: string }, index: number) => (
-                    <div className="dark:bg-bg-200 dark:text-fg-900 bg-bg-50 text-fg-900 p-3 rounded-lg mb-4 break-all" key={'help' + index}>
-                      {message}
+            {this.state.connection && this.state.stream ? (
+              <div className="flex flex-col gap-2 items-center">
+                <video ref={this.videoRef} autoPlay />
+                <Button disabled={this.state.waiting} onClick={() => this.disconnect()}>disconnect</Button>
+              </div>
+            ) : (
+              <div className="overflow-y-auto overflow-hidden h-full">
+                {this.helpMsgs.map(({ message }: { message: string }, index: number) => (
+                  <div className="dark:bg-bg-200 dark:text-fg-900 bg-bg-50 text-fg-900 p-3 rounded-lg mb-4 break-all" key={'help' + index}>
+                    {message}
 
-                    </div>
-                  ))}
-                  <div className="bg-primary-600 flex flex-col p-6 rounded-lg">
-                    <P className="text-fg-100">or enter a peer's identifier and hit 'Enter' to connect to them and open a chat.</P>
-                    <Input
-                      disabled={this.state.waiting}
-                      className="mt-4"
-                      placeholder="Enter a peer's identifier or copy yours to connect"
-                      onKeyUp={e => { if (e.key === 'Enter') { this.connectToPeer() } }}
-                      value={this.state.peerId} onChange={e => this.setState({ peerId: e.target.value })}
-                    />
                   </div>
-                </>
-              )}
-            </div>
+                ))}
+                <div className="bg-primary-600 flex flex-col p-6 rounded-lg">
+                  <P className="text-fg-100">or enter a peer's identifier and hit 'Enter' to connect to them and open a chat.</P>
+                  <Input
+                    disabled={this.state.waiting}
+                    className="mt-4"
+                    placeholder="Enter a peer's identifier or copy yours to connect"
+                    onKeyUp={e => { if (e.key === 'Enter') { this.connectToPeer() } }}
+                    value={this.state.peerId} onChange={e => this.setState({ peerId: e.target.value })}
+                  />
+                </div>
+              </div>
+            )}
           </Card>
         </div>
       </Card>
