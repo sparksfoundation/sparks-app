@@ -2,18 +2,17 @@ import { Fragment, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"
-import { HomeModernIcon, IdentificationIcon, PuzzlePieceIcon, TicketIcon } from "@heroicons/react/24/solid"
+import { HomeModernIcon, IdentificationIcon, RocketLaunchIcon } from "@heroicons/react/24/solid"
 import { ProfileMenu } from "@components/ProfileMenu"
 import { ThemeSwitcher } from "@components/ThemeSwitcher"
 import { H4, Logo, NoiseBackground, clsxm } from "sparks-ui"
 import { Link, Outlet } from "react-router-dom";
-import { USER_APPS_PATH, USER_PATH, USER_WORKER_PATH } from  "@utils/routeHelpers"
+import { USER_PATH, USER_SANDBOX_PATH } from  "@utils/routeHelpers"
 
 const navigation = [
   { name: "Dashboard", href: USER_PATH, icon: HomeModernIcon, current: true },
   { name: "Credentials", href: "#", icon: IdentificationIcon, current: false },
-  { name: "Applications", href: USER_APPS_PATH, icon: PuzzlePieceIcon, current: false },
-  { name: "Watch Events", href: USER_WORKER_PATH, icon: TicketIcon, current: false },
+  { name: "Sandbox", href: USER_SANDBOX_PATH, icon: RocketLaunchIcon, current: false },
 ]
 
 export const PrivateLayout = () => {

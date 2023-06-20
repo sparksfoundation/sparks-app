@@ -78,5 +78,5 @@ export default defineConfig({
     terserOptions: {
       keep_fnames: true,
     },
-  },
+  }
 })
