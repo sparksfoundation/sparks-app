@@ -11,6 +11,7 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
   const [waiting, setWaiting] = useState(false)
   const [request, setRequest] = useState(connectionWaiting) as any
 
+
   async function connect({ url }: { url: string }) {
     if (!user) return
     const source = request && window.opener ? window.opener : window.open(url, '_blank');
