@@ -1,7 +1,8 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useUser } from "@stores/user"
 import { useState } from "react"
-import { PostMessage, Spark } from "sparks-sdk"
+import { Spark } from "sparks-sdk"
+import { PostMessage } from "sparks-sdk/channels"
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
   const { user } = useUser(state => ({ user: state.user as any }))
