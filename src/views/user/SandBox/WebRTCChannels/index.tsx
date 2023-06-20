@@ -62,17 +62,17 @@ export const WebRTCChannels = () => {
     <Card className="h-full">
       <div className="flex flex-col h-full gap-4">
         <Card className="w-full h-full" shade="light">
-          <div className="overflow-y-auto h-full pr-4">
+          <div className="overflow-y-auto overflow-hidden h-full pr-4">
             {connection ? (
               messages.map((({ message, mine }: { message: string, receipt?: string, mine: boolean }, index: number) => (
-                <div className={clsxm("dark:bg-bg-200 dark:text-fg-900 bg-bg-100 text-fg-900 p-3 rounded-lg mb-4", !mine && "bg-primary-500 text-fg-200 dark:bg-primary-500 dark:text-fg-200 text-right")} key={index}>
+                <div className={clsxm("dark:bg-bg-200 dark:text-fg-900 bg-bg-100 text-fg-900 p-3 rounded-lg mb-4 break-all", !mine && "bg-primary-500 text-fg-200 dark:bg-primary-500 dark:text-fg-200 text-right")} key={'msg' + index}>
                   {message}
                 </div>
               )))
             ) : (
               <>
                 {help.map(({ message }: { message: string }, index: number) => (
-                  <div className="dark:bg-bg-200 dark:text-fg-900 bg-bg-50 text-fg-900 p-3 rounded-lg mb-4" key={index}>
+                  <div className="dark:bg-bg-200 dark:text-fg-900 bg-bg-50 text-fg-900 p-3 rounded-lg mb-4 break-all" key={'help' + index}>
                     {message}
                   </div>
                 ))}
