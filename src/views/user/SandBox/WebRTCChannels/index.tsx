@@ -1,4 +1,4 @@
-import { LinkIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useUser } from "@stores/user";
 import { useEffect, useState } from "react";
 import { Button, Card, Input, P, clsxm } from "sparks-ui";

@@ -8,7 +8,7 @@ import { PublicLayout, PrivateLayout } from '@layout';
 
 import { Landing } from '@views';
 import { Create, Import, Unlock } from '@views/auth';
-import { Apps, Dashboard } from '@views/user';
+import { Dashboard } from '@views/user';
 import { Settings } from '@views/user/settings';
 import { SandBox } from '@views/user/SandBox/SandBox';
 
