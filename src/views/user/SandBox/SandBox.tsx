@@ -24,7 +24,7 @@ export const SandBox = () => {
           key={index}
           onClick={() => setTab(index)}
         >
-          <P className={clsxm(index === tab && "text-primary-600 dark:text-primary-600 font-bold")}>{item.label}</P>
+          <P className={clsxm(index === tab && "text-primary-600 dark:text-primary-600 font-bold select-none")}>{item.label}</P>
           <span className={clsxm("absolute h-0.5 w-full bottom-0 bg-transparent block left-0", index === tab && "bg-primary-600")} />
         </div>
       ))}</section>
