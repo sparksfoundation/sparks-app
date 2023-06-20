@@ -1,4 +1,9 @@
-import { Spark, Agent, Password, Blake3, Ed25519, X25519SalsaPoly } from "sparks-sdk";
+import { Spark } from "sparks-sdk";
+import { Agent } from "sparks-sdk/agents";
+import { Ed25519 } from "sparks-sdk/signers";
+import { X25519SalsaPoly } from "sparks-sdk/ciphers";
+import { Blake3 } from "sparks-sdk/hashers";
+import { Password } from "sparks-sdk/controllers";
 import { avatar } from "./avatar";
 
 class User extends Agent {

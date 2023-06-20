@@ -2,7 +2,7 @@ import { InformationCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/so
 import { useUser } from "@stores/user";
 import React, { Fragment } from "react";
 import { Button, Card, Input, P, clsxm } from "sparks-ui";
-import { WebRTC } from "sparks-sdk";
+import { WebRTC } from "sparks-sdk/channels";
 
 interface IProps {
   user: any;
