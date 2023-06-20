@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { RelayService } from "./Workbench/RelayService";
-import { WebsiteChannels } from "./WebsiteChannels";
-import { WebRTCChannels } from "./WebRTCChannels";
+import { WebsiteChannels } from "./WebsiteChannel";
+import { WebRTCDataChannel } from "./WebRTCDataChannel";
+import { WebRTCVideoChannel } from "./WebRTCVideoChannel";
 import { clsxm, P } from "sparks-ui";
 
 export const SandBox = () => {
   const [tab, setTab] = useState(0);
   const tabs = [
-    { label: 'Website Channels', component: WebsiteChannels },
-    { label: 'WebRTC Channels', component: WebRTCChannels },
+    { label: 'Local Website Channel', component: WebsiteChannels },
+    { label: 'WebRTC Data Channel', component: WebRTCDataChannel },
+    { label: 'WebRTC Video Channel', component: WebRTCVideoChannel },
     { label: 'Workbench', component: RelayService },
   ];
 

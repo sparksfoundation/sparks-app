@@ -70,7 +70,7 @@ dependencies:
     version: 1.1.1
   sparks-sdk:
     specifier: github:sparksfoundation/sparks-sdk
-    version: github.com/sparksfoundation/sparks-sdk/cc7103f2aece57ea7f9f335c6835c38abac9f881
+    version: github.com/sparksfoundation/sparks-sdk/5a00d56dce07646019cea3f37ce644f8c163f85c
   sparks-ui:
     specifier: github:sparksfoundation/sparks-ui
     version: github.com/sparksfoundation/sparks-ui/972ef1c3d93c20e5837b53e6faf4f864a56e8dfb(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
@@ -2540,7 +2540,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001505
-      electron-to-chromium: 1.4.434
+      electron-to-chromium: 1.4.435
       node-releases: 2.0.12
       update-browserslist-db: 1.0.11(browserslist@4.21.9)
     dev: true
@@ -2972,8 +2972,8 @@ packages:
       jake: 10.8.7
     dev: true
 
-  /electron-to-chromium@1.4.434:
-    resolution: {integrity: sha512-5Gvm09UZTQRaWrimRtWRO5rvaX6Kpk5WHAPKDa7A4Gj6NIPuJ8w8WNpnxCXdd+CJJt6RBU6tUw0KyULoW6XuHw==}
+  /electron-to-chromium@1.4.435:
+    resolution: {integrity: sha512-B0CBWVFhvoQCW/XtjRzgrmqcgVWg6RXOEM/dK59+wFV93BFGR6AeNKc4OyhM+T3IhJaOOG8o/V+33Y2mwJWtzw==}
     dev: true
 
   /elliptic@6.5.4:
@@ -6085,8 +6085,8 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/sparksfoundation/sparks-sdk/cc7103f2aece57ea7f9f335c6835c38abac9f881:
-    resolution: {tarball: https://codeload.github.com/sparksfoundation/sparks-sdk/tar.gz/cc7103f2aece57ea7f9f335c6835c38abac9f881}
+  github.com/sparksfoundation/sparks-sdk/5a00d56dce07646019cea3f37ce644f8c163f85c:
+    resolution: {tarball: https://codeload.github.com/sparksfoundation/sparks-sdk/tar.gz/5a00d56dce07646019cea3f37ce644f8c163f85c}
     name: sparks-sdk
     version: 0.0.1
     dependencies:

@@ -68,7 +68,6 @@ class WebRTCChat extends React.Component<IProps, IState>  {
         messages: [...this.state.messages, { timestamp, message, messageId, mine: false }]
       })
     }
-    console.log('hey')
     this.setState({
       waiting: false,
       peerId: "",
@@ -180,4 +179,4 @@ const withUser = (BaseComponent: any) => (props: any) => {
   const user = useUser(state => state.user);
   return <BaseComponent {...props} user={user} />;
 };
-export const WebRTCChannels = withUser(WebRTCChat);
+export const WebRTCDataChannel = withUser(WebRTCChat);
