@@ -1,10 +1,8 @@
-import { InformationCircleIcon, PaperAirplaneIcon, ReceiptRefundIcon } from "@heroicons/react/24/solid";
+import { InformationCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useUser } from "@stores/user";
-import React, { Fragment, useEffect, useState } from "react";
-import { Button, Card, Input, P, clsxm, Tooltip } from "sparks-ui";
-
+import React, { Fragment } from "react";
+import { Button, Card, Input, P, clsxm } from "sparks-ui";
 import { WebRTC } from "sparks-sdk";
-import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 interface IProps {
   user: any;
