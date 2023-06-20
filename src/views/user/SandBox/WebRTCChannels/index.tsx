@@ -55,21 +55,17 @@ class WebRTCChat extends React.Component<IProps, IState>  {
   }
 
   async connectToPeer() {
-    console.log('hey')
     if (!this.state.peerId || this.state.connection) return
     this.setState({ waiting: true })
-    console.log('hey')
     const conn = new WebRTC({
       peerId: this.state.peerId,
       spark: this.user,
     });
-    console.log('hey', this.state.peerId, this.user)
     await conn.open();
-    console.log('hey')
     conn.onmessage = (payload: any) => {
-      console.log('hey4')
+      const { timestamp, message, messageId } = payload
       this.setState({
-        messages: [...this.state.messages, { message: payload.message, receipt: payload.receipt, mine: false }]
+        messages: [...this.state.messages, { timestamp, message, messageId, mine: false }]
       })
     }
     console.log('hey')
