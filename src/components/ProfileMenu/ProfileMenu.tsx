@@ -24,7 +24,7 @@ export const ProfileMenu = () => {
   const { user, logout } = useUser(state => ({ user: state.user as any, logout: state.logout }))
 
   return (
-    <Menu as="div" className="relative w-full">
+    <Menu as="div" className="relative w-full z-50">
       <Menu.Button className="-m-1.5 flex items-center p-1.5 w-full">
         <span className="sr-only">Open user menu</span>
         <img
