@@ -15,7 +15,7 @@ export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProp
   const location = useLocation()
   const params = Object.fromEntries(useSearchParams()[0].entries())
 
-  const isUser = !!user
+  const isUser = !!user && user.identifier
   const isMember = !isUser && members.length > 0
   const isGuest = !isMember && members.length === 0
 

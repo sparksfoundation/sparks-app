@@ -7,13 +7,13 @@ import { ProfileMenu } from "@components/ProfileMenu"
 import { ThemeSwitcher } from "@components/ThemeSwitcher"
 import { H4, Logo, NoiseBackground, clsxm } from "sparks-ui"
 import { Link, Outlet } from "react-router-dom";
-import { USER_PATH, USER_SANDBOX_PATH } from  "@utils/routeHelpers"
 import { useTheme } from "@stores/theme"
+import { Paths } from "@routes/paths"
 
 const navigation = [
-  { name: "Dashboard", href: USER_PATH, icon: HomeModernIcon, current: true },
+  { name: "Dashboard", href: Paths.USER, icon: HomeModernIcon, current: true },
   { name: "Credentials", href: "#", icon: IdentificationIcon, current: false },
-  { name: "Sandbox", href: USER_SANDBOX_PATH, icon: RocketLaunchIcon, current: false },
+  { name: "Sandbox", href: Paths.USER_SANDBOX, icon: RocketLaunchIcon, current: false },
 ]
 
 export const PrivateLayout = () => {

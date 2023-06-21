@@ -5,18 +5,18 @@ import { Menu, Transition } from "@headlessui/react"
 import { ArrowRightOnRectangleIcon, ChevronDownIcon, Cog6ToothIcon } from "@heroicons/react/20/solid"
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
-import { AUTH_UNLOCK_PATH, USER_SETTINGS_PATH } from "@utils/routeHelpers"
+import { Paths } from "@routes/paths";
 
 const OPTIONS = [
   {
     name: "Identity Settings",
     icon: Cog6ToothIcon,
-    path: USER_SETTINGS_PATH
+    path: Paths.USER_SETTINGS
   },
   {
     name: "Log out",
     icon: ArrowRightOnRectangleIcon,
-    path: AUTH_UNLOCK_PATH
+    path: Paths.AUTH_UNLOCK
   },
 ]
 

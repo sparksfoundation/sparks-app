@@ -4,7 +4,7 @@ import { SetName } from "./SetName";
 import { useEffect, useState } from "react";
 import { SetPassword } from "./SetPassword";
 import { ConfirmPassword } from "./ConfirmPassword";
-import { Identity } from "@libs/identity";
+import { useUser } from "@stores/user";
 import { useMembers } from "@stores/members";
 import { Buffer } from "buffer";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -23,7 +23,8 @@ export const Create = ({ className = '' }: DivProps) => {
   const [password, setPassword] = useState<string>('');
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
-  const { addMember } = useMembers(state => ({ addMember: state.addMember }))
+  const user = useUser(state => state.user)
+  const addMember = useMembers(state => state.addMember)
 
   function onSubmit(key: string, data: onSubmitTypes) {
     if (key === 'name') setName(data.name || '')
@@ -36,11 +37,10 @@ export const Create = ({ className = '' }: DivProps) => {
   }
 
   async function createUser({ name, password }: { name: string, password: string }) {
-    const identity = Identity;
     // todo: fix types inference with module augmentation
-    await identity.incept({ password } as any) 
+    await user.incept({ password } as any) 
     const b64Name = Buffer.from(name).toString('base64')
-    const { salt, data } = await identity.export()
+    const { salt, data } = await user.export()
     if (!b64Name || !salt || !data) throw new Error('failed to create identity')
     addMember({ name: b64Name, salt, data })
     navigate(successUrl)
