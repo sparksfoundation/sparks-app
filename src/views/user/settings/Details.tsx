@@ -1,5 +1,4 @@
-import { Card, H4 } from "sparks-ui";
-import { useUser } from "@stores/user";
+import { H4 } from "sparks-ui";
 
 export const Details = () => {
   return (
