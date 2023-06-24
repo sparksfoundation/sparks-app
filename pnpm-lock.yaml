@@ -1619,8 +1619,8 @@ packages:
     resolution: {integrity: sha512-Bu+AMaXNjrpjh41znzHqaz3r2Nr8hHuHZT6V2LBKMhyMl0FgKA62PNYbqnfgmzOhoWZj70Zecisbo4H1rotP5g==}
     dev: false
 
-  /@floating-ui/dom@1.4.1:
-    resolution: {integrity: sha512-loCXUOLzIC3jp50RFOKXZ/kQjjz26ryr/23M+FWG9jrmAv8lRf3DUfC2AiVZ3+K316GOhB08CR+Povwz8e9mDw==}
+  /@floating-ui/dom@1.4.2:
+    resolution: {integrity: sha512-VKmvHVatWnewmGGy+7Mdy4cTJX71Pli6v/Wjb5RQBuq5wjUYx+Ef+kRThi8qggZqDgD8CogCpqhRoVp3+yQk+g==}
     dependencies:
       '@floating-ui/core': 1.3.1
     dev: false
@@ -2114,7 +2114,7 @@ packages:
       grapheme-splitter: 1.0.4
       ignore: 5.2.4
       natural-compare-lite: 1.4.0
-      semver: 7.5.2
+      semver: 7.5.3
       tsutils: 3.21.0(typescript@5.0.2)
       typescript: 5.0.2
     transitivePeerDependencies:
@@ -2188,7 +2188,7 @@ packages:
       debug: 4.3.4
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.5.2
+      semver: 7.5.3
       tsutils: 3.21.0(typescript@5.0.2)
       typescript: 5.0.2
     transitivePeerDependencies:
@@ -2209,7 +2209,7 @@ packages:
       '@typescript-eslint/typescript-estree': 5.57.1(typescript@5.0.2)
       eslint: 8.38.0
       eslint-scope: 5.1.1
-      semver: 7.5.2
+      semver: 7.5.3
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -2349,7 +2349,7 @@ packages:
       postcss: ^8.1.0
     dependencies:
       browserslist: 4.21.9
-      caniuse-lite: 1.0.30001505
+      caniuse-lite: 1.0.30001507
       fraction.js: 4.2.0
       normalize-range: 0.1.2
       picocolors: 1.0.0
@@ -2539,8 +2539,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001505
-      electron-to-chromium: 1.4.435
+      caniuse-lite: 1.0.30001507
+      electron-to-chromium: 1.4.440
       node-releases: 2.0.12
       update-browserslist-db: 1.0.11(browserslist@4.21.9)
     dev: true
@@ -2622,8 +2622,8 @@ packages:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
     engines: {node: '>= 6'}
 
-  /caniuse-lite@1.0.30001505:
-    resolution: {integrity: sha512-jaAOR5zVtxHfL0NjZyflVTtXm3D3J9P15zSJ7HmQF8dSKGA6tqzQq+0ZI3xkjyQj46I4/M0K2GbMpcAFOcbr3A==}
+  /caniuse-lite@1.0.30001507:
+    resolution: {integrity: sha512-SFpUDoSLCaE5XYL2jfqe9ova/pbQHEmbheDf5r4diNwbAgR3qxM9NQtfsiSscjqoya5K7kFcHPUQ+VsUkIJR4A==}
     dev: true
 
   /chacha20-universal@1.0.4:
@@ -2764,7 +2764,7 @@ packages:
     resolution: {integrity: sha512-8G9WbbS+lzdbbN+3l9xe/XFZAHLMd/+Oo3l29yakRBkK3EVmh4TEFdBM6YdDSiAJnlr7cVt9u6MBR9GuKSN4sQ==}
     dependencies:
       b4a: 1.6.4
-      hypercore: 10.16.1
+      hypercore: 10.17.0
       hypercore-crypto: 3.3.1
       read-write-mutexify: 2.1.0
       ready-resource: 1.0.0
@@ -2972,8 +2972,8 @@ packages:
       jake: 10.8.7
     dev: true
 
-  /electron-to-chromium@1.4.435:
-    resolution: {integrity: sha512-B0CBWVFhvoQCW/XtjRzgrmqcgVWg6RXOEM/dK59+wFV93BFGR6AeNKc4OyhM+T3IhJaOOG8o/V+33Y2mwJWtzw==}
+  /electron-to-chromium@1.4.440:
+    resolution: {integrity: sha512-r6dCgNpRhPwiWlxbHzZQ/d9swfPaEJGi8ekqRBwQYaR3WmA5VkqQfBWSDDjuJU1ntO+W9tHx8OHV/96Q8e0dVw==}
     dev: true
 
   /elliptic@6.5.4:
@@ -3578,8 +3578,8 @@ packages:
       b4a: 1.6.4
       corestore: 6.8.3
       dns-query: 0.11.2
-      hyperbee: 2.13.1
-      hypercore: 10.16.1
+      hyperbee: 2.13.4
+      hypercore: 10.17.0
       hyperdrive: 11.2.0
       hyperswarm: 4.5.1
       random-access-application: 2.0.1
@@ -3587,8 +3587,8 @@ packages:
       z32: 1.0.0
     dev: false
 
-  /hyperbee@2.13.1:
-    resolution: {integrity: sha512-euHSqXcuYF1rVn2+mKwdUdO3w5O4gBdzb6oEQu+udDSA2F4Xvy3Y0mN6hf4+07QBHCEkcJO9IHf4oluP+93Trw==}
+  /hyperbee@2.13.4:
+    resolution: {integrity: sha512-9QKy9rDXXkAj1P4uv/dKBroGX62xM1pgWymp6DPxLpgQmGF21uOfIoDSI1wSUbgA8/HaPQyCSqgcDodJg8vWfg==}
     dependencies:
       b4a: 1.6.4
       codecs: 3.1.0
@@ -3616,8 +3616,8 @@ packages:
       sodium-universal: 4.0.0
     dev: false
 
-  /hypercore@10.16.1:
-    resolution: {integrity: sha512-0WeaZ9Cu6YRBoEiCitj8usKnhFvYvovztSziPcBTSpzNrdUNy8nQz/aMRYiyw6siu2FDpjInJxH1us0EIPMnGQ==}
+  /hypercore@10.17.0:
+    resolution: {integrity: sha512-Yp9lyfUjp81Gy1nPHemNFtYQtngliCGZ6prH+qxvjr2FPVG1QFtNqtOh+ZxFu4hXZ1dAOLYkQOA7Qq2vjFe64A==}
     dependencies:
       '@hyperswarm/secret-stream': 6.2.0
       b4a: 1.6.4
@@ -3663,7 +3663,7 @@ packages:
   /hyperdrive@11.2.0:
     resolution: {integrity: sha512-cNkQP5OSIN7EI+CsCGhSC5P87NzHUj1kvjorbJigqeBa39lEce1vaiGS1Et9Oszzql7mh4iLtCnEXa+m20HHvA==}
     dependencies:
-      hyperbee: 2.13.1
+      hyperbee: 2.13.4
       hyperblobs: 2.3.0
       is-options: 1.0.2
       mirror-drive: 1.2.4
@@ -4848,13 +4848,13 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-tooltip@5.14.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-fvHgZKSdDC/Zv7G7IL6kPJi99Fqty6zkQsYQZGSkhMmmDQhVnsBLAmY8s14Nh8bshgPmR5EvbjUDZg0yMsp1hg==}
+  /react-tooltip@5.15.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-OiH870zteP4T5B/J7cUGz37aY8C0Cny/i1qcLXevL+wZlW09mfjdcQ6FKP9OMMsRlszRwieOqAPT9l8rWz+BtA==}
     peerDependencies:
       react: '>=16.14.0'
       react-dom: '>=16.14.0'
     dependencies:
-      '@floating-ui/dom': 1.4.1
+      '@floating-ui/dom': 1.4.2
       classnames: 2.3.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -5070,8 +5070,8 @@ packages:
     hasBin: true
     dev: true
 
-  /semver@7.5.2:
-    resolution: {integrity: sha512-SoftuTROv/cRjCze/scjGyiDtcUyxw1rgYQSZY7XTmtR5hX+dm76iDbTH8TkLPHCQmlbQVSSbNZCPM2hb0knnQ==}
+  /semver@7.5.3:
+    resolution: {integrity: sha512-QBlUtyVk/5EeHbi7X0fw6liDZc7BBmEaSYn01fMU1OUYbf6GPsbTtd8WmnqbI20SeycoHSeiybkE/q1Q+qlThQ==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
@@ -6111,7 +6111,7 @@ packages:
       chroma-js: 2.4.2
       clsx: 1.2.1
       react-hook-form: 7.43.9(react@18.2.0)
-      react-tooltip: 5.14.0(react-dom@18.2.0)(react@18.2.0)
+      react-tooltip: 5.15.0(react-dom@18.2.0)(react@18.2.0)
       tailwind-merge: 1.12.0
     transitivePeerDependencies:
       - react
