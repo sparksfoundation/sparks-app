@@ -28,21 +28,15 @@ class Profile extends Agent {
   }
 }
 
-export type User = {
-  profile: Profile,
-  signer: Ed25519,
-  cipher: X25519SalsaPoly,
-  hasher: Blake3,
-  controller: Password,
-} & Spark & Password & Blake3 & X25519SalsaPoly & Ed25519 & Profile
+export type User = Spark<Password, Ed25519,X25519SalsaPoly,Blake3, [ Profile ]>;
 
-export const user = new Spark({
+export const user: User = new Spark({
   agents: [ Profile ],
   signer: Ed25519,
   cipher: X25519SalsaPoly,
   hasher: Blake3,
   controller: Password, 
-}) as User;
+});
 
 export type IdentityStore = {
   user: User,
@@ -52,6 +46,6 @@ export type IdentityStore = {
 
 export const useUser = create<IdentityStore>((set) => ({
   user: user,
-  login: (user) => set({ user: user as User }),
+  login: (user) => set({ user: user }),
   logout: () => set({ user: undefined }),
 }))

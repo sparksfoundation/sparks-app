@@ -7,5 +7,6 @@ export enum Paths {
   USER = "/user",
   USER_SETTINGS = "/user/settings",
   USER_SANDBOX = "/user/sandbox",
+  USER_CREDENTIALS = "/user/credentials",
 }
 

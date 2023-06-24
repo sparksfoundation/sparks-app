@@ -1,7 +1,6 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useUser } from "@stores/user"
 import { useState } from "react"
-import { Spark } from "sparks-sdk"
 import { PostMessage } from "sparks-sdk/channels"
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
@@ -11,27 +10,31 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
   const [waiting, setWaiting] = useState(false)
   const [request, setRequest] = useState(connectionWaiting) as any
 
-
   async function connect({ url }: { url: string }) {
     if (!user) return
     const source = request && window.opener ? window.opener : window.open(url, '_blank');
     if (!source) return;
     const origin = new URL(url).origin;
+
     const channel = new PostMessage({
       source: source as Window,
       origin,
-      spark: user as Spark,
+      spark: user,
     })
 
     setTimeout(async () => {
+      channel.onerror = ({ error }) => {
+        console.log('error', error)
+      }
       await channel.open()
       setWaiting(false)
       setConnection(channel)
-      const receipt = await channel.send({ name: user.agents.user.name })
-  
+
+      const receipt = await channel.send({ name: user.agents.profile.name });
+
       try {
-        const opened = await user.signer.verify({ signature: receipt, publicKey: channel.publicSigningKey });
-        const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedEncryptionKey });
+        const opened = await user.signer.verify({ signature: receipt, publicKey: channel.peer.publicKeys.signing });
+        const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedKey });
         console.log(decrypted)
         setVerified(!!decrypted)
       } catch (e) {
@@ -43,7 +46,7 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
         setConnection(null)
         setVerified(false)
       }
-  
+
       channel.onclose = () => {
         setWaiting(false)
         setConnection(null)

@@ -10,7 +10,7 @@ export type ForwardProps = {
 };
 
 export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProps) => {
-  const user = useUser(state => state.user)
+  const { user } = useUser(state => ({ user: state.user }))
   const members = useMembers(state => state.members)
   const location = useLocation()
   const params = Object.fromEntries(useSearchParams()[0].entries())

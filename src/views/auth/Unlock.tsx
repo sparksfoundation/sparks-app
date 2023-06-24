@@ -4,7 +4,6 @@ import { Button, Card, H3, P, clsxm, Input, Label, Error } from "sparks-ui";
 import { Buffer } from "buffer";
 import { useState } from "react";
 import { useUser } from "@stores/user";
-import { Identity } from "@libs/identity";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,17 +86,17 @@ type onSubmitTypes = {
 export const Unlock = ({ className = '' }: DivProps) => {
   const { members } = useMembers(state => ({ members: state.members }))
   const [error, setError] = useState<string | undefined>(undefined)
+  const user = useUser(state => state.user)
   const [unlocking, setUnlocking] = useState<Member | undefined>()
   const { login } = useUser(state => ({ login: state.login }))
 
   async function onSubmit(args: onSubmitTypes) {
     try {
       const { name, data, salt, password } = args
-      const identity = Identity;
       const utf8Name = Buffer.from(name as string, 'base64').toString('utf-8');
-      identity.agents.user.name = utf8Name as string;
-      await identity.import({ data: data, password, salt } as any);
-      login(identity)
+      user.agents.profile.name = utf8Name as string;
+      await user.import({ data: data, password, salt } as any);
+      login(user)
     } catch (e: any) {
       setError(e.message)
     }

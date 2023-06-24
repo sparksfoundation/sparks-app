@@ -35,15 +35,15 @@ export const ProfileMenu = () => {
         <span className="sr-only">Open user menu</span>
         <img
           className="h-8 w-8 rounded-full bg-gray-50"
-          src={user?.agents.user.avatar as string}
-          alt={`${user?.agents.user.name} avatar`}
+          src={user?.agents.profile.avatar as string}
+          alt={`${user?.agents.profile.name} avatar`}
         />
         <div className="flex lg:flex lg:items-center justify-between w-full">
           <div
             className="ml-4 text-sm font-semibold leading-6 text-slate-800 dark:text-slate-200"
             aria-hidden="true"
           >
-            {user?.agents.user.name as string}
+            {user?.agents.profile.name as string}
           </div>
           <ChevronDownIcon
             className="ml-2 h-5 w-5 text-gray-400"
