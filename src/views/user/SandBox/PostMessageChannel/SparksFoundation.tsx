@@ -28,10 +28,9 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
       }
       await channel.open()
 
-      return;
       setWaiting(false)
       setConnection(channel)
-      const receipt = await channel.send({ name: user.agents.profile.name })
+      const receipt = await channel.message({ name: user.agents.profile.name })
   
       try {
         const opened = await user.signer.verify({ signature: receipt, publicKey: channel.peer.publicKeys.signing });

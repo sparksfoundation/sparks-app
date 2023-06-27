@@ -1,14 +1,14 @@
 import { useUser } from "@stores/user";
 import React from "react";
 import { Button, Card, Input, P } from "sparks-ui";
-import { WebRTC } from "sparks-sdk/channels";
+import { WebRTC } from "sparks-sdk/channels/WebRTC";
 
 interface IProps {
   user: any;
 }
 
 interface IState {
-  peerId: string;
+  address: string;
   waiting: boolean;
   connection: any;
   stream: any;
@@ -25,12 +25,12 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
     this.user = props.user;
 
     this.state = {
-      peerId: "",
+      address: "",
       waiting: false,
       connection: null,
       stream: null,
     } as {
-      peerId: string,
+      address: string,
       waiting: boolean,
       connection: any,
       stream: any,
@@ -52,23 +52,15 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
   }
 
   async connectToPeer() {
-    if (!this.state.peerId || this.state.connection) return
+    if (!this.state.address || this.state.connection) return
     this.setState({ waiting: true })
     const conn = new WebRTC({
-      peerId: this.state.peerId,
+      address: this.state.address,
       spark: this.user,
     });
 
     await conn.open();
-    const stream = await conn.call()
-    conn.onclose = () => this.disconnect(false)
-
-    this.setState({
-      waiting: false,
-      peerId: "",
-      stream,
-      connection: conn,
-    })
+    
   }
 
   async disconnect(initiated = true) {
@@ -97,17 +89,12 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
   }
 
   componentDidMount() {
-    WebRTC.receive(async ({ resolve }: { resolve: any }) => {
+    WebRTC.handleOpenRequests(async ({ resolve }: { resolve: any }) => {
       const conn = await resolve()
       conn.onclose = () => this.disconnect(false)
       this.setState({ connection: conn })
     }, {
       spark: this.user,
-      oncall: async (args: any) => {
-        const { accept } = args
-        const stream = await accept()
-        this.setState({ stream })
-      }
     })
   }
 
@@ -136,7 +123,7 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
                     className="mt-4"
                     placeholder="Enter a peer's identifier or copy yours to connect"
                     onKeyUp={e => { if (e.key === 'Enter') { this.connectToPeer() } }}
-                    value={this.state.peerId} onChange={e => this.setState({ peerId: e.target.value })}
+                    value={this.state.address} onChange={e => this.setState({ address: e.target.value })}
                   />
                 </div>
               </div>

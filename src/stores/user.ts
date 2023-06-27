@@ -6,6 +6,7 @@ import { Password } from "sparks-sdk/controllers";
 import { create } from 'zustand';
 import { avatar } from "@assets/avatar";
 import { Spark } from "sparks-sdk";
+import { SparkTypes } from "sparks-sdk/types";
 
 class Profile extends Agent {
   public _avatar: string = avatar
@@ -28,7 +29,7 @@ class Profile extends Agent {
   }
 }
 
-export type User = Spark<Password, Ed25519,X25519SalsaPoly,Blake3, [ Profile ]>;
+export type User = SparkTypes.SparkInterface<[ Agent ], Password, Ed25519,X25519SalsaPoly, Blake3>;
 
 export const user: User = new Spark({
   agents: [ Profile ],
