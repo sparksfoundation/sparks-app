@@ -8,6 +8,7 @@ import { useUser } from "@stores/user";
 import { useMembers } from "@stores/members";
 import { Buffer } from "buffer";
 import { useLocation, useNavigate } from "react-router-dom";
+import { randomSalt } from "sparks-sdk/utilities";
 
 type onSubmitTypes = {
   name?: string | undefined;
@@ -38,9 +39,13 @@ export const Create = ({ className = '' }: DivProps) => {
 
   async function createUser({ name, password }: { name: string, password: string }) {
     // todo: fix types inference with module augmentation
-    await user.incept({ password } as any) 
+    const salt = randomSalt()
+    const keyPairs = await user.generateKeyPairs({ password, salt });
+    await user.setKeyPairs({ keyPairs });
+    await user.incept().catch(console.log) 
     const b64Name = Buffer.from(name).toString('base64')
-    const { salt, data } = await user.export()
+    const { data } = await user.export()
+    console.log(data);
     if (!b64Name || !salt || !data) throw new Error('failed to create identity')
     addMember({ name: b64Name, salt, data })
     navigate(successUrl)
