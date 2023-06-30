@@ -1,14 +1,14 @@
-import { Agent } from "sparks-sdk/agents";
+import { CoreAgent } from "sparks-sdk/agents";
 import { Ed25519Password } from "sparks-sdk/signers";
 import { X25519SalsaPolyPassword } from "sparks-sdk/ciphers";
 import { Blake3 } from "sparks-sdk/hashers";
 import { create } from 'zustand';
 import { avatar } from "@assets/avatar";
 import { Basic } from "sparks-sdk/controllers";
-import { Spark } from "sparks-sdk";
-import { SparkInterface } from "node_modules/sparks-sdk/dist/types";
+import { Spark } from "node_modules/sparks-sdk/dist/Spark";
 
-class Profile extends Agent {
+
+class Profile extends CoreAgent {
   public _avatar: string = avatar
   public _name: string = ''
 
@@ -27,17 +27,32 @@ class Profile extends Agent {
   set avatar(avatar) {
     this._avatar = avatar
   }
+
+  public async import(data: Record<string, any>): Promise<void> {
+    this._avatar = data.avatar
+    this._name = data.name
+    return Promise.resolve();
+  }
+
+  public async export(): Promise<Record<string, any>> {
+    return Promise.resolve({
+      avatar: this._avatar,
+      name: this._name,
+    });
+  }
 }
 
-export type User = SparkInterface<[ Agent ], X25519SalsaPolyPassword, Basic, Blake3, Ed25519Password>;
+export type User = Spark<[Profile], X25519SalsaPolyPassword, Basic, Blake3, Ed25519Password>;
 
-export const user: User = new Spark({
-  agents: [ Profile ],
-  signer: Ed25519Password,
-  cipher: X25519SalsaPolyPassword,
-  hasher: Blake3,
-  controller: Basic, 
-});
+function emptyUser(): User {
+  return new Spark({
+    agents: [Profile],
+    signer: Ed25519Password,
+    cipher: X25519SalsaPolyPassword,
+    hasher: Blake3,
+    controller: Basic,
+  });
+}
 
 export type IdentityStore = {
   user: User,
@@ -46,7 +61,7 @@ export type IdentityStore = {
 }
 
 export const useUser = create<IdentityStore>((set) => ({
-  user: user,
+  user: emptyUser(),
   login: (user) => set({ user: user }),
-  logout: () => set({ user: undefined }),
+  logout: () => set({ user: emptyUser() }),
 }))

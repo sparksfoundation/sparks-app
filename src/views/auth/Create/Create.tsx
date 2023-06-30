@@ -39,13 +39,14 @@ export const Create = ({ className = '' }: DivProps) => {
 
   async function createUser({ name, password }: { name: string, password: string }) {
     // todo: fix types inference with module augmentation
-    const salt = randomSalt()
-    const keyPairs = await user.generateKeyPairs({ password, salt });
-    await user.setKeyPairs({ keyPairs });
-    await user.incept().catch(console.log) 
+    const salt = randomSalt();
+    await user.incept({
+      password,
+      salt,
+    });
+    user.agents.profile.name = name;
     const b64Name = Buffer.from(name).toString('base64')
-    const { data } = await user.export()
-    console.log(data);
+    const data = await user.export();
     if (!b64Name || !salt || !data) throw new Error('failed to create identity')
     addMember({ name: b64Name, salt, data })
     navigate(successUrl)

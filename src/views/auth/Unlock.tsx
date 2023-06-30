@@ -77,10 +77,10 @@ export const UnlockForm = ({ identity, error, className = '', onSubmit }: Unlock
 
 
 type onSubmitTypes = {
-  name?: string | undefined;
-  salt?: string | undefined;
-  data?: string | undefined;
-  password?: string | undefined;
+  name: string;
+  salt: string;
+  data: string;
+  password: string;
 }
 
 export const Unlock = ({ className = '' }: DivProps) => {
@@ -92,10 +92,8 @@ export const Unlock = ({ className = '' }: DivProps) => {
 
   async function onSubmit(args: onSubmitTypes) {
     try {
-      const { name, data, salt, password } = args
-      const utf8Name = Buffer.from(name as string, 'base64').toString('utf-8');
-      user.agents.profile.name = utf8Name as string;
-      await user.import({ data: data, password, salt } as any);
+      const { data, salt, password } = args
+      await user.import({ data: data, password, salt });
       login(user)
     } catch (e: any) {
       setError(e.message)
@@ -126,7 +124,7 @@ export const Unlock = ({ className = '' }: DivProps) => {
       {unlocking && (
         <UnlockForm
           error={error}
-          onSubmit={onSubmit}
+          onSubmit={onSubmit as FormHandlerType}
           identity={unlocking}
         />
       )}

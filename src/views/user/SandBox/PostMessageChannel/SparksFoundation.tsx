@@ -33,9 +33,8 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
       const receipt = await channel.message({ name: user.agents.profile.name })
   
       try {
-        const opened = await user.signer.verify({ signature: receipt, publicKey: channel.peer.publicKeys.signing });
+        const opened = await user.signer.verify({ signature: receipt, publicKey: channel.peer.publicKeys.signer });
         const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedKey });
-        console.log(decrypted)
         setVerified(!!decrypted)
       } catch (e) {
         setVerified(false)
@@ -52,7 +51,7 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
         setConnection(null)
         setVerified(false)
       }
-    }, 2000)
+    }, 10000)
   }
 
   async function disconnect() {
