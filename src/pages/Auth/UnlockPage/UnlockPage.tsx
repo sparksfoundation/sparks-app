@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
 import { Button, Card, ErrorMsg, H3, Input, Label, P, clsxm } from 'sparks-ui';
 import { useEffect } from "react";
 import { useUser } from "@stores/user";
@@ -22,7 +21,6 @@ export const UnlockPage = () => {
   const { login, user } = useUser(state => ({ login: state.login, user: state.user }));
   const members = useMembers(state => state.getMembers());
   const member = members[0] as Member;
-  const navigate = useNavigate();
 
   const {
     register,
