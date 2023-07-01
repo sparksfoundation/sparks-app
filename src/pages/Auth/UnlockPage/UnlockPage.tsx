@@ -22,6 +22,7 @@ export const UnlockPage = () => {
   const { login, user } = useUser(state => ({ login: state.login, user: state.user }));
   const members = useMembers(state => state.getMembers());
   const member = members[0] as Member;
+  const navigate = useNavigate();
 
   const {
     register,
