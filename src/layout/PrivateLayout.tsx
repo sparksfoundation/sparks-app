@@ -1,7 +1,5 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Sidenav } from "@components/Sidenav";
-import { ThemeSwitcher } from "@components/ThemeSwitcher";
 import { NoiseBackground } from "sparks-ui";
 import { Outlet } from "react-router-dom";
 import { useSidenav } from "@hooks";

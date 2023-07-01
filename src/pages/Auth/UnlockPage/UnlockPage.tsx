@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button, Card, ErrorMsg, H3, Input, Label, P, clsxm } from 'sparks-ui';
 import { useEffect } from "react";
 import { useUser } from "@stores/user";
