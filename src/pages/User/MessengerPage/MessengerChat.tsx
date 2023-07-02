@@ -1,10 +1,12 @@
 import { PaperAirplaneIcon } from "@heroicons/react/20/solid";
+import { User } from "@stores/user";
 import { Component, FormEvent } from "react";
 import { ChannelEventType, WebRTC } from "sparks-sdk/channels";
 import { Button, Card, Input, P, clsxm } from "sparks-ui";
 
 interface MessengerChatProps {
   channel: WebRTC;
+  user: User;
   handleCloseChat: Function;
 }
 
@@ -16,9 +18,16 @@ interface MessengerChatState {
 }
 
 export class MessengerChat extends Component<MessengerChatProps, MessengerChatState> {
-  constructor(props: { channel: WebRTC, handleCloseChat: Function }) {
+  constructor(props: { channel: WebRTC, handleCloseChat: Function, user: User }) {
     super(props);
 
+    const messageTypes = [ ChannelEventType.MESSAGE, ChannelEventType.MESSAGE_CONFIRMATION ]
+    const messageEvents = props.channel.eventLog
+      .filter(event => messageTypes.includes(event.type))
+      .map(async (event: any) => {
+        const message = await props.channel.getEventMessage(event);
+      })
+    
     this.state = {
       message: '',
       waiting: false,

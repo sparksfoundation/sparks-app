@@ -9,6 +9,7 @@ import { MessengerChat } from "./MessengerChat";
 import { useChannels } from "@stores/channels";
 import { ChannelId, ChannelState, WebRTC } from "sparks-sdk/channels";
 import { useEffect, useState } from "react";
+import { useUser } from "@stores/user";
 
 const ChannelsList = ({ channels }: { channels: { [key: ChannelId]: WebRTC } }) => {
   const navigate = useNavigate();
@@ -20,8 +21,6 @@ const ChannelsList = ({ channels }: { channels: { [key: ChannelId]: WebRTC } }) 
   }
 
   async function reconnect(channel: WebRTC) {
-    console.log('reconnecting', channel);
-
     setConnecting(true);
     await channel.open();
     setConnecting(false);
@@ -32,8 +31,6 @@ const ChannelsList = ({ channels }: { channels: { [key: ChannelId]: WebRTC } }) 
     if (confirm('Are you sure you want to delete this channel?') === false) return;
     removeChannel(channel)
   }
-
-  console.log(Object.values(channels))
 
   return (
     <>
@@ -67,6 +64,7 @@ export const MessengerPage = () => {
   const navigate = useNavigate();
   const { openModal } = useModal(state => ({ openModal: state.openModal }));
   const [activeChannel, setActiveChannel] = useState<WebRTC | null>(null);
+  const { user } = useUser(state => ({ user: state.user }));
   const location = useLocation();
 
   async function handleConnected(channel: WebRTC) {
@@ -104,7 +102,7 @@ export const MessengerPage = () => {
     <>
       <PrivateLayoutHeader title="Messenger" />
       {activeChannel ? (
-        <MessengerChat channel={activeChannel} handleCloseChat={onChatClosed} />
+        <MessengerChat channel={activeChannel} handleCloseChat={onChatClosed} user={user} />
       ) : (
         <>
           <ChannelsList channels={channels as { [key: ChannelId]: WebRTC }} />

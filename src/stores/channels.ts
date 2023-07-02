@@ -15,7 +15,6 @@ export interface ChannelStore {
   addChannel: (channel: Channel) => Promise<void>;
   saveChannelData: (channel: Channel) => Promise<void>;
   removeChannel: (channel: Channel) => void;
-
 }
 
 export const useChannels = create<ChannelStore>()(
@@ -23,25 +22,34 @@ export const useChannels = create<ChannelStore>()(
     channels: {},
     encryptedChannelsData: {},
     addChannel: async (channel: Channel) => {
-      console.log('adding', channel.cid)
       if (!channel.cid) return;
+      const user = useUser.getState().user;
+      if (!user) return;
       const channelData = get().encryptedChannelsData[channel.cid];
       if (channelData) {
-        await channel.import({ data: channelData });
+        const decrypted = await useUser.getState().user.decrypt({ data: channelData });
+        await channel.import(decrypted as Record<string, any>);
       }
       set({ channels: { ...get().channels, [channel.cid]: channel } });
       get().saveChannelData(channel);
     },
     removeChannel: (channel: Channel) => {
       // remove from encrypted & channels
-      delete get().channels[channel.cid];
-      delete get().encryptedChannelsData[channel.cid];
+      const update = { ...get().channels };
+      delete update[channel.cid];
+      set({ channels: update });
+
+      const encryptedUpdate = { ...get().encryptedChannelsData };
+      delete encryptedUpdate[channel.cid];
+
+      set({ encryptedChannelsData: encryptedUpdate });
     },
     saveChannelData: async (channel: Channel) => {
       if (!channel.cid) return;
       const user = useUser.getState().user;
       const data = await channel.export();
-      console.log('saving data', data);
+      console.log('saving data', data.cid);
+      console.log('saving data', data.peer);
       const encryptedData = await user.encrypt({ data });
       const encryptedChannelsData = get().encryptedChannelsData;
       encryptedChannelsData[channel.cid] = encryptedData;
@@ -72,8 +80,6 @@ useChannels.persist.onFinishHydration((state) => {
       if (!cid || !encryptedData) continue;
       const channelData = await user.decrypt({ data: encryptedData }) as any;
       if (!channelData.cid) continue;
-      console.log(cid, channelData)
-
       const channel = new WebRTC({ spark: user, ...channelData });
       useChannels.getState().addChannel(channel);
     }

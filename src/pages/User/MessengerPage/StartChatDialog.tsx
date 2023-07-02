@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useChannels } from "@stores/channels";
 import { useModal } from "@stores/modal";
 import { useUser } from "@stores/user";
 import { useState } from "react";
@@ -23,6 +24,7 @@ export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC
     const [status, setStatus] = useState('');
     const { user } = useUser(state => ({ user: state.user }));
     const { closeModal } = useModal(state => ({ closeModal: state.closeModal }));
+    const { addChannel } = useChannels(state => ({ addChannel: state.addChannel }));
 
     const {
         register,
@@ -51,6 +53,8 @@ export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC
                 setStatus('peer rejected connection');
                 reject();
             }
+
+            addChannel(channel);
 
             setStatus('peer connection accepted');
             closeModal();
