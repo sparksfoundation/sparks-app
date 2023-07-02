@@ -5,6 +5,7 @@ import { Button, Card, Input, P, clsxm } from "sparks-ui";
 
 interface MessengerChatProps {
   channel: WebRTC;
+  handleCloseChat: Function;
 }
 
 interface MessengerChatState {
@@ -15,8 +16,9 @@ interface MessengerChatState {
 }
 
 export class MessengerChat extends Component<MessengerChatProps, MessengerChatState> {
-  constructor(props: { channel: WebRTC }) {
+  constructor(props: { channel: WebRTC, handleCloseChat: Function }) {
     super(props);
+
     this.state = {
       message: '',
       waiting: false,
@@ -29,6 +31,13 @@ export class MessengerChat extends Component<MessengerChatProps, MessengerChatSt
     const { channel } = this.props;
     channel.onmessage = (event) => {
       this.setState({ messages: [...this.state.messages, { message: event.data, event }] });
+    }
+    channel.onerror = (error) => {
+      console.log('channel error', error)
+    }
+    channel.onclose = () => {
+      console.log('channel closed')
+      this.props.handleCloseChat();
     }
   }
 

@@ -1,16 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, H1, P, Triangle } from 'sparks-ui';
+import { Button, H1, P } from 'sparks-ui';
 import { IntroCard } from '@components/IntroCard';
-import { ThemeSwitcher } from '@components/ThemeSwitcher';
 
 export const LandingPage = () => {
   const navigate = useNavigate()
 
   return (
-    <>
-      <ThemeSwitcher className="absolute top-4 right-4" />
-      <Triangle className="left-1/2 top-0 -translate-x-1/2 -translate-y-1/2" />
-      <Triangle className="left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2" />
       <div className="relative flex flex-col justify-center items-center h-full p-6 max-w-4xl mx-auto">
         <H1 className="text-center mb-2 ">SPARKS</H1>
         <P className="text-center text-xl sm:text-2xl mb-6">Get started with your SPARKS Identity</P>
@@ -37,6 +32,5 @@ export const LandingPage = () => {
           />
         </div>
       </div>
-    </>
   )
 }

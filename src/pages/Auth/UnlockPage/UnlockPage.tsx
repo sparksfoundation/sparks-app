@@ -46,7 +46,6 @@ export const UnlockPage = () => {
     await user.import({ data: data, password, salt })
     .then(() => login(user))
     .catch((err) => {
-      console.log(err)
       const message = 'invalid password';
       setValue('password', '');
       setError('password', { message });

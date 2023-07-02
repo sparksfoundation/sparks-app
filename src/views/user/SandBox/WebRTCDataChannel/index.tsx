@@ -9,7 +9,7 @@ interface IProps {
 }
 
 interface IState {
-  address: string;
+  peerIdentifier: string;
   waiting: boolean;
   message: string;
   messages: any[];
@@ -27,7 +27,7 @@ class WebRTCChat extends React.Component<IProps, IState>  {
     this.set = false;
 
     this.state = {
-      address: "",
+      peerIdentifier: "",
       waiting: false,
       message: "",
       messages: [],
@@ -51,11 +51,11 @@ class WebRTCChat extends React.Component<IProps, IState>  {
   }
 
   async connectToPeer() {
-    if (!this.state.address || this.state.connection) return
+    if (!this.state.peerIdentifier || this.state.connection) return
     this.setState({ waiting: true })
 
     const conn = new WebRTC({
-      peerAddress: this.state.address,
+      peerIdentifier: this.state.peerIdentifier,
       spark: this.user,
     });
 
@@ -70,7 +70,7 @@ class WebRTCChat extends React.Component<IProps, IState>  {
     }
     this.setState({
       waiting: false,
-      address: "",
+      peerIdentifier: "",
       connection: conn,
     })
   }
@@ -155,7 +155,7 @@ class WebRTCChat extends React.Component<IProps, IState>  {
                       className="mt-4"
                       placeholder="Enter a peer's identifier or copy yours to connect"
                       onKeyUp={e => { if (e.key === 'Enter') { this.connectToPeer() } }}
-                      value={this.state.address} onChange={e => this.setState({ address: e.target.value })}
+                      value={this.state.peerIdentifier} onChange={e => this.setState({ peerIdentifier: e.target.value })}
                     />
                   </div>
                 </>

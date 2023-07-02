@@ -1,19 +1,22 @@
 import { useUser } from "@stores/user";
 import { useEffect } from "react";
-import { PostMessage, WebRTC } from "sparks-sdk/channels";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from "@stores/theme";
 import { Button, P } from "sparks-ui";
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@routes/paths";
+import { useChannels } from "@stores/channels";
+import { PostMessage, WebRTC } from "sparks-sdk/channels";
 
 const HandleChatInvite = ({ event, resolve, reject, closeToast }: { event: any, resolve: Function, reject: Function, closeToast: (() => void) | undefined }) => {
   const peerId = `${event.data.identifier.slice(0, 6)}...${event.data.identifier.slice(-6)}`;
+  const { addChannel } = useChannels(state => ({ addChannel: state.addChannel }));
   const navigate = useNavigate();
 
   async function handleAccept() {
-    await resolve();
+    const channel = await resolve();
+    await addChannel(channel);
     if (closeToast) closeToast();
     navigate(Paths.USER_MESSENGER, { state: { channelId: event.metadata.cid } });
   }
@@ -34,17 +37,27 @@ export const NotificationProvider = () => {
   const { user } = useUser(state => ({ user: state.user }));
   const { identifier } = user || { identifier: '' };
   const { theme } = useTheme(state => ({ theme: state.theme }));
+  const { addChannel } = useChannels(state => ({ addChannel: state.addChannel }));
 
   useEffect(() => {
     if (!user || !user.identifier) return;
 
-    PostMessage.handleOpenRequests(async (props) => {
-      toast(({ closeToast }) => <HandleChatInvite {...props} closeToast={closeToast} />);
+    PostMessage.handleOpenRequests(async ({ event, resolve, reject }) => {
+      const addAndResolve = async () => {
+        const channel = await resolve() as any;
+        await addChannel(channel);
+        return channel;
+      }
+      toast(({ closeToast }) => <HandleChatInvite event={event} resolve={addAndResolve} reject={reject} closeToast={closeToast} />);
     }, { spark: user });
 
-    WebRTC.handleOpenRequests(async (props) => {
-      console.log(props);
-      toast(({ closeToast }) => <HandleChatInvite {...props} closeToast={closeToast} />);
+    WebRTC.handleOpenRequests(async ({ event, resolve, reject }) => {
+      const addAndResolve = async () => {
+        const channel = await resolve() as any;
+        await addChannel(channel);
+        return channel;
+      }
+      toast(({ closeToast }) => <HandleChatInvite event={event} reject={reject} resolve={addAndResolve} closeToast={closeToast} />);
     }, { spark: user });
 
   }, [identifier])

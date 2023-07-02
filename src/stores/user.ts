@@ -9,7 +9,7 @@ import { Spark } from "node_modules/sparks-sdk/dist/Spark";
 import { FetchAPI, PostMessage, WebRTC } from "sparks-sdk/channels";
 import { useMembers } from "./members";
 
-Spark.availableChannels = [ PostMessage, WebRTC, FetchAPI ];
+Spark.availableChannels = [PostMessage, WebRTC, FetchAPI];
 
 class Profile extends CoreAgent {
   public _avatar: string = avatar
@@ -57,8 +57,6 @@ function emptyUser(): User {
   });
 }
 
-
-
 export type IdentityStore = {
   user: User,
   login: (user: User) => void
@@ -69,21 +67,22 @@ export const useUser = create<IdentityStore>((set) => ({
   user: emptyUser(),
   login: (user) => {
     set({ user: user })
-    window.addEventListener('beforeunload', handleSave);
   },
   logout: () => {
     set({ user: emptyUser() })
-    window.removeEventListener('beforeunload', handleSave);
   },
-}))
+}));
 
-async function handleSave() {
-  const user = useUser.getState().user
-  const salt = user.keyPairs.cipher.salt
-  const data = await user.export()
-  useMembers.getState().updateMember({ 
-    name: user.agents.profile.name,
-    salt, 
-    data,
-  })
+if (window) {
+  window.addEventListener('beforeunload', async () => {
+    const user = useUser.getState().user
+    const salt = user.keyPairs.cipher.salt
+    const data = await user.export()
+    useMembers.getState().updateMember({
+      name: user.agents.profile.name,
+      salt,
+      data,
+    })
+  });
 }
+

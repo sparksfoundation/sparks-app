@@ -41,7 +41,7 @@ export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC
 
             const { identifier } = fields;
             const channel = new WebRTC({
-                peerAddress: identifier,
+                peerIdentifier: identifier,
                 spark: user,
             });
 
