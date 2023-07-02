@@ -5,7 +5,6 @@ import { Button, Card, ErrorMsg, H3, Input, Label, P, clsxm } from 'sparks-ui';
 import { useEffect } from "react";
 import { useUser } from "@stores/user";
 import { Member, useMembers } from "@stores/members";
-import { useModal } from "@stores/modal";
 
 const formSchema = z.object({
   password: z.string().min(8, { message: 'invalid password' }).max(50),
@@ -23,8 +22,6 @@ export const UnlockPage = () => {
   const members = useMembers(state => state.getMembers());
   const member = members[0] as Member;
 
-  const { openModal } = useModal();
-
   const {
     register,
     handleSubmit,
@@ -40,9 +37,6 @@ export const UnlockPage = () => {
   });
 
   useEffect(() => {
-    setTimeout(() => {
-      openModal({ heading: 'test', content: 'test' });
-    }, 5000)
     setFocus('password')
   }, [])
 
@@ -51,7 +45,8 @@ export const UnlockPage = () => {
     const { password } = fields;
     await user.import({ data: data, password, salt })
     .then(() => login(user))
-    .catch(() => {
+    .catch((err) => {
+      console.log(err)
       const message = 'invalid password';
       setValue('password', '');
       setError('password', { message });

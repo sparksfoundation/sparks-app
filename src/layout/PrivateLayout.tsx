@@ -1,32 +1,37 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { Sidenav } from "@components/Sidenav";
-import { NoiseBackground } from "sparks-ui";
+import { H3, NoiseBackground } from "sparks-ui";
 import { Outlet } from "react-router-dom";
-import { useSidenav } from "@hooks";
+import { useSideNav } from "@stores/sidenav";
+
+export const PrivateLayoutHeader = ({ title }: { title: string }) => {
+  const { openSideNav } = useSideNav();
+  return (
+    <header className="flex items-center justify-stretch h-16">
+      <button
+        type="button"
+        className="p-4 z-20 text-fg-800 dark:text-fg-200 block lg:hidden grow-0"
+        onClick={openSideNav}
+      >
+        <span className="sr-only">Open sidebar</span>
+        <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+      </button>
+      <H3 className="text-center grow">{title}</H3>
+    </header>
+  )
+};
 
 export const PrivateLayout = () => {
-  const { closeSidenav, openSidenav, sidenavOpen } = useSidenav();
-
+  const { open, closeSideNav } = useSideNav();
   return (
-    <>
-      <div className="h-full">
-        <NoiseBackground />
-        <Sidenav sidenavOpen={sidenavOpen} closeSidenav={closeSidenav} />
-
-        <div className="lg:pl-72 h-full">
-          <button
-            type="button"
-            className="-m-2.5 p-2.5 text-slate-700 lg:hidden"
-            onClick={openSidenav}
-          >
-            <span className="sr-only">Open sidebar</span>
-            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-          </button>
-          <main className="relative py-6 px-6 w-full h-full">
+    <div className="w-full h-full overflow-hidden absolute">
+      <NoiseBackground />
+      <Sidenav sidenavOpen={open} closeSidenav={closeSideNav} />
+      <div className="lg:pl-72 h-full w-full overflow-hidden absolute">
+        <div className="top-0 left-0 w-full h-full relative flex flex-col p-2">
             <Outlet />
-          </main>
         </div>
       </div>
-    </>
+    </div>
   );
 };

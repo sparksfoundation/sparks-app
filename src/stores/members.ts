@@ -14,6 +14,7 @@ export interface MemberStore {
   getMembers: () => Member[];
   addMember: (member: Member) => void;
   removeMember: (salt: string) => void;
+  updateMember: (member: Member) => void;
 }
 
 export const useMembers = create<MemberStore>()(
@@ -34,6 +35,14 @@ export const useMembers = create<MemberStore>()(
     },
     removeMember: (salt: string) => {
       set({ members: get().members.filter(m => m.salt !== salt) })
+    },
+    updateMember: (member: Member) => {
+      const update = {
+        data: member.data,
+        name: Buffer.from(member.name, 'utf-8').toString('base64'),
+        salt: member.salt,
+      }
+      set({ members: get().members.map(m => m.salt === member.salt ? update : m) })
     }
   }), {
     name: 'members',

@@ -26,8 +26,8 @@ const routes = [
       { path: Paths.USER, element: <Forward Component={DashboardPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_CREDENTIALS, element: <Forward Component={CredentialsPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_SETTINGS, element: <Forward Component={Settings} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
+      { path: Paths.USER_MESSENGER, element: <Forward Component={MessengerPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_SANDBOX, element: <Forward Component={() => <SandBox />} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
-      { path: Paths.USER_MESSENGER, element: <Forward Component={MessengerPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> }
     ]
   }
 ]

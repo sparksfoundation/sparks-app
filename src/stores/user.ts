@@ -7,6 +7,7 @@ import { avatar } from "@assets/avatar";
 import { Basic } from "sparks-sdk/controllers";
 import { Spark } from "node_modules/sparks-sdk/dist/Spark";
 import { FetchAPI, PostMessage, WebRTC } from "sparks-sdk/channels";
+import { useMembers } from "./members";
 
 Spark.availableChannels = [ PostMessage, WebRTC, FetchAPI ];
 
@@ -56,6 +57,8 @@ function emptyUser(): User {
   });
 }
 
+
+
 export type IdentityStore = {
   user: User,
   login: (user: User) => void
@@ -64,6 +67,23 @@ export type IdentityStore = {
 
 export const useUser = create<IdentityStore>((set) => ({
   user: emptyUser(),
-  login: (user) => set({ user: user }),
-  logout: () => set({ user: emptyUser() }),
+  login: (user) => {
+    set({ user: user })
+    window.addEventListener('beforeunload', handleSave);
+  },
+  logout: () => {
+    set({ user: emptyUser() })
+    window.removeEventListener('beforeunload', handleSave);
+  },
 }))
+
+async function handleSave() {
+  const user = useUser.getState().user
+  const salt = user.keyPairs.cipher.salt
+  const data = await user.export()
+  useMembers.getState().updateMember({ 
+    name: user.agents.profile.name,
+    salt, 
+    data,
+  })
+}

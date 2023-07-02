@@ -2,18 +2,18 @@ import { ReactNode } from 'react';
 import { create } from 'zustand';
 
 export type ModalType = {
-  heading: string,
+  title: string,
   content: ReactNode,
 }
 
-export type IdentityStore = {
+export type ModalStore = {
   modal: ModalType | null,
-  openModal: ({ heading, content } : ModalType) => void,
+  openModal: ({ title, content } : ModalType) => void,
   closeModal: () => void,
 }
 
-export const useModal = create<IdentityStore>((set) => ({
+export const useModal = create<ModalStore>((set) => ({
   modal: null,
-  openModal: ({ heading, content }: ModalType) => set({ modal: { heading, content } }),
+  openModal: ({ title, content }: ModalType) => set({ modal: { title, content } }),
   closeModal: () => set({ modal: null }),
 }))
