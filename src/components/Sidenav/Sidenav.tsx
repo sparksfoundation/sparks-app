@@ -4,6 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { NavLink } from "react-router-dom";
 import {
+  EnvelopeIcon,
   HomeModernIcon,
   IdentificationIcon,
   RocketLaunchIcon,
@@ -22,20 +23,22 @@ const navigation = [
     name: "Dashboard",
     href: Paths.USER,
     icon: HomeModernIcon,
-    current: false,
   },
   {
     name: "Credentials",
     href: Paths.USER_CREDENTIALS,
     icon: IdentificationIcon,
-    current: false,
   },
   {
     name: "Sandbox",
     href: Paths.USER_SANDBOX,
     icon: RocketLaunchIcon,
-    current: false,
   },
+  { 
+    name: "Messenger",
+    href: Paths.USER_MESSENGER,
+    icon: EnvelopeIcon,
+  }
 ];
 
 export const Sidenav = ({ closeSidenav, sidenavOpen }: SidenavProps) => {

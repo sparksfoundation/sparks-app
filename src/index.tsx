@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.js'
 import "@fontsource/inter";
-import './styles/global.css'
+import './styles/global.css';
+import './styles/toastify.css';
 import { registerSW } from 'virtual:pwa-register';
 
 const updateSW = registerSW({

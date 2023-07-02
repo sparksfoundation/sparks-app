@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react"
-import { Outlet } from "react-router-dom"
+import { ReactNode, useEffect, useState } from "react"
 import { UseBoundStore } from "zustand"
 
-export const LoadStores = ({ stores }: { stores: UseBoundStore<any>[]  }) => {
+export const StoresLoader = ({ stores, children }: { stores: UseBoundStore<any>[], children: ReactNode  }) => {
   const [done, setDone] = useState(false)
   useEffect(() => {
     if (done) return
@@ -15,5 +14,5 @@ export const LoadStores = ({ stores }: { stores: UseBoundStore<any>[]  }) => {
       setDone(true)
     })()
   })
-  return <>{done ? <Outlet /> : <></>}</>
+  return <>{done ? children : <></>}</>
 }

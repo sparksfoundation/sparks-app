@@ -1,5 +1,5 @@
 import { useTheme } from "@stores/theme"
-import { Outlet } from "react-router-dom"
+import { ReactNode } from "react"
 import { clsxm } from "sparks-ui"
 
 const DevHeader = () => {
@@ -10,7 +10,7 @@ const DevHeader = () => {
   )
 }
 
-export const LoadTheme = () => {
+export const ThemeLoader = ({ children }: { children: ReactNode }) => {
   const { theme } = useTheme(state => ({ theme: state.theme }))
   return (
     <div className={clsxm(
@@ -19,7 +19,7 @@ export const LoadTheme = () => {
       !theme && 'display-none',
     )}>
       <DevHeader />
-      <Outlet />
+      {children}
     </div>
   )
 }

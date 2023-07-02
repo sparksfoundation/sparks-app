@@ -33,6 +33,7 @@
     "react-hook-form": "^7.45.0",
     "react-html-props": "^2.0.2",
     "react-router-dom": "^6.14.0",
+    "react-toastify": "^9.1.3",
     "scrypt-pbkdf": "^1.1.1",
     "sparks-sdk": "link:../sparks-sdk",
     "sparks-ui": "link:../sparks-ui",

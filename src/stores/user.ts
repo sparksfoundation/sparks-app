@@ -6,7 +6,9 @@ import { create } from 'zustand';
 import { avatar } from "@assets/avatar";
 import { Basic } from "sparks-sdk/controllers";
 import { Spark } from "node_modules/sparks-sdk/dist/Spark";
+import { FetchAPI, PostMessage, WebRTC } from "sparks-sdk/channels";
 
+Spark.availableChannels = [ PostMessage, WebRTC, FetchAPI ];
 
 class Profile extends CoreAgent {
   public _avatar: string = avatar
