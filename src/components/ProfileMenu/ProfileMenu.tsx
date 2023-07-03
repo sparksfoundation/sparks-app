@@ -1,5 +1,4 @@
 import { Fragment, forwardRef } from "react";
-import { useUser } from "@stores/user";
 import { Menu, Transition } from "@headlessui/react";
 import {
   ArrowRightOnRectangleIcon,
@@ -10,7 +9,8 @@ import { Cog6ToothIcon, SunIcon, MoonIcon, DocumentDuplicateIcon } from "@heroic
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 import { Paths } from "@routes/paths";
-import { useTheme } from "@stores/theme";
+import { userActions, userStore } from "@stores/refactor/userStore";
+import { themeStore, themeActions } from "@stores/refactor/themeStore";
 
 const MenuLink = forwardRef(({ label, Icon, ...rest }: any, ref) => {
   return (
@@ -30,12 +30,9 @@ const MenuLink = forwardRef(({ label, Icon, ...rest }: any, ref) => {
 });
 
 export const ProfileMenu = () => {
-  const { user, logout } = useUser((state) => ({
-    user: state.user as any,
-    logout: state.logout,
-  }));
-
-  const { theme, setTheme } = useTheme(state => ({ theme: state.theme, setTheme: state.setTheme }));
+  const user = userStore(state => state.user);
+  const { logout } = userActions;
+  const theme = themeStore(state => state.theme);
 
   return (
     <Menu as="div" className="relative w-full z-50">
@@ -44,14 +41,14 @@ export const ProfileMenu = () => {
         <img
           className="h-8 w-8 rounded-full bg-gray-50"
           src={user?.agents.profile.avatar as string}
-          alt={`${user?.agents.profile.name} avatar`}
+          alt={`${user?.agents.profile.handle} avatar`}
         />
         <div className="flex lg:flex lg:items-center justify-between w-full">
           <div
             className="ml-4 text-sm font-semibold leading-6 text-slate-800 dark:text-slate-200"
             aria-hidden="true"
           >
-            {user?.agents.profile.name as string}
+            {user?.agents.profile.handle as string}
           </div>
           <ChevronDownIcon
             className="ml-2 h-5 w-5 text-gray-400"
@@ -84,7 +81,7 @@ export const ProfileMenu = () => {
           </Menu.Item>
           <Menu.Item>
             <MenuLink
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={themeActions.toggle}
               label={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               Icon={theme === 'dark' ? SunIcon : MoonIcon}
             />

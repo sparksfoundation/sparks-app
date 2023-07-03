@@ -1,7 +1,7 @@
-import { useUser } from "@stores/user";
 import React from "react";
 import { Button, Card, Input, P } from "sparks-ui";
 import { WebRTC } from "sparks-sdk/channels/WebRTC";
+import { userStore } from "@stores/refactor/userStore";
 
 interface IProps {
   user: any;
@@ -136,7 +136,7 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
 }
 
 const withUser = (BaseComponent: any) => (props: any) => {
-  const user = useUser(state => state.user);
+  const user = userStore((state: any) => state.user);
   return <BaseComponent {...props} user={user} />;
 };
 export const WebRTCVideoChannel = withUser(WebRTCVideo);

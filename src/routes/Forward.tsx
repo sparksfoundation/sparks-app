@@ -1,5 +1,4 @@
-import { useMembers } from "@stores/members";
-import { useUser } from "@stores/user";
+import { userStore } from "@stores/refactor/userStore";
 import { Navigate, matchPath, useLocation, useSearchParams } from "react-router-dom";
 
 export type ForwardProps = {
@@ -10,14 +9,13 @@ export type ForwardProps = {
 };
 
 export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProps) => {
-  const { user } = useUser(state => ({ user: state.user }))
-  const members = useMembers(state => state.members)
-  const location = useLocation()
-  const params = Object.fromEntries(useSearchParams()[0].entries())
+  const { user, account } = userStore(state => state);
+  const location = useLocation();
+  const params = Object.fromEntries(useSearchParams()[0].entries());
 
-  const isUser = !!user && user.identifier
-  const isMember = !isUser && members.length > 0
-  const isGuest = !isMember && members.length === 0
+  const isUser = !!user && user.identifier;
+  const isMember = !isUser && account();
+  const isGuest = !isUser && !isMember;
 
   const redirectUser = usersTo && isUser && !matchPath(usersTo, location.pathname)
   const redirectMember = membersTo && isMember && !matchPath(membersTo, location.pathname)

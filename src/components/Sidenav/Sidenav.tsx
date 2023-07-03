@@ -11,12 +11,8 @@ import {
 } from "@heroicons/react/24/solid";
 import { ProfileMenu } from "@components/ProfileMenu";
 import { Paths } from "@routes/paths";
-import { useTheme } from "@stores/theme";
-
-interface SidenavProps {
-  sidenavOpen: boolean;
-  closeSidenav: () => void;
-}
+import { themeStore } from "@stores/refactor/themeStore";
+import { sideNavActions, sideNavStore } from "@stores/refactor/sideNavStore";
 
 const navigation = [
   {
@@ -41,16 +37,17 @@ const navigation = [
   },
 ];
 
-export const Sidenav = ({ closeSidenav, sidenavOpen }: SidenavProps) => {
-  const theme = useTheme((state) => state.theme);
+export const Sidenav = () => {
+  const theme = themeStore((state) => state.theme);
+  const open = sideNavStore((state) => state.open);
 
   return (
     <>
-      <Transition.Root show={sidenavOpen} as={Fragment}>
+      <Transition.Root show={open} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-40 lg:hidden"
-          onClose={closeSidenav}
+          onClose={sideNavActions.close}
         >
           <Transition.Child
             as={Fragment}
@@ -88,7 +85,7 @@ export const Sidenav = ({ closeSidenav, sidenavOpen }: SidenavProps) => {
                     <button
                       type="button"
                       className="-m-2.5 p-2.5"
-                      onClick={closeSidenav}
+                      onClick={sideNavActions.close}
                     >
                       <span className="sr-only">Close sidebar</span>
                       <XMarkIcon
@@ -127,7 +124,7 @@ export const Sidenav = ({ closeSidenav, sidenavOpen }: SidenavProps) => {
                                   )
                                 }
                                 end
-                                onClick={closeSidenav}
+                                onClick={sideNavActions.close}
                               >
                                 <item.icon
                                   className="h-6 w-6 shrink-0"

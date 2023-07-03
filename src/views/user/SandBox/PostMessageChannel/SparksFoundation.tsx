@@ -1,10 +1,10 @@
 import { Button, Card, H5, P } from "sparks-ui"
-import { useUser } from "@stores/user"
 import { useState } from "react"
-import { PostMessage } from "sparks-sdk/channels"
+import { ChannelEventType, PostMessage } from "sparks-sdk/channels"
+import { userStore } from "@stores/refactor/userStore";
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
-  const { user } = useUser(state => ({ user: state.user as any }))
+  const user = userStore(state => state.user);
   const [connection, setConnection] = useState(null) as any
   const [verified, setVerified] = useState(false)
   const [waiting, setWaiting] = useState(false)
@@ -23,34 +23,35 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
     })
 
     setTimeout(async () => {
-      channel.onerror = ({ error }) => {
+      channel.on(ChannelEventType.ERROR, (error) => {
         console.log('error', error)
-      }
+      })
       await channel.open()
 
       setWaiting(false)
       setConnection(channel)
-      const receipt = await channel.message({ name: user.agents.profile.name })
+      const event = await channel.message({ handle: user.agents.profile.handle })
+      const receipt = event.data.receipt
   
       try {
-        const opened = await user.signer.verify({ signature: receipt, publicKey: channel.peer.publicKeys.signer });
-        const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedKey });
+        const opened = await user.signer.open({ signature: receipt, publicKey: channel.peer.publicKeys.signer }) as string;
+        const decrypted = await user.cipher.decrypt({ data: opened, publicKey: channel.sharedKey });
         setVerified(!!decrypted)
       } catch (e) {
         setVerified(false)
       }
 
-      channel.onerror = () => {
+      channel.on(ChannelEventType.ERROR, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)
-      }
+      });
   
-      channel.onclose = () => {
+      channel.on(ChannelEventType.CLOSE, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)
-      }
+      })
     }, 10000)
   }
 

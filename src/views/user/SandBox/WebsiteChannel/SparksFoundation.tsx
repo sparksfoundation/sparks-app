@@ -1,10 +1,11 @@
 import { Button, Card, H5, P } from "sparks-ui"
-import { useUser } from "@stores/user"
 import { useState } from "react"
 import { PostMessage } from "sparks-sdk/channels/PostMessage"
+import { userStore } from "@stores/refactor/userStore";
+import { ChannelEventType } from "sparks-sdk/channels";
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
-  const { user } = useUser(state => ({ user: state.user }))
+  const user = userStore(state => state.user);
   const [connection, setConnection] = useState<PostMessage | null>(null)
   const [verified, setVerified] = useState(false)
   const [waiting, setWaiting] = useState(false)
@@ -23,14 +24,11 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
     }) as PostMessage
 
     setTimeout(async () => {
-      channel.onerror = ({ error }) => {
-        console.log('error', error)
-      }
       await channel.open()
       setWaiting(false)
       setConnection(channel)
 
-      const receiptEvent = await channel.message({ name: user.agents.profile.name });
+      const receiptEvent = await channel.message({ handle: user.agents.profile.handle });
       try {
         const opened = await user.open({ signature: receiptEvent.data.receipt, publicKey: channel.peer.publicKeys.signer }) as string;
         const decrypted = await user.decrypt({ data: opened, sharedKey: channel.sharedKey });
@@ -39,17 +37,17 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
         setVerified(false)
       }
 
-      channel.onerror = () => {
+      channel.on(ChannelEventType.ERROR, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)
-      }
+      })
 
-      channel.onclose = () => {
+      channel.on(ChannelEventType.ERROR, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)
-      }
+      })
     }, 1000)
   }
 

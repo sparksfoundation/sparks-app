@@ -1,23 +1,19 @@
-import { useUser } from "@stores/user";
 import { useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useTheme } from "@stores/theme";
 import { Button, P } from "sparks-ui";
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@routes/paths";
-import { useChannels } from "@stores/channels";
 import { PostMessage, WebRTC } from "sparks-sdk/channels";
+import { userStore } from "@stores/refactor/userStore";
+import { themeStore } from "@stores/refactor/themeStore";
+import { channelActions } from "@stores/refactor/channelStore";
 
-const HandleChatInvite = ({ event, resolve, reject, closeToast }: { event: any, resolve: Function, reject: Function, closeToast: (() => void) | undefined }) => {
+export const HandleChatInvite = ({ event, resolve, reject, closeToast }: { event: any, resolve: Function, reject: Function, closeToast: (() => void) | undefined }) => {
   const peerId = `${event.data.identifier.slice(0, 6)}...${event.data.identifier.slice(-6)}`;
-  const { addChannel } = useChannels(state => ({ addChannel: state.addChannel }));
   const navigate = useNavigate();
-
   async function handleAccept() {
-    const channel = await resolve();
-
-    await addChannel(channel);
+    await resolve();
     if (closeToast) closeToast();
     navigate(Paths.USER_MESSENGER, { state: { channelId: event.metadata.cid } });
   }
@@ -35,10 +31,9 @@ const HandleChatInvite = ({ event, resolve, reject, closeToast }: { event: any, 
 }
 
 export const NotificationProvider = () => {
-  const { user } = useUser(state => ({ user: state.user }));
+  const user = userStore(state => state.user);
   const { identifier } = user || { identifier: '' };
-  const { theme } = useTheme(state => ({ theme: state.theme }));
-  const { addChannel } = useChannels(state => ({ addChannel: state.addChannel }));
+  const theme = themeStore(state => state.theme);
 
   useEffect(() => {
     if (!user || !user.identifier) return;
@@ -46,8 +41,7 @@ export const NotificationProvider = () => {
     PostMessage.handleOpenRequests(async ({ event, resolve, reject }) => {
       const addAndResolve = async () => {
         const channel = await resolve() as any;
-        await addChannel(channel);
-        return channel;
+        await channelActions.add(channel);
       }
       toast(({ closeToast }) => <HandleChatInvite event={event} resolve={addAndResolve} reject={reject} closeToast={closeToast} />);
     }, { spark: user });
@@ -55,8 +49,7 @@ export const NotificationProvider = () => {
     WebRTC.handleOpenRequests(async ({ event, resolve, reject }) => {
       const addAndResolve = async () => {
         const channel = await resolve() as any;
-        await addChannel(channel);
-        return channel;
+        await channelActions.add(channel);
       }
       toast(({ closeToast }) => <HandleChatInvite event={event} reject={reject} resolve={addAndResolve} closeToast={closeToast} />);
     }, { spark: user });
