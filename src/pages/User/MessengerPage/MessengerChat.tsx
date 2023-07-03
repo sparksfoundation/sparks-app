@@ -204,7 +204,7 @@ const ChannelChatVideo = ({ streams }: { streams: WebRTCMediaStreams }) => {
           className="max-h-full max-w-full h-auto w-auto"
           autoPlay
           ref={(ref) => {
-            if (ref) ref.srcObject = streams.local;
+            if (ref) ref.srcObject = streams.remote;
           }}
         />
         <video
