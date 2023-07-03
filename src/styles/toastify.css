@@ -1,0 +1,24 @@
+:root {
+  --toastify-color-progress-light: linear-gradient(
+    to right,
+    #5d55ad,
+    #5d55ad,
+    #5d55ad
+  );
+}
+
+.Toastify__toast-theme--light {
+  @apply bg-bg-200/20;
+  @apply text-fg-800;
+}
+
+.Toastify__toast-theme--dark {
+  @apply bg-bg-800/20;
+  @apply text-fg-200;
+}
+
+.Toastify__progress-bar--default,
+.Toastify__progress-bar--dark,
+.Toastify__progress-bar--light {
+  @apply bg-primary-600;
+}

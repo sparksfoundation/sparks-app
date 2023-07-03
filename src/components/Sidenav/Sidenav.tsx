@@ -4,16 +4,13 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { NavLink } from "react-router-dom";
 import {
+  EnvelopeIcon,
   HomeModernIcon,
   IdentificationIcon,
   RocketLaunchIcon,
 } from "@heroicons/react/24/solid";
 import { ProfileMenu } from "@components/ProfileMenu";
-import {
-  USER_PATH,
-  USER_SANDBOX_PATH,
-  USER_CREDENTIALS_PATH,
-} from "@utils/routeHelpers";
+import { Paths } from "@routes/paths";
 import { useTheme } from "@stores/theme";
 
 interface SidenavProps {
@@ -24,21 +21,23 @@ interface SidenavProps {
 const navigation = [
   {
     name: "Dashboard",
-    href: USER_PATH,
+    href: Paths.USER,
     icon: HomeModernIcon,
-    current: false,
   },
   {
     name: "Credentials",
-    href: USER_CREDENTIALS_PATH,
+    href: Paths.USER_CREDENTIALS,
     icon: IdentificationIcon,
-    current: false,
+  },
+  { 
+    name: "Messenger",
+    href: Paths.USER_MESSENGER,
+    icon: EnvelopeIcon,
   },
   {
     name: "Sandbox",
-    href: USER_SANDBOX_PATH,
+    href: Paths.USER_SANDBOX,
     icon: RocketLaunchIcon,
-    current: false,
   },
 ];
 

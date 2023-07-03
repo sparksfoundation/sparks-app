@@ -1,27 +1,33 @@
-import { Fragment } from "react";
+import { Fragment, forwardRef } from "react";
 import { useUser } from "@stores/user";
 import { Menu, Transition } from "@headlessui/react";
 import {
   ArrowRightOnRectangleIcon,
   ChevronDownIcon,
 } from "@heroicons/react/20/solid";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+
+import { Cog6ToothIcon, SunIcon, MoonIcon  } from "@heroicons/react/24/outline";
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
-import { AUTH_UNLOCK_PATH, USER_SETTINGS_PATH } from "@utils/routeHelpers";
+import { Paths } from "@routes/paths";
+import { useTheme } from "@stores/theme";
 
-const OPTIONS = [
-  {
-    name: "Identity Settings",
-    icon: Cog6ToothIcon,
-    path: USER_SETTINGS_PATH,
-  },
-  {
-    name: "Log out",
-    icon: ArrowRightOnRectangleIcon,
-    path: AUTH_UNLOCK_PATH,
-  },
-];
+const MenuLink = forwardRef(({ label, Icon, ...rest }: any, ref) => {
+  return (
+    <Link
+      className={clsxm(
+        "text-slate-800 dark:text-slate-200",
+        "hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-400/20 dark:hover:bg-slate-800/50",
+        "cursor-pointer group flex gap-x-3 p-2 text-sm leading-6 font-semibold"
+      )}
+      {...rest}
+      ref={ref}
+    >
+      <Icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+      {label}
+    </Link>
+  );
+});
 
 export const ProfileMenu = () => {
   const { user, logout } = useUser((state) => ({
@@ -29,21 +35,23 @@ export const ProfileMenu = () => {
     logout: state.logout,
   }));
 
+  const { theme, setTheme } = useTheme(state => ({ theme: state.theme, setTheme: state.setTheme }));
+
   return (
     <Menu as="div" className="relative w-full z-50">
       <Menu.Button className="-m-1.5 flex items-center p-1.5 w-full">
         <span className="sr-only">Open user menu</span>
         <img
           className="h-8 w-8 rounded-full bg-gray-50"
-          src={user?.agents.user.avatar as string}
-          alt={`${user?.agents.user.name} avatar`}
+          src={user?.agents.profile.avatar as string}
+          alt={`${user?.agents.profile.name} avatar`}
         />
         <div className="flex lg:flex lg:items-center justify-between w-full">
           <div
             className="ml-4 text-sm font-semibold leading-6 text-slate-800 dark:text-slate-200"
             aria-hidden="true"
           >
-            {user?.agents.user.name as string}
+            {user?.agents.profile.name as string}
           </div>
           <ChevronDownIcon
             className="ml-2 h-5 w-5 text-gray-400"
@@ -67,24 +75,21 @@ export const ProfileMenu = () => {
             "focus:outline-none bottom-full w-full"
           )}
         >
-          {OPTIONS.map((item) => (
-            <Menu.Item key={item.name}>
-              <Link
-                to={item.path}
-                className={clsxm(
-                  "text-slate-800 dark:text-slate-200",
-                  "hover:text-slate-900 dark:hover:text-slate-50 hover:bg-slate-400/20 dark:hover:bg-slate-800/50",
-                  "cursor-pointer group flex gap-x-3 p-2 text-sm leading-6 font-semibold"
-                )}
-                onClick={item.name === "Log out" ? logout : undefined}
-              >
-                <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
-                {item.name}
-              </Link>
-            </Menu.Item>
-          ))}
+          <Menu.Item>
+            <MenuLink
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              label={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              Icon={theme === 'dark' ? SunIcon : MoonIcon}
+            />
+          </Menu.Item>
+          <Menu.Item>
+            <MenuLink to={Paths.USER_SETTINGS} label="Settings" Icon={Cog6ToothIcon} />
+          </Menu.Item>
+          <Menu.Item>
+            <MenuLink onClick={logout} label="Logout" Icon={ArrowRightOnRectangleIcon} />
+          </Menu.Item>
         </Menu.Items>
-      </Transition>
-    </Menu>
+      </Transition >
+    </Menu >
   );
 };

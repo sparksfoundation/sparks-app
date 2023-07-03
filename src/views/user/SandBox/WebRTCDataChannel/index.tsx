@@ -1,43 +1,39 @@
 import { InformationCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { useUser } from "@stores/user";
+import { User, useUser } from "@stores/user";
 import React, { Fragment } from "react";
 import { Button, Card, Input, P, clsxm } from "sparks-ui";
-import { WebRTC } from "sparks-sdk/channels";
+import { WebRTC } from "sparks-sdk/channels/WebRTC";
 
 interface IProps {
-  user: any;
+  user: User;
 }
 
 interface IState {
-  peerId: string;
+  peerIdentifier: string;
   waiting: boolean;
   message: string;
   messages: any[];
-  connection: any;
+  connection: WebRTC | null;
 }
 
 class WebRTCChat extends React.Component<IProps, IState>  {
   helpMsgs: any[];
-  user: any;
+  user: User;
 
   constructor(props: IProps) {
     super(props);
 
     this.user = props.user;
+    this.set = false;
 
     this.state = {
-      peerId: "",
+      peerIdentifier: "",
       waiting: false,
       message: "",
       messages: [],
       connection: null,
-    } as {
-      peerId: string,
-      waiting: boolean,
-      message: string,
-      messages: any[],
-      connection: any,
     };
+
     this.helpMsgs = [
       { message: "Welcome to the WebRTC Channels sandbox. This is a simple example of how to use the WebRTC Channels SDK to connected two identities and send messages." },
       { message: "It's more that just P2P chat, here two KERI identities both have a proof of the connection being established, and the messages sent and received." },
@@ -55,13 +51,16 @@ class WebRTCChat extends React.Component<IProps, IState>  {
   }
 
   async connectToPeer() {
-    if (!this.state.peerId || this.state.connection) return
+    if (!this.state.peerIdentifier || this.state.connection) return
     this.setState({ waiting: true })
+
     const conn = new WebRTC({
-      peerId: this.state.peerId,
+      peerIdentifier: this.state.peerIdentifier,
       spark: this.user,
     });
+
     await conn.open();
+
     conn.onmessage = (payload: any) => {
       const { timestamp, message, messageId } = payload
       this.setState({
@@ -70,34 +69,36 @@ class WebRTCChat extends React.Component<IProps, IState>  {
     }
     this.setState({
       waiting: false,
-      peerId: "",
+      peerIdentifier: "",
       connection: conn,
     })
   }
 
   async sendMessage() {
     if (!this.state.message) return;
+    if (!this.state.connection) return;
     this.setState({ waiting: true });
-    const receipt = await this.state.connection.send(this.state.message);
-    const opened = await this.user.verify({ signature: receipt, publicKey: this.state.connection.publicKeys.signing });
-    const decrypted = await this.user.decrypt({ data: opened, sharedKey: this.state.connection.sharedKey });
-    const { timestamp, message, messageId } = decrypted as any;
+    const receipt = await this.state.connection.message(this.state.message);
+    const { timestamp, metadata: { mid } } = receipt;
     this.setState({
-      messages: [...this.state.messages, { timestamp, message, messageId, receipt, mine: true }],
+      messages: [...this.state.messages, { timestamp, message: this.state.message, messageId: mid, receipt: receipt.data.receipt, mine: true }],
       message: "",
       waiting: false,
     })
   }
 
   async receiveMessage(payload: any) {
-    const { timestamp, message, messageId } = payload
+    const { timestamp, data, metadata: { mid } } = payload
     this.setState({
-      messages: [...this.state.messages, { timestamp, message, messageId, mine: false }]
+      messages: [...this.state.messages, { timestamp, message: data, messageId: mid, mine: false }]
     })
   }
 
+  public set: boolean;
   componentDidMount() {
-    WebRTC.receive(async ({ resolve }: { resolve: any }) => {
+    if (this.set) return;
+    this.set = true;
+    WebRTC.handleOpenRequests(async ({ resolve }: { resolve: any }) => {
       const conn = await resolve()
       conn.onmessage = this.receiveMessage
       this.setState({ connection: conn })
@@ -112,7 +113,7 @@ class WebRTCChat extends React.Component<IProps, IState>  {
         <div className="flex flex-col h-full gap-4">
           <Card className="w-full h-full" shade="light">
             <div className="overflow-y-auto overflow-hidden h-full pr-4">
-              {this.state.connection ? (
+              {this.state.connection !== null ? (
                 this.state.messages.map((({ messageId, timestamp, message, receipt, mine, opened }: { messageId: string, timestamp: number, message: string, receipt?: string, mine: boolean, opened: boolean }, index: number) => (
                   <Fragment key={'msg' + index}>
                     <div className={clsxm("dark:bg-bg-200 dark:text-fg-900 bg-bg-50 text-fg-900 p-3 rounded-lg mb-4 break-all", !mine && "bg-primary-500 text-fg-200 dark:bg-primary-500 dark:text-fg-200 text-right")}>
@@ -126,7 +127,7 @@ class WebRTCChat extends React.Component<IProps, IState>  {
                         })
                       })} />
                       <div className={clsxm("overflow-hidden max-h-0", opened && "mt-4 max-h-none")}>
-                        <P className={clsxm("text-xs overflow-hidden mb-1 text-left text-ellipsis whitespace-nowrap dark:text-fg-900 text-fg-900", !mine && "text-fg-200 dark:text-fg-200")}><span className="font-bold">peer:</span> {this.state.connection.peerId}</P>
+                        <P className={clsxm("text-xs overflow-hidden mb-1 text-left text-ellipsis whitespace-nowrap dark:text-fg-900 text-fg-900", !mine && "text-fg-200 dark:text-fg-200")}><span className="font-bold">peer:</span> {this.state.connection?.address}</P>
                         <P className={clsxm("text-xs overflow-hidden mb-1 text-left text-ellipsis whitespace-nowrap dark:text-fg-900 text-fg-900", !mine && "text-fg-200 dark:text-fg-200")}><span className="font-bold">messageId:</span> {messageId}</P>
                         <P className={clsxm("text-xs overflow-hidden mb-1 text-left text-ellipsis whitespace-nowrap dark:text-fg-900 text-fg-900", !mine && "text-fg-200 dark:text-fg-200")}><span className="font-bold">timestamp:</span> {timestamp}</P>
                         {receipt && (
@@ -151,7 +152,7 @@ class WebRTCChat extends React.Component<IProps, IState>  {
                       className="mt-4"
                       placeholder="Enter a peer's identifier or copy yours to connect"
                       onKeyUp={e => { if (e.key === 'Enter') { this.connectToPeer() } }}
-                      value={this.state.peerId} onChange={e => this.setState({ peerId: e.target.value })}
+                      value={this.state.peerIdentifier} onChange={e => this.setState({ peerIdentifier: e.target.value })}
                     />
                   </div>
                 </>

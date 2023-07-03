@@ -10,12 +10,12 @@ export type ForwardProps = {
 };
 
 export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProps) => {
-  const user = useUser(state => state.user)
+  const { user } = useUser(state => ({ user: state.user }))
   const members = useMembers(state => state.members)
   const location = useLocation()
   const params = Object.fromEntries(useSearchParams()[0].entries())
 
-  const isUser = !!user
+  const isUser = !!user && user.identifier
   const isMember = !isUser && members.length > 0
   const isGuest = !isMember && members.length === 0
 

@@ -15,6 +15,7 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
     const source = request && window.opener ? window.opener : window.open(url, '_blank');
     if (!source) return;
     const origin = new URL(url).origin;
+
     const channel = new PostMessage({
       source: source as Window,
       origin,
@@ -22,11 +23,23 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
     })
 
     setTimeout(async () => {
+      channel.onerror = ({ error }) => {
+        console.log('error', error)
+      }
       await channel.open()
+
       setWaiting(false)
       setConnection(channel)
-      await channel.message({ name: user.agents.user.name })
+      const receipt = await channel.message({ name: user.agents.profile.name })
   
+      try {
+        const opened = await user.signer.verify({ signature: receipt, publicKey: channel.peer.publicKeys.signer });
+        const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedKey });
+        setVerified(!!decrypted)
+      } catch (e) {
+        setVerified(false)
+      }
+
       channel.onerror = () => {
         setWaiting(false)
         setConnection(null)
@@ -38,7 +51,7 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
         setConnection(null)
         setVerified(false)
       }
-    }, 2000)
+    }, 10000)
   }
 
   async function disconnect() {

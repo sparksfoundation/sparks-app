@@ -1,38 +1,39 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useUser } from "@stores/user"
 import { useState } from "react"
-import { Spark } from "sparks-sdk"
-import { PostMessage } from "sparks-sdk/channels"
+import { PostMessage } from "sparks-sdk/channels/PostMessage"
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
-  const { user } = useUser(state => ({ user: state.user as any }))
-  const [connection, setConnection] = useState(null) as any
+  const { user } = useUser(state => ({ user: state.user }))
+  const [connection, setConnection] = useState<PostMessage | null>(null)
   const [verified, setVerified] = useState(false)
   const [waiting, setWaiting] = useState(false)
-  const [request, setRequest] = useState(connectionWaiting) as any
-
+  const [request, setRequest] = useState(connectionWaiting)
 
   async function connect({ url }: { url: string }) {
     if (!user) return
     const source = request && window.opener ? window.opener : window.open(url, '_blank');
     if (!source) return;
     const origin = new URL(url).origin;
+
     const channel = new PostMessage({
       source: source as Window,
       origin,
-      spark: user as Spark,
-    })
+      spark: user,
+    }) as PostMessage
 
     setTimeout(async () => {
+      channel.onerror = ({ error }) => {
+        console.log('error', error)
+      }
       await channel.open()
       setWaiting(false)
       setConnection(channel)
-      const receipt = await channel.send({ name: user.agents.user.name })
-  
+
+      const receiptEvent = await channel.message({ name: user.agents.profile.name });
       try {
-        const opened = await user.signer.verify({ signature: receipt, publicKey: channel.publicSigningKey });
-        const decrypted = await user.cipher.decrypt({ data: opened.message, publicKey: channel.sharedEncryptionKey });
-        console.log(decrypted)
+        const opened = await user.open({ signature: receiptEvent.data.receipt, publicKey: channel.peer.publicKeys.signer }) as string;
+        const decrypted = await user.decrypt({ data: opened, sharedKey: channel.sharedKey });
         setVerified(!!decrypted)
       } catch (e) {
         setVerified(false)
@@ -43,17 +44,18 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
         setConnection(null)
         setVerified(false)
       }
-  
+
       channel.onclose = () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)
       }
-    }, 2000)
+    }, 1000)
   }
 
   async function disconnect() {
     setWaiting(true)
+    if (!connection) return
     await connection.close()
     setConnection(null)
     setVerified(false)
