@@ -2,7 +2,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/20/solid";
 import { User } from "@stores/user";
 import { Component, FormEvent } from "react";
 import { ChannelEventType, WebRTC } from "sparks-sdk/channels";
-import { Button, Card, Input, P, clsxm } from "sparks-ui";
+import { Button, Card, Input, clsxm } from "sparks-ui";
 
 interface MessengerChatProps {
   channel: WebRTC;

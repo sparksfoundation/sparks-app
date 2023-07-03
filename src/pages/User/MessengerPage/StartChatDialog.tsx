@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useChannels } from "@stores/channels";
 import { useModal } from "@stores/modal";
 import { useUser } from "@stores/user";
 import { useState } from "react";

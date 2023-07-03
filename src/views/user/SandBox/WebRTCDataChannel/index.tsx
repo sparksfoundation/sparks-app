@@ -59,7 +59,7 @@ class WebRTCChat extends React.Component<IProps, IState>  {
       spark: this.user,
     });
 
-    const res = await conn.open().catch(console.log);
+    await conn.open();
 
     conn.onmessage = (payload: any) => {
       const { timestamp, message, messageId } = payload
