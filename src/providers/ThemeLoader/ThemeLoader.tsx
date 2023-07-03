@@ -1,4 +1,4 @@
-import { useTheme } from "@stores/theme"
+import { themeStore } from "@stores/refactor/themeStore"
 import { ReactNode } from "react"
 import { clsxm } from "sparks-ui"
 
@@ -11,7 +11,8 @@ const DevHeader = () => {
 }
 
 export const ThemeLoader = ({ children }: { children: ReactNode }) => {
-  const { theme } = useTheme(state => ({ theme: state.theme }))
+  const theme = themeStore((state) => state.theme)
+
   return (
     <div className={clsxm(
       !!theme && theme,

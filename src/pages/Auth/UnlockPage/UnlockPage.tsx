@@ -3,8 +3,7 @@ import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Card, ErrorMsg, H3, Input, Label, P, clsxm } from 'sparks-ui';
 import { useEffect } from "react";
-import { useUser } from "@stores/user";
-import { Member, useMembers } from "@stores/members";
+import { userActions, userStore } from "@stores/refactor/userStore";
 
 const formSchema = z.object({
   password: z.string().min(8, { message: 'invalid password' }).max(50),
@@ -18,9 +17,7 @@ export type UnlockPageRegisterType = UseFormRegister<UnlockPageFieldTypes>;
 export type UnlockPageErrorsType = FieldErrors<UnlockPageFieldTypes>;
 
 export const UnlockPage = () => {
-  const { login, user } = useUser(state => ({ login: state.login, user: state.user }));
-  const members = useMembers(state => state.getMembers());
-  const member = members[0] as Member;
+  const { account } = userStore(state => state);
 
   const {
     register,
@@ -41,22 +38,19 @@ export const UnlockPage = () => {
   }, [])
 
   const onSubmit: UnlockPageHandlerType = async (fields: UnlockPageFieldTypes) => {
-    const { data, salt } = member;
-    const { password } = fields;
-    await user.import({ data: data, password, salt })
-    .then(() => login(user))
-    .catch(() => {
-      const message = 'invalid password';
-      setValue('password', '');
-      setError('password', { message });
-    });
+    await userActions.login({ password: fields.password })
+      .catch(() => {
+        const message = 'invalid password';
+        setValue('password', '');
+        setError('password', { message });
+      });
   }
 
   return (
     <div className="relative flex flex-col justify-center items-center h-full p-6 max-w-lg mx-auto">
       <Card className={clsxm("w-full")}>
         <H3 className={clsxm('mb-3 text-center')}>
-          Welcome back {member.name}!
+          Welcome back {account()}!
         </H3>
         <P className="mt-2 mb-6">
           Enter your password to unlock your SPARK.

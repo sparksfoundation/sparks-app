@@ -1,20 +1,21 @@
 import { ArrowPathIcon, LinkIcon, PaperAirplaneIcon, PlusCircleIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { PrivateLayoutHeader } from "@layout";
-import { useModal } from "@stores/modal";
 import { Card, P } from "sparks-ui";
 import { StartChatDialog } from "./StartChatDialog";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Paths } from "@routes/paths";
 import { MessengerChat } from "./MessengerChat";
-import { useChannels } from "@stores/channels";
-import { ChannelId, ChannelState, WebRTC } from "sparks-sdk/channels";
+import { ChannelEventType, ChannelState, ChannelType, WebRTC } from "sparks-sdk/channels";
 import { useEffect, useState } from "react";
-import { useUser } from "@stores/user";
+import { User, userStore } from "@stores/refactor/userStore";
+import { modalActions } from "@stores/refactor/modalStore";
+import { channelActions, channelStore } from "@stores/refactor/channelStore";
 
-const ChannelsList = ({ channels }: { channels: { [key: ChannelId]: WebRTC } }) => {
+const ChannelsList = () => {
   const navigate = useNavigate();
   const [connecting, setConnecting] = useState(false);
-  const { removeChannel } = useChannels(state => ({ removeChannel: state.removeChannel }));
+  const channels = Object.values(channelStore(state => state.channels))
+    .filter((channel) => channel.type === ChannelType.WEBRTC_CHANNEL) as WebRTC[];
 
   function openChat(channel: WebRTC) {
     navigate(Paths.USER_MESSENGER, { state: { channelId: channel.cid } });
@@ -23,13 +24,14 @@ const ChannelsList = ({ channels }: { channels: { [key: ChannelId]: WebRTC } }) 
   async function reconnect(channel: WebRTC) {
     setConnecting(true);
     await channel.open();
+    await channelActions.add(channel);
     setConnecting(false);
     navigate(Paths.USER_MESSENGER, { state: { channelId: channel.cid }, replace: true })
   }
 
   function deleteChannel(channel: WebRTC) {
     if (confirm('Are you sure you want to delete this channel?') === false) return;
-    removeChannel(channel)
+    channelActions.remove(channel)
   }
 
   return (
@@ -60,29 +62,30 @@ const ChannelsList = ({ channels }: { channels: { [key: ChannelId]: WebRTC } }) 
 }
 
 export const MessengerPage = () => {
-  const { channels, addChannel } = useChannels(state => ({ channels: state.channels, addChannel: state.addChannel }));
+  const channels = channelStore(state => state.channels);
   const navigate = useNavigate();
-  const { openModal } = useModal(state => ({ openModal: state.openModal }));
-  const { exportChannel } = useChannels(state => ({ exportChannel: state.exportChannel }));
+  const { openModal } = modalActions;
   const [activeChannel, setActiveChannel] = useState<WebRTC | null>(null);
-  const { user } = useUser(state => ({ user: state.user }));
+  const user = userStore(state => state.user) as User;
   const location = useLocation();
 
   async function handleConnected(channel: WebRTC) {
-    await addChannel(channel);
+    await channelActions.add(channel);
     navigate(Paths.USER_MESSENGER, { state: { channelId: channel.cid }, replace: true })
   }
 
   async function onChatClosed() {
-    await exportChannel(activeChannel as WebRTC);
     setActiveChannel(null);
   }
 
   useEffect(() => {
     if (activeChannel) {
-      activeChannel.onclose = () => {
+      activeChannel.on([
+        ChannelEventType.CLOSE,
+        ChannelEventType.CLOSE_CONFIRMATION,
+      ], () => {
         setActiveChannel(null);
-      }
+      }, { once: true });
     } else {
       if (!location.state?.channelId) return;
       const channel = channels[location.state.channelId];
@@ -102,21 +105,23 @@ export const MessengerPage = () => {
   return (
     <>
       <PrivateLayoutHeader title="Messenger" />
-      {activeChannel ? (
-        <MessengerChat channel={activeChannel} handleCloseChat={onChatClosed} user={user} />
-      ) : (
-        <>
-          <ChannelsList channels={channels as { [key: ChannelId]: WebRTC }} />
-          <button onClick={newChat} className="bg-primary-600 rounded-full overflow-hidden fixed bottom-4 right-4">
-            <span className="bg-bg-200 h-1/2 w-1/2 absolute top-1/4 left-1/4"></span>
-            <PlusCircleIcon
-              height={48}
-              width={48}
-              className="bottom-0 right-0 fill-primary-600 cursor-pointer relative"
-            />
-          </button>
-        </>
-      )}
+      <div className="relative h-full flex flex-col max-w-4xl mx-auto w-full">
+        {activeChannel ? (
+            <MessengerChat channel={activeChannel} handleCloseChat={onChatClosed} user={user} />
+        ) : (
+          <>
+            <ChannelsList />
+            <button onClick={newChat} className="bg-primary-600 rounded-full overflow-hidden fixed bottom-4 right-4">
+              <span className="bg-bg-200 h-1/2 w-1/2 absolute top-1/4 left-1/4"></span>
+              <PlusCircleIcon
+                height={48}
+                width={48}
+                className="bottom-0 right-0 fill-primary-600 cursor-pointer relative"
+              />
+            </button>
+          </>
+        )}
+      </div>
     </>
   )
 }

@@ -4,14 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, ErrorMsg, H3, Input, Label, P, clsxm } from 'sparks-ui';
 import { useEffect } from "react";
-import { randomSalt } from "sparks-sdk/utilities";
-import { useUser } from "@stores/user";
-import { useMembers } from "@stores/members";
-import { Buffer } from "buffer";
 import { Paths } from "@routes/paths";
+import { userActions } from "@stores/refactor/userStore";
 
 const formSchema = z.object({
-  name: z.string().min(1, { message: 'identity name is required' }).max(50),
+  handle: z.string().min(3, { message: 'identity handle is required' }).max(50),
   password: z.string().min(8, { message: 'password must be at least 8 characters long' }).max(50),
   confirm: z.string().min(8, { message: 'password must be at least 8 characters long' }).max(50),
 }).refine((data) => data.password === data.confirm, {
@@ -21,12 +18,10 @@ const formSchema = z.object({
 
 type CreatePageSchemaType = z.infer<typeof formSchema>;
 type CreatePageHandlerType = SubmitHandler<CreatePageSchemaType>;
-type CreatePageFieldTypes = { name: string, password: string, confirm: string };
+type CreatePageFieldTypes = { handle: string, password: string, confirm: string };
 
 export const CreatePage = () => {
   const navigate = useNavigate();
-  const user = useUser(state => state.user);
-  const addMember = useMembers(state => state.addMember);
   const location = useLocation();
   
   const {
@@ -42,22 +37,12 @@ export const CreatePage = () => {
   });
 
   useEffect(() => {
-    setFocus('name')
+    setFocus('handle')
   }, [])
 
   const onSubmit: CreatePageHandlerType = async (fields: CreatePageFieldTypes) => {
-    const { name, password } = fields;
-    
-    const salt = randomSalt();
-    await user.incept({ password, salt });
-    user.agents.profile.name = name;
-
-    const b64Name = Buffer.from(name).toString('base64');
-    const data = await user.export();
-    if (!b64Name || !salt || !data) throw new Error('failed to create identity');
-
-    addMember({ name: b64Name, salt, data });
-
+    const { handle, password } = fields;
+    await userActions.create({ handle, password });
     const state = location.state?.prev ? { prev: { ...location.state.prev } } : undefined;
     navigate(Paths.AUTH_UNLOCK, { state });
   }
@@ -69,17 +54,17 @@ export const CreatePage = () => {
           Create Your Identity
         </H3>
         <P className="mt-2 mb-6">
-          Creating your SPARK is easy, simply provide a name and master password.
+          Creating your SPARK is easy, simply provide a handle and master password.
         </P>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Label className="mb-1 block">Name</Label>
+          <Label className="mb-1 block">Handle</Label>
           <Input
-            id="name"
+            id="handle"
             type="text"
             placeholder="personal"
-            registration={register("name")}
+            registration={register("handle")}
           />
-          <ErrorMsg>{errors.name?.message}</ErrorMsg>
+          <ErrorMsg>{errors.handle?.message}</ErrorMsg>
 
           <Label className="mb-1 mt-1 block">Password</Label>
           <Input

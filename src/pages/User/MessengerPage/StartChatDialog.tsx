@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useModal } from "@stores/modal";
-import { useUser } from "@stores/user";
+import { modalActions } from "@stores/refactor/modalStore";
+import { userStore } from "@stores/refactor/userStore";
 import { useState } from "react";
 import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
 import { ChannelEventType, ChannelOpenRejectionEvent, WebRTC } from "sparks-sdk/channels";
@@ -21,8 +21,8 @@ export type StartChatDialogErrorsType = FieldErrors<StartChatDialogFieldTypes>;
 export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC) => void }) => {
     const [identifier, setIdentifier] = useState('');
     const [status, setStatus] = useState('');
-    const { user } = useUser(state => ({ user: state.user }));
-    const { closeModal } = useModal(state => ({ closeModal: state.closeModal }));
+    const user = userStore(state => state.user);
+    const { closeModal } = modalActions;
 
     const {
         register,
@@ -36,6 +36,7 @@ export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC
     });
 
     const onSubmit: StartChatDialogHandlerType = async (fields: StartChatDialogFieldTypes) => {
+        if (!user) return;
         return new Promise(async (resolve, reject) => {
             setStatus('attempting connection...');
 

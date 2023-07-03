@@ -8,12 +8,12 @@
 }
 
 .Toastify__toast-theme--light {
-  @apply bg-bg-200/20;
+  @apply bg-bg-200;
   @apply text-fg-800;
 }
 
 .Toastify__toast-theme--dark {
-  @apply bg-bg-800/20;
+  @apply bg-bg-800;
   @apply text-fg-200;
 }
 

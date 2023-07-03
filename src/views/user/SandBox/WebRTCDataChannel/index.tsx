@@ -1,8 +1,9 @@
 import { InformationCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { User, useUser } from "@stores/user";
 import React, { Fragment } from "react";
 import { Button, Card, Input, P, clsxm } from "sparks-ui";
 import { WebRTC } from "sparks-sdk/channels/WebRTC";
+import { User, userStore } from "@stores/refactor/userStore";
+import { ChannelEventType } from "sparks-sdk/channels";
 
 interface IProps {
   user: User;
@@ -61,12 +62,13 @@ class WebRTCChat extends React.Component<IProps, IState>  {
 
     await conn.open();
 
-    conn.onmessage = (payload: any) => {
+    conn.on(ChannelEventType.MESSAGE, (payload: any) => {
       const { timestamp, message, messageId } = payload
       this.setState({
         messages: [...this.state.messages, { timestamp, message, messageId, mine: false }]
       })
-    }
+    })
+
     this.setState({
       waiting: false,
       peerIdentifier: "",
@@ -177,7 +179,7 @@ class WebRTCChat extends React.Component<IProps, IState>  {
 }
 
 const withUser = (BaseComponent: any) => (props: any) => {
-  const user = useUser(state => state.user);
+  const user = userStore((state: any) => state.user);
   return <BaseComponent {...props} user={user} />;
 };
 export const WebRTCDataChannel = withUser(WebRTCChat);
