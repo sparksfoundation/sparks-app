@@ -60,7 +60,6 @@ class WebRTCChat extends React.Component<IProps, IState>  {
     });
 
     const res = await conn.open().catch(console.log);
-    console.log('res', res);
 
     conn.onmessage = (payload: any) => {
       const { timestamp, message, messageId } = payload
@@ -81,7 +80,6 @@ class WebRTCChat extends React.Component<IProps, IState>  {
     this.setState({ waiting: true });
     const receipt = await this.state.connection.message(this.state.message);
     const { timestamp, metadata: { mid } } = receipt;
-    console.log(timestamp, this.state.message, mid, receipt)
     this.setState({
       messages: [...this.state.messages, { timestamp, message: this.state.message, messageId: mid, receipt: receipt.data.receipt, mine: true }],
       message: "",
@@ -90,7 +88,6 @@ class WebRTCChat extends React.Component<IProps, IState>  {
   }
 
   async receiveMessage(payload: any) {
-    console.log('received', payload)
     const { timestamp, data, metadata: { mid } } = payload
     this.setState({
       messages: [...this.state.messages, { timestamp, message: data, messageId: mid, mine: false }]

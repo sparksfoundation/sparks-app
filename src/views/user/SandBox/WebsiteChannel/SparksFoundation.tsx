@@ -26,14 +26,14 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
       channel.onerror = ({ error }) => {
         console.log('error', error)
       }
-      await channel.open().catch(e => console.log(e))
+      await channel.open()
       setWaiting(false)
       setConnection(channel)
 
       const receiptEvent = await channel.message({ name: user.agents.profile.name });
       try {
         const opened = await user.open({ signature: receiptEvent.data.receipt, publicKey: channel.peer.publicKeys.signer }) as string;
-        const decrypted = await user.decrypt({ data: opened, sharedKey: channel.sharedKey }).catch(console.log);
+        const decrypted = await user.decrypt({ data: opened, sharedKey: channel.sharedKey });
         setVerified(!!decrypted)
       } catch (e) {
         setVerified(false)

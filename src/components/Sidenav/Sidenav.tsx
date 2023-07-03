@@ -29,16 +29,16 @@ const navigation = [
     href: Paths.USER_CREDENTIALS,
     icon: IdentificationIcon,
   },
+  { 
+    name: "Messenger",
+    href: Paths.USER_MESSENGER,
+    icon: EnvelopeIcon,
+  },
   {
     name: "Sandbox",
     href: Paths.USER_SANDBOX,
     icon: RocketLaunchIcon,
   },
-  { 
-    name: "Messenger",
-    href: Paths.USER_MESSENGER,
-    icon: EnvelopeIcon,
-  }
 ];
 
 export const Sidenav = ({ closeSidenav, sidenavOpen }: SidenavProps) => {

@@ -24,7 +24,6 @@ export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC
     const [status, setStatus] = useState('');
     const { user } = useUser(state => ({ user: state.user }));
     const { closeModal } = useModal(state => ({ closeModal: state.closeModal }));
-    const { addChannel } = useChannels(state => ({ addChannel: state.addChannel }));
 
     const {
         register,
@@ -39,7 +38,7 @@ export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC
 
     const onSubmit: StartChatDialogHandlerType = async (fields: StartChatDialogFieldTypes) => {
         return new Promise(async (resolve, reject) => {
-            setStatus('looking for peer...');
+            setStatus('attempting connection...');
 
             const { identifier } = fields;
             const channel = new WebRTC({
@@ -51,15 +50,13 @@ export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC
 
             if ((confirmation as ChannelOpenRejectionEvent).type === ChannelEventType.OPEN_REJECTION) {
                 setStatus('peer rejected connection');
-                reject();
+                return reject();
             }
 
-            addChannel(channel);
-
             setStatus('peer connection accepted');
+            onConnected(channel);
             closeModal();
             resolve(void 0);
-            onConnected(channel);
         })
     }
 
@@ -77,6 +74,7 @@ export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC
                 value={identifier}
                 onChange={e => setIdentifier(e.target.value)}
                 registration={register('identifier')}
+                autoComplete="off"
             />
             <ErrorMsg>{errors.identifier?.message}</ErrorMsg>
             <div className="flex gap-2 justify-stretch">

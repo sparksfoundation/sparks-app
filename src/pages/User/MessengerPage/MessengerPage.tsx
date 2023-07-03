@@ -60,20 +60,21 @@ const ChannelsList = ({ channels }: { channels: { [key: ChannelId]: WebRTC } }) 
 }
 
 export const MessengerPage = () => {
-  const { channels, addChannel, saveChannelData } = useChannels(state => ({ channels: state.channels, addChannel: state.addChannel, saveChannelData: state.saveChannelData }));
+  const { channels, addChannel } = useChannels(state => ({ channels: state.channels, addChannel: state.addChannel }));
   const navigate = useNavigate();
   const { openModal } = useModal(state => ({ openModal: state.openModal }));
+  const { exportChannel } = useChannels(state => ({ exportChannel: state.exportChannel }));
   const [activeChannel, setActiveChannel] = useState<WebRTC | null>(null);
   const { user } = useUser(state => ({ user: state.user }));
   const location = useLocation();
 
   async function handleConnected(channel: WebRTC) {
     await addChannel(channel);
-    await saveChannelData(channel);
     navigate(Paths.USER_MESSENGER, { state: { channelId: channel.cid }, replace: true })
   }
 
-  function onChatClosed() {
+  async function onChatClosed() {
+    await exportChannel(activeChannel as WebRTC);
     setActiveChannel(null);
   }
 
@@ -109,8 +110,8 @@ export const MessengerPage = () => {
           <button onClick={newChat} className="bg-primary-600 rounded-full overflow-hidden fixed bottom-4 right-4">
             <span className="bg-bg-200 h-1/2 w-1/2 absolute top-1/4 left-1/4"></span>
             <PlusCircleIcon
-              height={36}
-              width={36}
+              height={48}
+              width={48}
               className="bottom-0 right-0 fill-primary-600 cursor-pointer relative"
             />
           </button>

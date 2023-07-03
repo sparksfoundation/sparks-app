@@ -16,6 +16,7 @@ const HandleChatInvite = ({ event, resolve, reject, closeToast }: { event: any, 
 
   async function handleAccept() {
     const channel = await resolve();
+
     await addChannel(channel);
     if (closeToast) closeToast();
     navigate(Paths.USER_MESSENGER, { state: { channelId: event.metadata.cid } });

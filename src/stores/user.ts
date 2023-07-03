@@ -75,14 +75,16 @@ export const useUser = create<IdentityStore>((set) => ({
 
 if (window) {
   window.addEventListener('beforeunload', async () => {
-    const user = useUser.getState().user
-    const salt = user.keyPairs.cipher.salt
-    const data = await user.export()
-    useMembers.getState().updateMember({
-      name: user.agents.profile.name,
-      salt,
-      data,
-    })
-  });
+    const { user } = useUser.getState()
+    if (user.identifier && user.keyPairs.cipher.salt) {
+      const salt = user.keyPairs.cipher.salt
+      const data = await user.export()
+      useMembers.getState().updateMember({
+        name: user.agents.profile.name,
+        salt,
+        data,
+      })
+    } 
+  }, { capture: true });
 }
 
