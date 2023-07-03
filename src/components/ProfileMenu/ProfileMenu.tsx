@@ -6,7 +6,7 @@ import {
   ChevronDownIcon,
 } from "@heroicons/react/20/solid";
 
-import { Cog6ToothIcon, SunIcon, MoonIcon  } from "@heroicons/react/24/outline";
+import { Cog6ToothIcon, SunIcon, MoonIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 import { Paths } from "@routes/paths";
@@ -75,6 +75,13 @@ export const ProfileMenu = () => {
             "focus:outline-none bottom-full w-full"
           )}
         >
+          <Menu.Item>
+            <MenuLink
+              onClick={() => navigator.clipboard.writeText(user?.identifier as string) }
+              label="Copy Identifier"
+              Icon={DocumentDuplicateIcon}
+            />
+          </Menu.Item>
           <Menu.Item>
             <MenuLink
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
