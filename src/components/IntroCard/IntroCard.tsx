@@ -34,6 +34,8 @@ export const IntroCard = ({
         </li>
       ))}
     </ul>
-    {footer ? footer : <></>}
+    <>
+      {footer ? footer : <></>}
+    </>
   </Card>
 )

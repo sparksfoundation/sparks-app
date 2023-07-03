@@ -1,9 +1,8 @@
-import { ReactNode } from 'react';
 import { create } from 'zustand';
 
 export type ModalType = {
   title: string,
-  content: ReactNode,
+  content: any,
 }
 
 export type ModalStore = {

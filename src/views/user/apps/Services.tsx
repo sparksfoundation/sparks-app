@@ -25,7 +25,7 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
       await channel.open()
       setWaiting(false)
       setConnection(channel)
-      const receipt = await channel.message({ name: user.agents.user.name })
+      await channel.message({ name: user.agents.user.name })
   
       channel.onerror = () => {
         setWaiting(false)

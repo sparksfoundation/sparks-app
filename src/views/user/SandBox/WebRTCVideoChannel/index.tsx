@@ -55,7 +55,7 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
     if (!this.state.address || this.state.connection) return
     this.setState({ waiting: true })
     const conn = new WebRTC({
-      address: this.state.address,
+      peerIdentifier: this.state.address,
       spark: this.user,
     });
 
