@@ -3,7 +3,6 @@ import { RelayService } from "./Workbench/RelayService";
 import { WebsiteChannels } from "./WebsiteChannel";
 import { clsxm, P } from "sparks-ui";
 import { PrivateLayoutHeader } from "@layout";
-import { Card } from "sparks-ui";
 
 export const SandBox = () => {
   const [tab, setTab] = useState(0);
