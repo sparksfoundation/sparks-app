@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { create } from 'zustand';
+import { createSelectors } from './createSelectors';
 
 type Nullable<T> = T | null;
 
@@ -14,6 +15,8 @@ export const modalStore = create<ModalStore>(() => ({
   title: null,
   content: null,
 }));
+
+export const useModalStore = createSelectors(modalStore);
 
 export const modalActions = {
   openModal: ({ title, content }: { title: string, content: string | ReactNode }) => {

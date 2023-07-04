@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { createSelectors } from './createSelectors';
 
 type SideNavOpen = boolean;
 
@@ -8,7 +9,9 @@ interface SideNavStore {
 
 export const sideNavStore = create<SideNavStore>(() => ({
     open: false,
-}))
+}));
+
+export const useSideNavStore = createSelectors(sideNavStore);
 
 export const sideNavActions = {
     open: () => {

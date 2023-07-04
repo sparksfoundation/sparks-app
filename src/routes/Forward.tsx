@@ -1,4 +1,4 @@
-import { userStore } from "@stores/refactor/userStore";
+import { useUserStore } from "@stores/refactor/userStore";
 import { Navigate, matchPath, useLocation, useSearchParams } from "react-router-dom";
 
 export type ForwardProps = {
@@ -9,7 +9,8 @@ export type ForwardProps = {
 };
 
 export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProps) => {
-  const { user, account } = userStore(state => state);
+  const user = useUserStore.use.user();
+  const account = useUserStore.use.account();
   const location = useLocation();
   const params = Object.fromEntries(useSearchParams()[0].entries());
 
@@ -25,7 +26,7 @@ export const Forward = ({ usersTo, membersTo, guestsTo, Component }: ForwardProp
   if (location.pathname.startsWith('/user/sandbox')) {
     state = { prev: { pathname: location.pathname, params } }
   }
-  
+
   if (redirectUser) {
     const userPath = state?.prev?.pathname || usersTo
     return <Navigate to={userPath} state={state} />
