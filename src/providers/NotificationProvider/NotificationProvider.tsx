@@ -31,7 +31,7 @@ export const HandleWebRTCInvite = ({ event, resolve, reject, closeToast }: { eve
   )
 }
 
-export const HandlePostMessageInvite = () => <></>
+export const HandlePostMessageInvite = (_?: any) => <></>
 
 export const NotificationProvider = () => {
   const user = userStore(state => state.user);
@@ -52,8 +52,7 @@ export const NotificationProvider = () => {
     WebRTC.handleOpenRequests(async ({ event, resolve, reject }) => {
       const addAndResolve = async () => {
         const channel = await resolve() as any;
-        await channelActions.add(channel);
-        chatStoreActions.startChat(channel);
+        await chatStoreActions.startChat(channel);
       }
       toast(({ closeToast }) => <HandleWebRTCInvite event={event} reject={reject} resolve={addAndResolve} closeToast={closeToast} />);
     }, { spark: user });

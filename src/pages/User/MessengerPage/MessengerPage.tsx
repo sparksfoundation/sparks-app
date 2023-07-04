@@ -5,6 +5,7 @@ import { MessengerChat } from "./MessengerChat";
 import { modalActions } from "@stores/refactor/modalStore";
 import { AvailableChannels } from "./AvailableChannels";
 import { useChatStore } from "@stores/refactor/chatStore";
+import { MessengerChatMenu } from "@components/MessengerChatMenu";
 
 export const NewChatButton = () => {
   const { openModal } = modalActions;
@@ -38,6 +39,9 @@ export const MessengerPage = () => {
         <MessengerChat />
         <AvailableChannels />
         <NewChatButton />
+      </div>
+      <div className="absolute z-50 top-5 right-5">
+        <MessengerChatMenu />
       </div>
     </>
   )

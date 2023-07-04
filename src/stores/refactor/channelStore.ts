@@ -58,6 +58,7 @@ async function addOrCreateChannel(params: {
   if (!user) throw new Error('User not logged in');
   const { options, channel: _channel } = params;
   const channel = (isInstance(_channel) ? _channel : new _channel(options));
+
   let data = channelStore.getState()._data[channel.cid];
   if (!data) {
     const raw = await channel.export();
@@ -74,7 +75,7 @@ async function addOrCreateChannel(params: {
   channel.on([
     ChannelEventType.OPEN_ACCEPTANCE,
     ChannelEventType.OPEN_CONFIRMATION,
-    ChannelEventType.MESSAGE,
+    ChannelEventType.MESSAGE_RECEIVED,
     ChannelEventType.MESSAGE_CONFIRMATION,
     ChannelEventType.CLOSE,
     ChannelEventType.CLOSE_CONFIRMATION,

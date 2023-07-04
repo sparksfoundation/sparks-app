@@ -3,20 +3,23 @@ import { VideoCameraIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useChatStore, chatStoreActions } from "@stores/refactor/chatStore";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ChannelEventType } from "sparks-sdk/channels";
+import { ChannelEventType, ChannelState } from "sparks-sdk/channels";
 import { Button, Card, Input, clsxm } from "sparks-ui";
 import { z } from "zod";
+
 
 export const MessengerChat = () => {
   const channel = useChatStore.use.channel();
   if (!channel) return <></>
   return (
-    <Card className="p-2 h-full">
-      <div className="h-full flex flex-col">
-        <ChannelChatVideo />
-        <ChannelChatMessages />
-      </div>
-    </Card>
+    <>
+      <Card className="p-2 h-full">
+        <div className="h-full flex flex-col">
+          <ChannelChatVideo />
+          <ChannelChatMessages />
+        </div>
+      </Card>
+    </>
   )
 };
 
@@ -30,20 +33,20 @@ export const ChannelChatVideo = () => {
         "bg-bg-100/70 dark:bg-bg-800/70 rounded-sm mb-2 p-1 h-auto relative overflow-hidden flex items-center justify-center",
       )}
     >
-        <video
-          className="h-auto max-h-full object-contain"
-          autoPlay
-          ref={(ref) => {
-            if (ref) ref.srcObject = streams.remote;
-          }}
-        />
-        <video
-          autoPlay
-          className="h-1/5 object-contain absolute mx-auto bottom-[1%] mb-1 translate-x-[193%]"
-          ref={(ref) => {
-            if (ref) ref.srcObject = streams.local;
-          }}
-        />
+      <video
+        className="h-auto max-h-full object-contain"
+        autoPlay
+        ref={(ref) => {
+          if (ref) ref.srcObject = streams.remote;
+        }}
+      />
+      <video
+        autoPlay
+        className="h-1/5 object-contain absolute mx-auto bottom-[1%] mb-1 translate-x-[193%]"
+        ref={(ref) => {
+          if (ref) ref.srcObject = streams.local;
+        }}
+      />
     </div>
   ) : <></>
 }
@@ -58,6 +61,8 @@ export const ChannelChatMessages = () => {
   const waiting = useChatStore.use.waiting();
   const streamable = useChatStore.use.streamable();
   const streams = useChatStore.use.streams();
+  const channel = useChatStore.use.channel();
+
   const { startCall, endCall } = chatStoreActions;
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
@@ -95,19 +100,20 @@ export const ChannelChatMessages = () => {
           type="text"
           autoFocus
           autoComplete="off"
+          disabled={waiting || channel?.status !== ChannelState.OPENED}
           registration={register('message')}
         />
         {streamable ? (
           <Button
             className="h-full"
-            disabled={waiting}
+            disabled={waiting || channel?.status !== ChannelState.OPENED}
             onClick={streams ? endCall : startCall}
             color={streams ? "danger" : "primary"}
           >
             <VideoCameraIcon className="w-6 h-6" />
           </Button>
         ) : <></>}
-        <Button className="h-full" type="submit" disabled={waiting}>
+        <Button className="h-full" type="submit" disabled={waiting || channel?.status !== ChannelState.OPENED}>
           <PaperAirplaneIcon className="w-6 h-6" />
         </Button>
       </form>

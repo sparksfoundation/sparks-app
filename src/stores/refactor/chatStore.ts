@@ -3,6 +3,7 @@ import { ChannelEventType, ChannelMessageData, FetchAPI, PostMessage, WebRTC, We
 import { create } from "zustand";
 import { inviteToaster } from "@components/CallInviteToast";
 import { createSelectors } from "./createSelectors";
+import { channelActions } from "./channelStore";
 
 type Channel = WebRTC | PostMessage | FetchAPI;
 
@@ -53,34 +54,50 @@ async function unlockMessages(channel: Channel): Promise<{ message: ChannelMessa
   return Promise.all(messages);
 }
 
-
 export const chatStoreActions = {
+  setChannel: async (channel: Channel) => {
+    chatStore.setState({ waiting: true });
+    await channelActions.add(channel);
+    const streamable = await isStreamable();
+    const messages = await unlockMessages(channel);
+    chatStore.setState({ channel, messages, streamable, waiting: false });
+  },
   startChat: async (channel: WebRTC) => {
     chatStore.setState({ waiting: true });
+    await channelActions.add(channel);
     const streamable = await isStreamable();
     const messages = await unlockMessages(channel);
 
-    channel.on([
-      ChannelEventType.MESSAGE_RECEIVED,
-      ChannelEventType.MESSAGE_CONFIRMATION,
-    ], async (event) => {
-      const isEncrypted = event.type === ChannelEventType.MESSAGE_CONFIRMATION;
-
-      const message = isEncrypted ? await channel.getLoggedEventMessage(event) : event.data;
-      if (!message) return;
-      const messages = chatStore.getState().messages;
-      chatStore.setState({ messages: [...messages, { message, event }], waiting: false });
-    });
-
-    channel.on([
-      ChannelEventType.CLOSE,
-      ChannelEventType.CLOSE_CONFIRMATION
-    ], () => {
-      chatStoreActions.closeChat(channel);
-    }, { once: true });
+    const listener = async (event: any) => {
+      switch (event.type) {
+        case ChannelEventType.CLOSE : case ChannelEventType.CLOSE_CONFIRMATION:
+          console.log('close', event);
+          await chatStoreActions.closeChat();
+          channel.off(listener);
+          break;
+        case ChannelEventType.MESSAGE_RECEIVED : case ChannelEventType.MESSAGE_CONFIRMATION:
+          const isEncrypted = event.type === ChannelEventType.MESSAGE_CONFIRMATION;
+          const message = isEncrypted ? await channel.getLoggedEventMessage(event) : event.data;
+          if (!message) return;
+          const messages = chatStore.getState().messages;
+          chatStore.setState({ messages: [...messages, { message, event }], waiting: false });
+          break;
+      }
+    }
+ 
+      channel.on([
+        ChannelEventType.MESSAGE_RECEIVED,
+        ChannelEventType.MESSAGE_CONFIRMATION,
+        ChannelEventType.CLOSE,
+        ChannelEventType.CLOSE_CONFIRMATION,
+      ], listener);
+    
 
     channel.handleHangup = () => {
-      chatStoreActions.endCall();
+      chatStore.setState({
+        streams: null,
+        waiting: false,
+      });
     };
 
     channel.handleCalls = ({ accept, reject }: { accept: () => Promise<WebRTCMediaStreams>, reject: () => Promise<void> }) => {
@@ -120,22 +137,16 @@ export const chatStoreActions = {
   },
   endCall: () => {
     const channel = chatStore.getState().channel as WebRTC;
-    if (channel) {
-      chatStore.setState({
-        streams: null,
-        waiting: false,
-      });
-    }
+    channel.hangup();
   },
   sendMessage: (message: string) => {
     const channel = chatStore.getState().channel as WebRTC;
     chatStore.setState({ waiting: true })
     channel.message(message);
   },
-  closeChat: async (channel: Channel) => {
-    setTimeout(() => {
-      chatStore.setState({ channel: null });
-      channel.off();
-    });
+  closeChat: async () => {
+    chatStore.setState({ waiting: true });
+    //channel.off();
+    chatStore.setState({ channel: null, waiting: false });
   }
 }
