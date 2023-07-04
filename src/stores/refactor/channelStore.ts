@@ -2,6 +2,7 @@ import { ChannelEventType, ChannelId, ChannelState, FetchAPI, PostMessage, WebRT
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { indexedDBStorage } from "./IndexedDB";
+import { createSelectors } from "./createSelectors";
 import { userStore } from "./userStore";
 
 type Channel = WebRTC | PostMessage | FetchAPI;
@@ -25,6 +26,7 @@ export const channelStore = create<ChannelStore>()(
   })
 );
 
+export const useChannelStore = createSelectors(channelStore);
 
 function isInstance(channel: any): channel is Channel {
   const isWebRTC = channel instanceof WebRTC;
@@ -38,6 +40,7 @@ async function saveChannelData(channel: Channel) {
   if (!user) throw new Error('User not logged in');
   const data = await channel.export();
   const encrypted = await user.encrypt({ data });
+  if (!encrypted) throw new Error('Could not encrypt channel data');
   channelStore.setState({
     _data: {
       ...channelStore.getState()._data,
@@ -55,7 +58,12 @@ async function addOrCreateChannel(params: {
   if (!user) throw new Error('User not logged in');
   const { options, channel: _channel } = params;
   const channel = (isInstance(_channel) ? _channel : new _channel(options));
-  const data = (channelStore.getState()._data[channel.cid] || await channel.export()) as string;
+
+  let data = channelStore.getState()._data[channel.cid];
+  if (!data) {
+    const raw = await channel.export();
+    data = await user.encrypt({ data: raw });
+  }
 
   // import the data if there is any
   if (channelStore.getState()._data[channel.cid]) {
@@ -67,7 +75,7 @@ async function addOrCreateChannel(params: {
   channel.on([
     ChannelEventType.OPEN_ACCEPTANCE,
     ChannelEventType.OPEN_CONFIRMATION,
-    ChannelEventType.MESSAGE,
+    ChannelEventType.MESSAGE_RECEIVED,
     ChannelEventType.MESSAGE_CONFIRMATION,
     ChannelEventType.CLOSE,
     ChannelEventType.CLOSE_CONFIRMATION,
@@ -140,4 +148,3 @@ userStore.persist.onFinishHydration(() => {
     unSubUser();
   })
 });
-

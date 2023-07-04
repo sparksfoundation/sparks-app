@@ -1,6 +1,7 @@
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { indexedDBStorage } from "./IndexedDB";
 import { create } from 'zustand';
+import { createSelectors } from './createSelectors';
 
 enum Themes {
   dark = 'dark',
@@ -23,6 +24,8 @@ export const themeStore = create<ThemeStore>()(
     }),
   })
 );
+
+export const useThemeStore = createSelectors(themeStore);
 
 export const themeActions = {
   set: (theme: Themes) => {

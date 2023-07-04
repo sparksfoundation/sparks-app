@@ -3,7 +3,7 @@ import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Card, ErrorMsg, H3, Input, Label, P, clsxm } from 'sparks-ui';
 import { useEffect } from "react";
-import { userActions, userStore } from "@stores/refactor/userStore";
+import { useUserStore, userActions } from "@stores/refactor/userStore";
 
 const formSchema = z.object({
   password: z.string().min(8, { message: 'invalid password' }).max(50),
@@ -17,7 +17,7 @@ export type UnlockPageRegisterType = UseFormRegister<UnlockPageFieldTypes>;
 export type UnlockPageErrorsType = FieldErrors<UnlockPageFieldTypes>;
 
 export const UnlockPage = () => {
-  const { account } = userStore(state => state);
+  const account = useUserStore.use.account();
 
   const {
     register,

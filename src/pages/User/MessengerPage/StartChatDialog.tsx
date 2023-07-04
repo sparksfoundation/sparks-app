@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { chatStoreActions } from "@stores/refactor/chatStore";
 import { modalActions } from "@stores/refactor/modalStore";
-import { userStore } from "@stores/refactor/userStore";
+import { useUserStore } from "@stores/refactor/userStore";
 import { useState } from "react";
 import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
 import { ChannelEventType, ChannelOpenRejectionEvent, WebRTC } from "sparks-sdk/channels";
@@ -18,10 +19,10 @@ export type StartChatDialogFieldTypes = { identifier: string };
 export type StartChatDialogRegisterType = UseFormRegister<StartChatDialogFieldTypes>;
 export type StartChatDialogErrorsType = FieldErrors<StartChatDialogFieldTypes>;
 
-export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC) => void }) => {
+export const StartChatDialog = () => {
     const [identifier, setIdentifier] = useState('');
     const [status, setStatus] = useState('');
-    const user = userStore(state => state.user);
+    const user = useUserStore.use.user();
     const { closeModal } = modalActions;
 
     const {
@@ -39,22 +40,18 @@ export const StartChatDialog = ({ onConnected }: { onConnected: (channel: WebRTC
         if (!user) return;
         return new Promise(async (resolve, reject) => {
             setStatus('attempting connection...');
-
             const { identifier } = fields;
             const channel = new WebRTC({
                 peerIdentifier: identifier,
                 spark: user,
             });
-
             const confirmation = await channel.open();
-
             if ((confirmation as ChannelOpenRejectionEvent).type === ChannelEventType.OPEN_REJECTION) {
                 setStatus('peer rejected connection');
                 return reject();
             }
-
             setStatus('peer connection accepted');
-            onConnected(channel);
+            await chatStoreActions.startChat(channel);
             closeModal();
             resolve(void 0);
         })

@@ -9,6 +9,7 @@ import { Basic } from "sparks-sdk/controllers";
 import { Blake3 } from "sparks-sdk/hashers";
 import { Ed25519Password } from "sparks-sdk/signers";
 import { Buffer } from "buffer";
+import { createSelectors } from "./createSelectors";
 
 export type User = Spark<[Profile], X25519SalsaPolyPassword, Basic, Blake3, Ed25519Password>;
 
@@ -57,6 +58,8 @@ export const userStore = create<UserStore>()(
     }),
   })
 );
+
+export const useUserStore = createSelectors(userStore);
 
 export const userActions = {
   login: async ({ password }: { password: string }) => {
