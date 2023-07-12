@@ -1,11 +1,12 @@
-import { ChannelEventType, ChannelId, ChannelState, FetchAPI, PostMessage, WebRTC } from "sparks-sdk/channels";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { indexedDBStorage } from "./IndexedDB";
 import { createSelectors } from "./createSelectors";
 import { userStore } from "./userStore";
+import { WebRTC, PostMessage, HttpFetch } from "sparks-sdk/channels/ChannelTransports";
+import { ChannelId } from "sparks-sdk/channels";
 
-type Channel = WebRTC | PostMessage | FetchAPI;
+type Channel = WebRTC | PostMessage | HttpFetch;
 
 interface ChannelStore {
   channels: { [key: ChannelId]: Channel };
@@ -31,8 +32,8 @@ export const useChannelStore = createSelectors(channelStore);
 function isInstance(channel: any): channel is Channel {
   const isWebRTC = channel instanceof WebRTC;
   const isPostMessage = channel instanceof PostMessage;
-  const isFetchAPI = channel instanceof FetchAPI;
-  return isWebRTC || isPostMessage || isFetchAPI;
+  const isHttpFetch = channel instanceof HttpFetch;
+  return isWebRTC || isPostMessage || isHttpFetch;
 }
 
 async function saveChannelData(channel: Channel) {
@@ -44,7 +45,7 @@ async function saveChannelData(channel: Channel) {
   channelStore.setState({
     _data: {
       ...channelStore.getState()._data,
-      [channel.cid]: encrypted,
+      [channel.channelId]: encrypted,
     },
   });
 }
@@ -59,43 +60,43 @@ async function addOrCreateChannel(params: {
   const { options, channel: _channel } = params;
   const channel = (isInstance(_channel) ? _channel : new _channel(options));
 
-  let data = channelStore.getState()._data[channel.cid];
+  let data = channelStore.getState()._data[channel.channelId];
   if (!data) {
     const raw = await channel.export();
     data = await user.encrypt({ data: raw });
   }
 
   // import the data if there is any
-  if (channelStore.getState()._data[channel.cid]) {
+  if (channelStore.getState()._data[channel.channelId]) {
     const decrypted = await user.decrypt({ data }) as Record<string, any>;
-    if (data) await channel.import(decrypted);
+    //if (data) await channel.import(decrypted);
   }
 
   // save the channel data when it changes
   channel.on([
-    ChannelEventType.OPEN_ACCEPTANCE,
-    ChannelEventType.OPEN_CONFIRMATION,
-    ChannelEventType.MESSAGE_RECEIVED,
-    ChannelEventType.MESSAGE_CONFIRMATION,
-    ChannelEventType.CLOSE,
-    ChannelEventType.CLOSE_CONFIRMATION,
+    channel.eventTypes.OPEN_CONFIRM,
+    channel.eventTypes.MESSAGE_REQUEST,
+    channel.eventTypes.MESSAGE_CONFIRM,
+    channel.eventTypes.CLOSE_REQUEST,
+    channel.eventTypes.CLOSE_CONFIRM,
   ], async () => {
     await saveChannelData(channel)
   });
 
-  if (channel.status === ChannelState.OPENED) {
-    await saveChannelData(channel);
-  }
+
+  // if (channel.status === ChannelState.OPENED) {
+  //   await saveChannelData(channel);
+  // }
 
   // add the channel and data to the store
   channelStore.setState({
     channels: {
       ...channelStore.getState().channels,
-      [channel.cid]: channel,
+      [channel.channelId]: channel,
     },
     _data: {
       ...channelStore.getState()._data,
-      [channel.cid]: data,
+      [channel.channelId]: data,
     },
   });
 }
@@ -114,11 +115,11 @@ export const channelActions = {
   remove: (channel: Channel) => {
     channelStore.setState({
       channels: Object.entries(channelStore.getState().channels)
-        .filter(([cid]) => cid !== channel.cid)
-        .reduce((acc, [cid, channel]) => ({ ...acc, [cid]: channel }), {}),
+        .filter(([channelId]) => channelId !== channel.channelId)
+        .reduce((acc, [channelId, channel]) => ({ ...acc, [channelId]: channel }), {}),
       _data: Object.entries(channelStore.getState()._data)
-        .filter(([cid]) => cid !== channel.cid)
-        .reduce((acc, [cid, data]) => ({ ...acc, [cid]: data }), {}),
+        .filter(([channelId]) => channelId !== channel.channelId)
+        .reduce((acc, [channelId, data]) => ({ ...acc, [channelId]: data }), {}),
     });
   },
 }
@@ -131,7 +132,7 @@ userStore.persist.onFinishHydration(() => {
     if (!user || !user.identifier || noData) return;
     Object.entries(data).forEach(async ([ _, encryptedData]) => {
       const channelData = await user.decrypt({ data: encryptedData }) as any;
-      if (!channelData || !channelData.cid) return;
+      if (!channelData || !channelData.channelId) return;
 
       const channel = new WebRTC({
         spark: user,
@@ -141,7 +142,7 @@ userStore.persist.onFinishHydration(() => {
       channelStore.setState({
         channels: {
           ...channelStore.getState().channels,
-          [channel.cid]: channel,
+          [channel.channelId]: channel,
         },
       });
     });

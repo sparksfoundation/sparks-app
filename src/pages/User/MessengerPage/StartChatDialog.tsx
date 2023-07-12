@@ -4,7 +4,7 @@ import { modalActions } from "@stores/refactor/modalStore";
 import { useUserStore } from "@stores/refactor/userStore";
 import { useState } from "react";
 import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
-import { ChannelEventType, ChannelOpenRejectionEvent, WebRTC } from "sparks-sdk/channels";
+import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 import { Button, ErrorMsg, Input, Label, P } from "sparks-ui";
 import { z } from "zod";
 
@@ -42,14 +42,11 @@ export const StartChatDialog = () => {
             setStatus('attempting connection...');
             const { identifier } = fields;
             const channel = new WebRTC({
-                peerIdentifier: identifier,
+                peer: { identifier },
                 spark: user,
             });
-            const confirmation = await channel.open();
-            if ((confirmation as ChannelOpenRejectionEvent).type === ChannelEventType.OPEN_REJECTION) {
-                setStatus('peer rejected connection');
-                return reject();
-            }
+            await channel.open();
+            // todo handle rejection
             setStatus('peer connection accepted');
             await chatStoreActions.startChat(channel);
             closeModal();

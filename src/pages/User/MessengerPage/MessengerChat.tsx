@@ -3,7 +3,6 @@ import { VideoCameraIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useChatStore, chatStoreActions } from "@stores/refactor/chatStore";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ChannelEventType, ChannelState } from "sparks-sdk/channels";
 import { Button, Card, Input, clsxm } from "sparks-ui";
 import { z } from "zod";
 
@@ -79,7 +78,8 @@ export const ChannelChatMessages = () => {
       <div className="overflow-y-auto pr-1 grow">
         {messages.map((messageData, index) => {
           const { event: { type }, message } = messageData;
-          const ours = type === ChannelEventType.MESSAGE_CONFIRMATION;
+          if (!message || !channel) return (<></>);
+          const ours = type === channel.eventTypes.MESSAGE_CONFIRM;
           return (
             <div
               key={index}
@@ -89,7 +89,7 @@ export const ChannelChatMessages = () => {
                 !ours && " bg-bg-100/70 text-fg-700 dark:bg-bg-800/70 dark:text-fg-200",
               )}
             >
-              {message as string}
+              {message as unknown as string}
             </div>
           )
         })}
@@ -100,20 +100,20 @@ export const ChannelChatMessages = () => {
           type="text"
           autoFocus
           autoComplete="off"
-          disabled={waiting || channel?.status !== ChannelState.OPENED}
+          disabled={waiting}
           registration={register('message')}
         />
         {streamable ? (
           <Button
             className="h-full"
-            disabled={waiting || channel?.status !== ChannelState.OPENED}
+            disabled={waiting}
             onClick={streams ? endCall : startCall}
             color={streams ? "danger" : "primary"}
           >
             <VideoCameraIcon className="w-6 h-6" />
           </Button>
         ) : <></>}
-        <Button className="h-full" type="submit" disabled={waiting || channel?.status !== ChannelState.OPENED}>
+        <Button className="h-full" type="submit" disabled={waiting}>
           <PaperAirplaneIcon className="w-6 h-6" />
         </Button>
       </form>

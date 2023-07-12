@@ -5,8 +5,8 @@ import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import { chatStoreActions, useChatStore } from "@stores/refactor/chatStore";
-import { ChannelState, WebRTC } from "sparks-sdk/channels";
 import { channelActions } from "@stores/refactor/channelStore";
+import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 
 const MenuLink = forwardRef(({ label, Icon, disabled, ...rest }: any, ref) => {
   return (
@@ -81,7 +81,7 @@ export const MessengerChatMenu = () => {
             <MenuLink
               label="Reconnect"
               Icon={LinkIcon}
-              disabled={waiting || channel?.status === ChannelState.OPENED}
+              disabled={waiting}
               onClick={reconnect}
             />
           </Menu.Item>

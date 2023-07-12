@@ -1,8 +1,8 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useState } from "react"
-import { PostMessage } from "sparks-sdk/channels/PostMessage"
+import { PostMessage } from "sparks-sdk/channels/ChannelTransports"
 import { userStore } from "@stores/refactor/userStore";
-import { ChannelEventType } from "sparks-sdk/channels";
+import { ChannelEvent } from "sparks-sdk/channels/ChannelEvent";
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
   const user = userStore(state => state.user);
@@ -19,7 +19,7 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
 
     const channel = new PostMessage({
       source: source as Window,
-      origin,
+      peer: { origin },
       spark: user,
     }) as PostMessage
 
@@ -30,20 +30,19 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
 
       const receiptEvent = await channel.message({ handle: user.agents.profile.handle });
       try {
-        const opened = await user.open({ signature: receiptEvent.data.receipt, publicKey: channel.peer.publicKeys.signer }) as string;
-        const decrypted = await user.decrypt({ data: opened, sharedKey: channel.sharedKey });
-        setVerified(!!decrypted)
+        await channel.openEvent(receiptEvent as ChannelEvent<any, true>)
+        setVerified(!receiptEvent.sealed)
       } catch (e) {
         setVerified(false)
       }
 
-      channel.on(ChannelEventType.ERROR, () => {
+      channel.on(channel.eventTypes.ANY_ERROR, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)
       })
 
-      channel.on(ChannelEventType.ERROR, () => {
+      channel.on(channel.eventTypes.CLOSE_CONFIRM, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)

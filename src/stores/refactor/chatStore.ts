@@ -1,17 +1,18 @@
 import { toast } from "react-toastify";
-import { ChannelEventType, ChannelMessageData, FetchAPI, PostMessage, WebRTC, WebRTCMediaStreams } from "sparks-sdk/channels";
 import { create } from "zustand";
 import { inviteToaster } from "@components/CallInviteToast";
 import { createSelectors } from "./createSelectors";
 import { channelActions } from "./channelStore";
+import { HttpFetch, PostMessage, WebRTC, WebRTCMediaStreams } from "sparks-sdk/channels/ChannelTransports";
+import { ChannelEventData } from "node_modules/sparks-sdk/dist/channels/ChannelEvent/types";
 
-type Channel = WebRTC | PostMessage | FetchAPI;
+type Channel = WebRTC | PostMessage | HttpFetch;
 
 type Nullable<T> = T | null;
 
 interface ChatStore {
   channel: Nullable<Channel>,
-  messages: { message: ChannelMessageData; event: any; }[],
+  messages: { message: ChannelEventData; event: any; }[],
   streams: Nullable<{
     local: MediaStream,
     remote: MediaStream,
@@ -42,14 +43,14 @@ async function isStreamable(): Promise<boolean> {
   });
 }
 
-async function unlockMessages(channel: Channel): Promise<{ message: ChannelMessageData; event: any; }[]> {
-  const isMyMessage = (event: any) => event.response && event.type === ChannelEventType.MESSAGE_CONFIRMATION;
-  const isTheirMessage = (event: any) => event.response && event.type === ChannelEventType.MESSAGE;
+async function unlockMessages(channel: Channel): Promise<{ message: ChannelEventData; event: any; }[]> {
+  const isMyMessage = (event: any) => event.response && event.type === channel.eventTypes.MESSAGE_CONFIRM;
+  const isTheirMessage = (event: any) => event.response && event.type === channel.eventTypes.MESSAGE_REQUEST;
   const messages = channel.eventLog
     .filter((event: any) => isMyMessage(event) || isTheirMessage(event))
     .map(async (event: any) => {
-      const message = await channel.getLoggedEventMessage(event);
-      return { message, event };
+      await channel.openEvent(event);
+      return { message: event.data, event };
     });
   return Promise.all(messages);
 }
@@ -70,28 +71,33 @@ export const chatStoreActions = {
 
     const listener = async (event: any) => {
       switch (event.type) {
-        case ChannelEventType.CLOSE : case ChannelEventType.CLOSE_CONFIRMATION:
-          console.log('close', event);
+        case channel.eventTypes.CLOSE_REQUEST: case channel.eventTypes.CLOSE_CONFIRM:
           await chatStoreActions.closeChat();
-          channel.off(listener);
+          channel.off(event.types, listener);
           break;
-        case ChannelEventType.MESSAGE_RECEIVED : case ChannelEventType.MESSAGE_CONFIRMATION:
-          const isEncrypted = event.type === ChannelEventType.MESSAGE_CONFIRMATION;
-          const message = isEncrypted ? await channel.getLoggedEventMessage(event) : event.data;
-          if (!message) return;
-          const messages = chatStore.getState().messages;
-          chatStore.setState({ messages: [...messages, { message, event }], waiting: false });
+        case channel.eventTypes.MESSAGE_REQUEST:
+          if (event.sealed) await channel.openEvent(event);
+          chatStore.setState({ messages: [
+            ...chatStore.getState().messages, 
+            { message: event.data, event }
+          ], waiting: false });
+          break;
+        case channel.eventTypes.MESSAGE_CONFIRM:
+          if (event.sealed) await channel.openEvent(event);
+          chatStore.setState({ messages: [
+            ...chatStore.getState().messages, 
+            { message: event.data.data, event }
+          ], waiting: false });
           break;
       }
     }
- 
-      channel.on([
-        ChannelEventType.MESSAGE_RECEIVED,
-        ChannelEventType.MESSAGE_CONFIRMATION,
-        ChannelEventType.CLOSE,
-        ChannelEventType.CLOSE_CONFIRMATION,
-      ], listener);
-    
+
+    channel.on([
+      channel.eventTypes.MESSAGE_REQUEST,
+      channel.eventTypes.MESSAGE_CONFIRM,
+      channel.eventTypes.CLOSE_REQUEST,
+      channel.eventTypes.CLOSE_CONFIRM,
+    ], listener);
 
     channel.handleHangup = () => {
       chatStore.setState({
@@ -110,7 +116,7 @@ export const chatStoreActions = {
       }
 
       toast(inviteToaster({
-        identifier: channel.peer.identifier,
+        identifier: channel.peer.identifier as string,
         accept: acceptCalls,
         reject,
       }));
@@ -146,7 +152,6 @@ export const chatStoreActions = {
   },
   closeChat: async () => {
     chatStore.setState({ waiting: true });
-    //channel.off();
     chatStore.setState({ channel: null, waiting: false });
   }
 }
