@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Card, Input, P } from "sparks-ui";
 import { WebRTC } from "sparks-sdk/channels/WebRTC";
-import { userStore } from "@stores/refactor/userStore";
+import { userStore } from "@stores/userStore";
 
 interface IProps {
   user: any;

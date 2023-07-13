@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { chatStoreActions } from "@stores/refactor/chatStore";
-import { modalActions } from "@stores/refactor/modalStore";
-import { useUserStore } from "@stores/refactor/userStore";
+import { messengerStoreActions } from "@stores/messengerStore";
+import { modalActions } from "@stores/modalStore";
+import { useUserStore } from "@stores/userStore";
 import { useState } from "react";
 import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
 import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
@@ -45,10 +45,16 @@ export const StartChatDialog = () => {
                 peer: { identifier },
                 spark: user,
             });
+
+            channel.on(channel.errorTypes.REQUEST_TIMEOUT_ERROR, (error) => {
+                if (error.metadata?.eventType === 'OPEN_REQUEST') {
+                    setStatus('peer connection timed out');
+                }
+            });
+
             await channel.open();
-            // todo handle rejection
             setStatus('peer connection accepted');
-            await chatStoreActions.startChat(channel);
+            await messengerStoreActions.setChannel(channel);
             closeModal();
             resolve(void 0);
         })

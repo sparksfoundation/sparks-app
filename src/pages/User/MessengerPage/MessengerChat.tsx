@@ -1,14 +1,14 @@
 import { PaperAirplaneIcon } from "@heroicons/react/20/solid";
 import { VideoCameraIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useChatStore, chatStoreActions } from "@stores/refactor/chatStore";
+import { useMessengerStore } from "@stores/messengerStore";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button, Card, Input, clsxm } from "sparks-ui";
 import { z } from "zod";
 
 
 export const MessengerChat = () => {
-  const channel = useChatStore.use.channel();
+  const channel = useMessengerStore.use.channel();
   if (!channel) return <></>
   return (
     <>
@@ -23,8 +23,9 @@ export const MessengerChat = () => {
 };
 
 export const ChannelChatVideo = () => {
-  const streams = useChatStore.use.streams();
-  const streamable = useChatStore.use.streamable();
+  const channel = useMessengerStore.use.channel();
+  const streamable = useMessengerStore.use.streamable();
+  const streams = channel?.streams;
 
   return streamable && streams ? (
     <div
@@ -56,19 +57,18 @@ type ChatMessageHandlerType = SubmitHandler<ChatMessageSchema>;
 type ChatMessageFieldTypes = { message: string };
 
 export const ChannelChatMessages = () => {
-  const messages = useChatStore.use.messages();
-  const waiting = useChatStore.use.waiting();
-  const streamable = useChatStore.use.streamable();
-  const streams = useChatStore.use.streams();
-  const channel = useChatStore.use.channel();
+  const channel = useMessengerStore.use.channel();
+  const waiting = useMessengerStore.use.waiting();
+  const streamable = useMessengerStore.use.streamable();
+  const streams = channel?.streams;
 
-  const { startCall, endCall } = chatStoreActions;
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
   });
 
   const onSubmit: ChatMessageHandlerType = async ({ message }: ChatMessageFieldTypes) => {
-    chatStoreActions.sendMessage(message);
+    if (!channel) return;
+    channel.message(message);
     setValue('message', '');
     setFocus('message');
   }

@@ -4,13 +4,14 @@ import { StoresLoader } from "@providers/StoresLoader";
 import { ThemeLoader } from "@providers/ThemeLoader";
 import { AppRoutes } from "@routes";
 import { BrowserRouter } from "react-router-dom";
-import { userStore } from "@stores/refactor/userStore";
-import { themeStore } from "@stores/refactor/themeStore";
+import { userStore } from "@stores/userStore";
+import { themeStore } from "@stores/themeStore";
+import { channelStore } from "@stores/channels";
 
 function App() {
   return (
     <>
-      <StoresLoader stores={[themeStore, userStore]}>
+      <StoresLoader stores={[themeStore, userStore, channelStore]}>
         <ThemeLoader>
           <BrowserRouter>
             <AppRoutes />

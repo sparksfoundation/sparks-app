@@ -1,7 +1,7 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useState } from "react"
 import { ChannelEventType, PostMessage } from "sparks-sdk/channels"
-import { userStore } from "@stores/refactor/userStore"
+import { userStore } from "@stores/userStore"
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
   const user = userStore(state => state.user);

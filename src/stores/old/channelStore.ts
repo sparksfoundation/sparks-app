@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { indexedDBStorage } from "./IndexedDB";
-import { createSelectors } from "./createSelectors";
-import { userStore } from "./userStore";
+import { indexedDBStorage } from "../IndexedDB";
+import { createSelectors } from "../createSelectors";
+import { userStore } from "../userStore";
 import { WebRTC, PostMessage, HttpFetch } from "sparks-sdk/channels/ChannelTransports";
 import { ChannelId } from "sparks-sdk/channels";
 

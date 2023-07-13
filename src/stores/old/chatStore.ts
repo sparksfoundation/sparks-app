@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import { create } from "zustand";
-import { inviteToaster } from "@components/CallInviteToast";
-import { createSelectors } from "./createSelectors";
+import { inviteToaster } from "@components/Toast";
+import { createSelectors } from "../createSelectors";
 import { channelActions } from "./channelStore";
 import { HttpFetch, PostMessage, WebRTC, WebRTCMediaStreams } from "sparks-sdk/channels/ChannelTransports";
 import { ChannelEventData } from "node_modules/sparks-sdk/dist/channels/ChannelEvent/types";

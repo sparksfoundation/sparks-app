@@ -1,4 +1,4 @@
-import { modalStore } from "@stores/refactor/modalStore";
+import { modalStore } from "@stores/modalStore";
 import { Card, H4 } from "sparks-ui";
 
 export const ModalProvider = () => {

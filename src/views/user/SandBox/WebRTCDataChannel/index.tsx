@@ -2,7 +2,7 @@ import { InformationCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/so
 import React, { Fragment } from "react";
 import { Button, Card, Input, P, clsxm } from "sparks-ui";
 import { WebRTC } from "sparks-sdk/channels/WebRTC";
-import { User, userStore } from "@stores/refactor/userStore";
+import { User, userStore } from "@stores/userStore";
 import { ChannelEventType } from "sparks-sdk/channels";
 
 interface IProps {

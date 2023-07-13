@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { ToastContentProps } from "react-toastify";
 import { Button, P } from "sparks-ui";
 
-export const CallInviteToast = ({ peerIdentifier, accept, reject, closeToast }: { peerIdentifier: any, accept: Function, reject: Function, closeToast: (() => void) | undefined }) => {
+export const WebRTCCall = ({ peerIdentifier, accept, reject, closeToast }: { peerIdentifier: any, accept: Function, reject: Function, closeToast: (() => void) | undefined }) => {
   const peerId = `${peerIdentifier.slice(0, 6)}...${peerIdentifier.slice(-6)}`;
 
   async function handleAccept() {
@@ -32,14 +32,13 @@ export type InviteToaster = ({
   reject: () => Promise<void>,
 }) => (props: ToastContentProps<unknown>) => ReactNode;
 
-
 export const inviteToaster: InviteToaster = ({
   identifier,
   accept,
   reject,
 }: { identifier: any, accept: Function, reject: Function }) => {
   return ({ closeToast }) => (
-    <CallInviteToast
+    <WebRTCCall
       peerIdentifier={identifier}
       accept={accept}
       reject={reject}

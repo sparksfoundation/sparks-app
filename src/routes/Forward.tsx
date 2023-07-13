@@ -1,4 +1,4 @@
-import { useUserStore } from "@stores/refactor/userStore";
+import { useUserStore } from "@stores/userStore";
 import { Navigate, matchPath, useLocation, useSearchParams } from "react-router-dom";
 
 export type ForwardProps = {
