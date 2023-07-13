@@ -5,7 +5,7 @@ import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import { chatStoreActions, useChatStore } from "@stores/refactor/chatStore";
-import { channelActions } from "@stores/refactor/channelStore";
+import { channelActions } from "@stores/channelStore";
 import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 
 const MenuLink = forwardRef(({ label, Icon, disabled, ...rest }: any, ref) => {

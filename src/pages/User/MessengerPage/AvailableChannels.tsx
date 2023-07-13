@@ -1,5 +1,5 @@
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
-import { useChannelStore } from "@stores/refactor/channelStore";
+import { useChannelStore } from "@stores/channelStore";
 import { chatStoreActions, useChatStore } from "@stores/refactor/chatStore";
 import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 import { Card, P } from "sparks-ui";

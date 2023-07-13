@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Button, P } from "sparks-ui";
 import { userStore } from "@stores/refactor/userStore";
 import { themeStore } from "@stores/refactor/themeStore";
-import { channelActions } from "@stores/refactor/channelStore";
+import { channelActions } from "@stores/channelStore";
 import { chatStoreActions } from "@stores/refactor/chatStore";
 import { useNavigate } from "react-router-dom";
 import { Paths } from "@routes/paths";
