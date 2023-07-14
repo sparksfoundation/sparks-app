@@ -44,6 +44,7 @@ export const StartChatDialog = () => {
             const channel = new WebRTC({
                 peer: { identifier },
                 spark: user,
+                timeout: 20000,
             });
 
             channel.on(channel.errorTypes.REQUEST_TIMEOUT_ERROR, (error) => {

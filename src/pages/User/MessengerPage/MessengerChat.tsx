@@ -61,6 +61,7 @@ export const ChannelChatMessages = () => {
   const waiting = useMessengerStore.use.waiting();
   const streamable = useMessengerStore.use.streamable();
   const streams = channel?.streams;
+  const messages = useMessengerStore.use.messages();
 
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
@@ -107,7 +108,7 @@ export const ChannelChatMessages = () => {
           <Button
             className="h-full"
             disabled={waiting}
-            onClick={streams ? endCall : startCall}
+            onClick={streams ? () => {} : () => {}}
             color={streams ? "danger" : "primary"}
           >
             <VideoCameraIcon className="w-6 h-6" />

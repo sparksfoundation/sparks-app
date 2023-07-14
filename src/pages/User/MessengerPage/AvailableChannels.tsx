@@ -1,23 +1,23 @@
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
-import { useChannelStore } from "@stores/channelStore";
-import { chatStoreActions, useChatStore } from "@stores/chatStore";
+import { useChannelStore } from "@stores/channels";
+import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
 import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 import { Card, P } from "sparks-ui";
 
 export const AvailableChannels = () => {
-  const channel = useChatStore.use.channel();
-  const channels = Object.values(useChannelStore.use.channels()) as WebRTC[];
-    // .filter((channel) => channel.type === ChannelType.WEBRTC_CHANNEL) as WebRTC[];
+  const channel = useMessengerStore.use.channel();
+  const channels = useChannelStore.use.channels();
+  const webRtcChannels = Object.values(channels).filter(channel => channel instanceof WebRTC) as WebRTC[];
 
   async function openChat(channel: WebRTC) {
-    await chatStoreActions.setChannel(channel);
+    await messengerStoreActions.setChannel(channel);
   }
 
   if (channel) return <></>
 
   return (
     <>
-      {Object.values(channels).map(channel =>
+      {webRtcChannels.map(channel =>
         <Card key={channel.channelId} className="w-full p-4 mb-2 h-auto">
           <div className="flex gap-4 items-stretch">
             <P className="overflow-hidden nowrap text-ellipsis grow">{channel.peer.identifier}</P>

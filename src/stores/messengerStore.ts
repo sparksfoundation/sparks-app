@@ -8,6 +8,7 @@ interface MessengerStore {
     channel: Nullable<WebRTC>,
     waiting: boolean,
     streamable: boolean,
+    messages: any[],
 }
 
 export const messengerStore = create<MessengerStore>(() => ({
