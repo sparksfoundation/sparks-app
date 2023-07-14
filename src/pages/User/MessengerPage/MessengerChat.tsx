@@ -114,7 +114,7 @@ export const ChannelChatMessages = () => {
           type="text"
           autoFocus
           autoComplete="off"
-          disabled={waiting}
+          disabled={waiting || channel?.state.status !== 'OPEN'}
           registration={register('message')}
         />
         {streamable ? (
@@ -127,7 +127,7 @@ export const ChannelChatMessages = () => {
             <VideoCameraIcon className="w-6 h-6" />
           </Button>
         ) : <></>}
-        <Button className="h-full" type="submit" disabled={waiting}>
+        <Button className="h-full" type="submit" disabled={waiting || channel?.state.status !== 'OPEN'}>
           <PaperAirplaneIcon className="w-6 h-6" />
         </Button>
       </form>

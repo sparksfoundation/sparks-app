@@ -49,6 +49,7 @@ export const MessengerChatMenu = () => {
   async function quit() {
     if (channel) {
       await channel.close()
+        .catch(e => console.error(e))
       messengerStoreActions.setChannel(null);
     }
   }
@@ -81,7 +82,7 @@ export const MessengerChatMenu = () => {
             <MenuLink
               label="Reconnect"
               Icon={LinkIcon}
-              disabled={waiting}
+              disabled={waiting || channel.state.status === 'OPEN'}
               onClick={reconnect}
             />
           </Menu.Item>

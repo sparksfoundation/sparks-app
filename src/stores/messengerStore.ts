@@ -39,6 +39,7 @@ export const messengerStoreActions = {
           channel.eventTypes.MESSAGE_REQUEST,
           channel.eventTypes.MESSAGE_CONFIRM,
         ], async event => {
+          console.log(event)
           if (!event.data && !!event.seal) {
             await channel.openEvent(event);
           }
