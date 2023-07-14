@@ -63,6 +63,8 @@ export const ChannelChatMessages = () => {
   const messages = useMessengerStore.use.messages();
   const streams = channel?.streams;
 
+  console.log(streams, streamable);
+
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
   });
@@ -72,6 +74,16 @@ export const ChannelChatMessages = () => {
     channel.message(message);
     setValue('message', '');
     setFocus('message');
+  }
+
+  const startCall = async () => {
+    if (!channel) return;
+    await channel.call();
+  }
+
+  const endCall = async () => {
+    if (!channel) return;
+    await channel.hangup();
   }
 
   return (
@@ -109,7 +121,7 @@ export const ChannelChatMessages = () => {
           <Button
             className="h-full"
             disabled={waiting}
-            onClick={streams ? () => {} : () => {}}
+            onClick={streams ? endCall : startCall}
             color={streams ? "danger" : "primary"}
           >
             <VideoCameraIcon className="w-6 h-6" />

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createSelectors } from "./createSelectors";
 import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
-import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
+import { channelStoreActions } from "./channels";
 
 type Nullable<T> = T | null;
 
@@ -27,6 +27,7 @@ export const messengerStoreActions = {
         const currentChannel = messengerStore.getState().channel;
         if (currentChannel) {
             currentChannel.removeAllListeners();
+            messengerStore.setState({ channel: null });
         }
 
         if (!channel) {
@@ -41,24 +42,29 @@ export const messengerStoreActions = {
           if (!event.data && !!event.seal) {
             await channel.openEvent(event);
           }
+
           messengerStore.setState({ 
             messages: [...messengerStore.getState().messages, event ], 
           });
+
+          await channelStoreActions.save(channel);
         })
 
         channel.on([
           channel.eventTypes.CLOSE_REQUEST,
           channel.eventTypes.CLOSE_CONFIRM,
-        ], async event => {
+        ], async () => {
+          channel.removeAllListeners();
           messengerStore.setState({ channel: null });
         })
 
         const messages = channel.eventLog
           .filter(event => {
-            return event.type === channel.eventTypes.MESSAGE_REQUEST || event.type === channel.eventTypes.MESSAGE_CONFIRM
+            const isOurs = event.type === channel.eventTypes.MESSAGE_CONFIRM && event.response;
+            const isTheirs = event.type === channel.eventTypes.MESSAGE_REQUEST && event.response;
+            return isOurs || isTheirs;
           })
 
-        console.log(messages);
         messengerStore.setState({ channel, messages });
     }
 }

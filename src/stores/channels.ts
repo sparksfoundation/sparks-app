@@ -6,11 +6,8 @@ import { userStore } from "./userStore";
 import { WebRTC, PostMessage, HttpFetch, WebRTCParams, PostMessageParams, HttpFetchParams } from "sparks-sdk/channels/ChannelTransports";
 import { ChannelId } from "sparks-sdk/channels";
 import { EncryptedData } from "node_modules/sparks-sdk/dist/ciphers/types";
-import { WebRTCOpen, webRTCOpenToaster } from "@components/Toast/WebRTCOpen";
-import { toast } from "react-toastify";
-import { chatStoreActions } from "./old/chatStore";
+import { webRTCOpenToaster } from "@components/Toast/WebRTCOpen";
 import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
-import { postMessageOpenToaster } from "@components/Toast";
 import { Paths } from "@routes/paths";
 import { history } from "@routes";
 import { messengerStoreActions } from "./messengerStore";
@@ -38,27 +35,35 @@ export const channelStore = create<ChannelStore>()(
 
 export const useChannelStore = createSelectors(channelStore);
 
+// no watchers here, just actions
 export const channelStoreActions = {
   async add(channel: Channel) {
-    // if the channel is already in the store, return
-    if (channelStore.getState().channels[channel.channelId]) return;
+    const existing = channelStore.getState().channels[channel.channelId];
+    if (existing) channel.import(existing.export());
+    await channelStoreActions.save(channel);
+  },
+  remove(channel: Channel) {
+    const { [channel.channelId]: _, ...channels } = channelStore.getState().channels;
+    const { [channel.channelId]: __, ..._exports } = channelStore.getState()._exports;
+    channelStore.setState({ channels, _exports });
+  },
+  async save(channel: Channel) {
+    const user = userStore.getState().user;
+    if (!user) throw new Error('User not logged in');
 
-    // update the channel and exports for the first time (or first time this session)
-    await channelStoreActions.update(channel);
+    const data = channel.export();
+    const encrypted = await user.encrypt({ data });
+    if (!encrypted) throw new Error('Could not encrypt channel data');
 
-    // if new listen for changes to the channel and update the store
-    channel.on([
-      channel.eventTypes.ANY_CONFIRM,
-      channel.eventTypes.ANY_REQUEST,
-    ], async () => {
-      await channelStoreActions.update(channel);
-    });
-
-    channel.on([
-      channel.eventTypes.CLOSE_REQUEST,
-      channel.eventTypes.CLOSE_CONFIRM,
-    ], async () => {
-      channel.removeAllListeners();
+    channelStore.setState({
+      channels: {
+        ...channelStore.getState().channels,
+        [channel.channelId]: channel,
+      },
+      _exports: {
+        ...channelStore.getState()._exports,
+        [channel.channelId]: encrypted,
+      },
     });
   },
   async import(data: EncryptedData) {
@@ -84,35 +89,6 @@ export const channelStoreActions = {
 
     return channelStoreActions.add(channel);
   },
-  async update(channel: Channel) {
-    const user = userStore.getState().user;
-    if (!user) throw new Error('User not logged in');
-    const data = channel.export();
-    const encrypted = await user.encrypt({ data });
-    if (!encrypted) throw new Error('Could not encrypt channel data');
-
-    channelStore.setState({
-      channels: {
-        ...channelStore.getState().channels,
-        [channel.channelId]: channel,
-      },
-      _exports: {
-        ...channelStore.getState()._exports,
-        [channel.channelId]: encrypted,
-      },
-    });
-  },
-  async remove(channel: Channel) {
-    const user = userStore.getState().user;
-    if (!user) throw new Error('User not logged in');
-    const data = channel.export();
-    const encrypted = await user.encrypt({ data });
-    if (!encrypted) throw new Error('Could not encrypt channel data');
-    const { [channel.channelId]: _, ...channels } = channelStore.getState().channels;
-    const { [channel.channelId]: __, ..._exports } = channelStore.getState()._exports;
-    _.removeAllListeners();
-    channelStore.setState({ channels, _exports });
-  },
 }
 
 userStore.persist.onFinishHydration(() => {
@@ -130,15 +106,7 @@ userStore.persist.onFinishHydration(() => {
     WebRTC.receive(async ({ event, confirmOpen }) => {
       const addAndResolve = async () => {
         const channel = await confirmOpen() as any;
-        const existing = channelStore.getState().channels[channel.channelId];
-        if (existing) {
-          existing.removeAllListeners();
-          channel.eventLog = [ ...existing.eventLog, ...channel.eventLog ];
-          await channelStoreActions.update(channel);
-        } else {
-          await channelStoreActions.add(channel);
-        }
-
+        await channelStoreActions.add(channel);
         await messengerStoreActions.setChannel(channel);
         history.navigate(Paths.USER_MESSENGER);
       }

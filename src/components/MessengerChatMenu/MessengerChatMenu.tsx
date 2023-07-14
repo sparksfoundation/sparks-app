@@ -34,11 +34,8 @@ export const MessengerChatMenu = () => {
   if (!channel) return <></>;
 
   async function reconnect() {
-    console.log(!!channel);
     if (!channel) return;
     await channel.open()
-
-    console.log('open??')
     await messengerStoreActions.setChannel(channel);
   }
 
