@@ -60,8 +60,8 @@ export const ChannelChatMessages = () => {
   const channel = useMessengerStore.use.channel();
   const waiting = useMessengerStore.use.waiting();
   const streamable = useMessengerStore.use.streamable();
-  const streams = channel?.streams;
   const messages = useMessengerStore.use.messages();
+  const streams = channel?.streams;
 
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
@@ -77,10 +77,11 @@ export const ChannelChatMessages = () => {
   return (
     <div className="flex flex-col gap-3 grow h-1/2 mt-2">
       <div className="overflow-y-auto pr-1 grow">
-        {messages.map((messageData, index) => {
-          const { event: { type }, message } = messageData;
-          if (!message || !channel) return (<></>);
-          const ours = type === channel.eventTypes.MESSAGE_CONFIRM;
+        {messages.map((event, index) => {
+          const { data } = event;
+          const message = data.data ? data.data : data;
+          const ours = !!data.data; 
+
           return (
             <div
               key={index}

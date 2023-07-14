@@ -11,6 +11,9 @@ import { toast } from "react-toastify";
 import { chatStoreActions } from "./old/chatStore";
 import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
 import { postMessageOpenToaster } from "@components/Toast";
+import { Paths } from "@routes/paths";
+import { history } from "@routes";
+import { messengerStoreActions } from "./messengerStore";
 
 type Channel = WebRTC | PostMessage | HttpFetch;
 
@@ -49,6 +52,13 @@ export const channelStoreActions = {
       channel.eventTypes.ANY_REQUEST,
     ], async () => {
       await channelStoreActions.update(channel);
+    });
+
+    channel.on([
+      channel.eventTypes.CLOSE_REQUEST,
+      channel.eventTypes.CLOSE_CONFIRM,
+    ], async () => {
+      channel.removeAllListeners();
     });
   },
   async import(data: EncryptedData) {
@@ -118,12 +128,19 @@ userStore.persist.onFinishHydration(() => {
 
     // watch for incoming open requests
     WebRTC.receive(async ({ event, confirmOpen }) => {
-
-      console.log(event);
-
       const addAndResolve = async () => {
         const channel = await confirmOpen() as any;
-        await channelStoreActions.add(channel);
+        const existing = channelStore.getState().channels[channel.channelId];
+        if (existing) {
+          existing.removeAllListeners();
+          channel.eventLog = [ ...existing.eventLog, ...channel.eventLog ];
+          await channelStoreActions.update(channel);
+        } else {
+          await channelStoreActions.add(channel);
+        }
+
+        await messengerStoreActions.setChannel(channel);
+        history.navigate(Paths.USER_MESSENGER);
       }
 
       webRTCOpenToaster({

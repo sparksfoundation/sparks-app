@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { channelStore, channelStoreActions } from "@stores/channels";
 import { messengerStoreActions } from "@stores/messengerStore";
 import { modalActions } from "@stores/modalStore";
 import { useUserStore } from "@stores/userStore";
@@ -55,6 +56,7 @@ export const StartChatDialog = () => {
 
             await channel.open();
             setStatus('peer connection accepted');
+            await channelStoreActions.add(channel);
             await messengerStoreActions.setChannel(channel);
             closeModal();
             resolve(void 0);

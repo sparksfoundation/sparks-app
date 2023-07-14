@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { createSelectors } from "./createSelectors";
 import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
+import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
 
 type Nullable<T> = T | null;
 
@@ -27,8 +28,38 @@ export const messengerStoreActions = {
         if (currentChannel) {
             currentChannel.removeAllListeners();
         }
-        // TODO - listen for message events and update decrypted messages in the store's state for chat rendering
-        messengerStore.setState({ channel });
+
+        if (!channel) {
+            messengerStore.setState({ channel: null });
+            return;
+        }
+
+        channel.on([
+          channel.eventTypes.MESSAGE_REQUEST,
+          channel.eventTypes.MESSAGE_CONFIRM,
+        ], async event => {
+          if (!event.data && !!event.seal) {
+            await channel.openEvent(event);
+          }
+          messengerStore.setState({ 
+            messages: [...messengerStore.getState().messages, event ], 
+          });
+        })
+
+        channel.on([
+          channel.eventTypes.CLOSE_REQUEST,
+          channel.eventTypes.CLOSE_CONFIRM,
+        ], async event => {
+          messengerStore.setState({ channel: null });
+        })
+
+        const messages = channel.eventLog
+          .filter(event => {
+            return event.type === channel.eventTypes.MESSAGE_REQUEST || event.type === channel.eventTypes.MESSAGE_CONFIRM
+          })
+
+        console.log(messages);
+        messengerStore.setState({ channel, messages });
     }
 }
 
