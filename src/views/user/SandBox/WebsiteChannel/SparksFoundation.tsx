@@ -2,10 +2,7 @@ import { Button, Card, H5, P } from "sparks-ui"
 import { useState } from "react"
 import { PostMessage } from "sparks-sdk/channels/ChannelTransports"
 import { userStore } from "@stores/userStore";
-import { ChannelEvent } from "sparks-sdk/channels/ChannelEvent";
 import { toast } from "react-toastify";
-import { channelStoreActions } from "@stores/channels";
-import { useChannelStore } from "@stores/channels";
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
   const user = userStore(state => state.user);
@@ -13,7 +10,6 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
   const [verified, setVerified] = useState(false)
   const [waiting, setWaiting] = useState(false)
   const [request, setRequest] = useState(connectionWaiting)
-  const channels = useChannelStore.use.channels();
 
   async function connect({ url, source: _source }: { url: string, source?: Window }) {
     if (!user) return
@@ -22,63 +18,45 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
     if (!source) return;
 
     const origin = new URL(url).origin;
+    const channel = new PostMessage({ peer: { origin }, spark: user, settings: { timeout: 2000 }});
 
-    const existingChannel = Object.values(channels).find(channel => channel.peer.origin === origin);
-    const channel = (existingChannel || new PostMessage({ peer: { origin }, spark: user, })) as PostMessage
-    if (source) channel.setSource(source)
+    if (source) channel.state.source = source;
 
-    channel.on(channel.errorTypes.REQUEST_TIMEOUT_ERROR, (error) => {  
-      if (error.metadata?.eventType !== 'CLOSE_REQUEST') {
-        setConnection(null)
-        setVerified(false)
-      }
+    setWaiting(true);
+    setConnection(null);
+    setVerified(false);
 
-      if (error.metadata?.eventType !== 'OPEN_REQUEST') return
-      
-      if (!_source) {
-        channel.removeAllListeners();
-        return connect({ url, source })
-      }
-
-      channel.removeAllListeners();
-
-      toast.error('Connection timeout, try again.')
-
-      setTimeout(() => {
-        setWaiting(false);
-        setConnection(null);
-        setVerified(false);
-      }, 250);
-    })
-
-    channel.on(channel.eventTypes.OPEN_CONFIRM, () => {
-      channelStoreActions.add(channel);
+    channel.on(channel.confirmTypes.OPEN_CONFIRM, async () => {
+      setVerified(true)
+      setWaiting(false)
+      setConnection(channel)
     });
 
-    await channel.open()
-
-    setWaiting(false)
-    setConnection(channel)
-
-    const receiptEvent = await channel.message({ handle: user.agents.profile.handle });
-    try {
-      await channel.openEvent(receiptEvent as ChannelEvent<any>)
-      setVerified(!!receiptEvent.data && !!receiptEvent.seal)
-    } catch (e) {
-      setVerified(false)
-    }
+    channel.on([
+      channel.errorTypes.CONFIRM_TIMEOUT_ERROR,
+    ], (event) => {
+      const isOpen = channel.state.open;
+      const isRequest = event.metadata?.eventType === 'OPEN_REQUEST';
+      if (isOpen || !isRequest) return;
+      channel.removeAllListeners();
+      setWaiting(false);
+      setConnection(null);
+      toast.error('Connection timeout, try again.');
+    });
 
     channel.on([
-      channel.eventTypes.ANY_ERROR,
       channel.eventTypes.CLOSE_REQUEST,
       channel.eventTypes.CLOSE_CONFIRM,
-    ], (event) => {
-      if (event.type === 'REQUEST_TIMEOUT_ERROR') return;
+    ], () => {
       channel.removeAllListeners()
+      setVerified(false)
       setWaiting(false)
       setConnection(null)
-      setVerified(false)
     })
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    await channel.open()
+    await channel.message({ handle: user.agents.profile.handle });
   }
 
   async function disconnect() {

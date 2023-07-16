@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { indexedDBStorage } from "./IndexedDB";
 import { createSelectors } from "./createSelectors";
 import { userStore } from "./userStore";
-import { WebRTC, PostMessage, HttpFetch, WebRTCParams, PostMessageParams, HttpFetchParams } from "sparks-sdk/channels/ChannelTransports";
+import { WebRTC, PostMessage, HttpFetch } from "sparks-sdk/channels/ChannelTransports";
 import { ChannelId } from "sparks-sdk/channels";
 import { EncryptedData } from "node_modules/sparks-sdk/dist/ciphers/types";
 import { webRTCOpenToaster } from "@components/Toast/WebRTCOpen";
@@ -11,6 +11,9 @@ import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
 import { Paths } from "@routes/paths";
 import { history } from "@routes";
 import { messengerStoreActions } from "./messengerStore";
+import { WebRTCParams } from "node_modules/sparks-sdk/dist/channels/ChannelTransports/WebRTC/types";
+import { PostMessageParams } from "node_modules/sparks-sdk/dist/channels/ChannelTransports/PostMessage/types";
+import { HttpFetchParams } from "node_modules/sparks-sdk/dist/channels/ChannelTransports/HttpFetch/types";
 
 type Channel = WebRTC | PostMessage | HttpFetch;
 
@@ -38,8 +41,11 @@ export const useChannelStore = createSelectors(channelStore);
 // no watchers here, just actions
 export const channelStoreActions = {
   async add(channel: Channel) {
-    const existing = channelStore.getState().channels[channel.channelId];
-    if (existing) channel.import(existing.export());
+    // if there's a channel with the same peer identifer already get it
+    const existing = Object.values(channelStore.getState().channels).find((c) => {
+      return c.peer.identifier === channel.peer.identifier;
+    });
+    if (existing) channel.import(existing.export() as any);
     await channelStoreActions.save(channel);
   },
   remove(channel: Channel) {

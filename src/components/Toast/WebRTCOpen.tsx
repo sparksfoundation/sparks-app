@@ -5,7 +5,8 @@ import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
 import { Button, P } from "sparks-ui";
 
 export const WebRTCOpen = ({ event, resolve, reject }: { event: ChannelRequestEvent, resolve: Function, reject: () => void }) => {
-  const peerId = `${event.data.peer.identifier.slice(0, 6)}...${event.data.peer.identifier.slice(-6)}`;
+  if (!event?.data?.identifier) return null;
+  const peerId = `${event.data.identifier.slice(0, 6)}...${event.data.identifier.slice(-6)}`;
   const navigate = useNavigate();
   async function handleAccept() {
     await resolve();

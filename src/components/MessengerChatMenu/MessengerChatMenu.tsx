@@ -82,7 +82,7 @@ export const MessengerChatMenu = () => {
             <MenuLink
               label="Reconnect"
               Icon={LinkIcon}
-              disabled={waiting || channel.state.status === 'OPEN'}
+              disabled={waiting || channel.state.open}
               onClick={reconnect}
             />
           </Menu.Item>

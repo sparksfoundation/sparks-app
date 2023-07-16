@@ -25,7 +25,7 @@ export const MessengerChat = () => {
 export const ChannelChatVideo = () => {
   const channel = useMessengerStore.use.channel();
   const streamable = useMessengerStore.use.streamable();
-  const streams = channel?.streams;
+  const streams = channel?.state?.streams;
 
   return streamable && streams ? (
     <div
@@ -61,9 +61,7 @@ export const ChannelChatMessages = () => {
   const waiting = useMessengerStore.use.waiting();
   const streamable = useMessengerStore.use.streamable();
   const messages = useMessengerStore.use.messages();
-  const streams = channel?.streams;
-
-  console.log(streams, streamable);
+  const streams = channel?.state.streams;
 
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
@@ -90,17 +88,15 @@ export const ChannelChatMessages = () => {
     <div className="flex flex-col gap-3 grow h-1/2 mt-2">
       <div className="overflow-y-auto pr-1 grow">
         {messages.map((event, index) => {
-          const { data } = event;
-          const message = data.data ? data.data : data;
-          const ours = !!data.data; 
-
+          const { data, request, response } = event;
+          const message = data;
           return (
             <div
               key={index}
               className={clsxm(
                 "flex flex-col gap-1 p-2 text-sm mb-2 rounded-sm whitespace-pre-wrap break-all",
-                ours && " bg-primary-500 text-fg-200 dark:bg-primary-500 dark:text-fg-200",
-                !ours && " bg-bg-100/70 text-fg-700 dark:bg-bg-800/70 dark:text-fg-200",
+                request && " bg-primary-500 text-fg-200 dark:bg-primary-500 dark:text-fg-200",
+                response && " bg-bg-100/70 text-fg-700 dark:bg-bg-800/70 dark:text-fg-200",
               )}
             >
               {message as unknown as string}
@@ -114,7 +110,7 @@ export const ChannelChatMessages = () => {
           type="text"
           autoFocus
           autoComplete="off"
-          disabled={waiting || channel?.state.status !== 'OPEN'}
+          disabled={waiting || !channel?.state.open}
           registration={register('message')}
         />
         {streamable ? (
@@ -127,7 +123,7 @@ export const ChannelChatMessages = () => {
             <VideoCameraIcon className="w-6 h-6" />
           </Button>
         ) : <></>}
-        <Button className="h-full" type="submit" disabled={waiting || channel?.state.status !== 'OPEN'}>
+        <Button className="h-full" type="submit" disabled={waiting || !channel?.state.open}>
           <PaperAirplaneIcon className="w-6 h-6" />
         </Button>
       </form>
