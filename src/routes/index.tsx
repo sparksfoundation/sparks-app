@@ -1,4 +1,4 @@
-import { useRoutes } from "react-router-dom";
+import { Location, NavigateFunction, useLocation, useNavigate, useRoutes } from "react-router-dom";
 import { Forward } from "./Forward";
 import { PublicLayout, PrivateLayout } from "@layout";
 
@@ -34,5 +34,12 @@ const routes = [
 
 export const AppRoutes = () => {
   const element = useRoutes(routes);
+  history.navigate = useNavigate();
+  history.location = useLocation();
   return <>{element}</>;
 };
+
+export const history = {} as {
+  navigate: NavigateFunction,
+  location: Location,
+}

@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { chatStoreActions } from "@stores/refactor/chatStore";
-import { modalActions } from "@stores/refactor/modalStore";
-import { useUserStore } from "@stores/refactor/userStore";
+import { channelStoreActions } from "@stores/channels";
+import { messengerStoreActions } from "@stores/messengerStore";
+import { modalActions } from "@stores/modalStore";
+import { useUserStore } from "@stores/userStore";
 import { useState } from "react";
 import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
-import { ChannelEventType, ChannelOpenRejectionEvent, WebRTC } from "sparks-sdk/channels";
+import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 import { Button, ErrorMsg, Input, Label, P } from "sparks-ui";
 import { z } from "zod";
 
@@ -38,20 +39,24 @@ export const StartChatDialog = () => {
 
     const onSubmit: StartChatDialogHandlerType = async (fields: StartChatDialogFieldTypes) => {
         if (!user) return;
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             setStatus('attempting connection...');
             const { identifier } = fields;
             const channel = new WebRTC({
-                peerIdentifier: identifier,
+                peer: { identifier },
                 spark: user,
             });
-            const confirmation = await channel.open();
-            if ((confirmation as ChannelOpenRejectionEvent).type === ChannelEventType.OPEN_REJECTION) {
-                setStatus('peer rejected connection');
-                return reject();
-            }
+
+            channel.on(channel.errorTypes.REQUEST_TIMEOUT_ERROR, (error) => {
+                if (error.metadata?.eventType === 'OPEN_REQUEST') {
+                    setStatus('peer connection timed out');
+                }
+            });
+
+            await channel.open();
             setStatus('peer connection accepted');
-            await chatStoreActions.startChat(channel);
+            await channelStoreActions.add(channel);
+            await messengerStoreActions.setChannel(channel);
             closeModal();
             resolve(void 0);
         })

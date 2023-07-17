@@ -1,26 +1,26 @@
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
-import { useChannelStore } from "@stores/refactor/channelStore";
-import { chatStoreActions, useChatStore } from "@stores/refactor/chatStore";
-import { ChannelType, WebRTC } from "sparks-sdk/channels";
+import { useChannelStore } from "@stores/channels";
+import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
+import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 import { Card, P } from "sparks-ui";
 
 export const AvailableChannels = () => {
-  const channel = useChatStore.use.channel();
-  const channels = Object.values(useChannelStore.use.channels())
-    .filter((channel) => channel.type === ChannelType.WEBRTC_CHANNEL) as WebRTC[];
+  const channel = useMessengerStore.use.channel();
+  const channels = useChannelStore.use.channels();
+  const webRtcChannels = Object.values(channels).filter(channel => channel instanceof WebRTC) as WebRTC[];
 
   async function openChat(channel: WebRTC) {
-    await chatStoreActions.setChannel(channel);
+    await messengerStoreActions.setChannel(channel);
   }
 
   if (channel) return <></>
 
   return (
     <>
-      {Object.values(channels).map(channel =>
-        <Card key={channel.cid} className="w-full p-4 mb-2 h-auto">
+      {webRtcChannels.map(channel =>
+        <Card key={channel.channelId} className="w-full p-4 mb-2 h-auto">
           <div className="flex gap-4 items-stretch">
-            <P className="overflow-hidden nowrap text-ellipsis grow">{channel.peerAddress}</P>
+            <P className="overflow-hidden nowrap text-ellipsis grow">{channel.peer.identifier}</P>
             <button onClick={() => openChat(channel)}>
               <ArrowRightOnRectangleIcon className="w-6 h-6 fill-primary-600 shrink-0" />
             </button>

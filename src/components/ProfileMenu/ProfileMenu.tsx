@@ -9,8 +9,8 @@ import { Cog6ToothIcon, SunIcon, MoonIcon, DocumentDuplicateIcon } from "@heroic
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 import { Paths } from "@routes/paths";
-import { userActions, userStore } from "@stores/refactor/userStore";
-import { themeStore, themeActions } from "@stores/refactor/themeStore";
+import { userActions, userStore } from "@stores/userStore";
+import { themeStore, themeActions } from "@stores/themeStore";
 
 const MenuLink = forwardRef(({ label, Icon, ...rest }: any, ref) => {
   return (

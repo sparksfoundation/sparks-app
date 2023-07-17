@@ -11,8 +11,8 @@ import {
 } from "@heroicons/react/24/solid";
 import { ProfileMenu } from "@components/ProfileMenu";
 import { Paths } from "@routes/paths";
-import { themeStore } from "@stores/refactor/themeStore";
-import { sideNavActions, sideNavStore } from "@stores/refactor/sideNavStore";
+import { themeStore } from "@stores/themeStore";
+import { sideNavActions, sideNavStore } from "@stores/sideNavStore";
 
 const navigation = [
   {

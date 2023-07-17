@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, ErrorMsg, H3, Input, Label, P, clsxm } from 'sparks-ui';
 import { useEffect } from "react";
 import { Paths } from "@routes/paths";
-import { userActions } from "@stores/refactor/userStore";
+import { userActions } from "@stores/userStore";
 
 const formSchema = z.object({
   handle: z.string().min(3, { message: 'identity handle is required' }).max(50),

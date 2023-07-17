@@ -1,15 +1,14 @@
 import { PaperAirplaneIcon } from "@heroicons/react/20/solid";
 import { VideoCameraIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useChatStore, chatStoreActions } from "@stores/refactor/chatStore";
+import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ChannelEventType, ChannelState } from "sparks-sdk/channels";
 import { Button, Card, Input, clsxm } from "sparks-ui";
 import { z } from "zod";
 
 
 export const MessengerChat = () => {
-  const channel = useChatStore.use.channel();
+  const channel = useMessengerStore.use.channel();
   if (!channel) return <></>
   return (
     <>
@@ -24,10 +23,13 @@ export const MessengerChat = () => {
 };
 
 export const ChannelChatVideo = () => {
-  const streams = useChatStore.use.streams();
-  const streamable = useChatStore.use.streamable();
+  const channel = useMessengerStore.use.channel();
+  const waiting = useMessengerStore.use.waiting();
+  const streams = channel?.state?.streams;
+  const streamable = channel?.state.streamable;
+  const call = channel?.state.call;
 
-  return streamable && streams ? (
+  return streamable && streams && call && !waiting ? (
     <div
       className={clsxm(
         "bg-bg-100/70 dark:bg-bg-800/70 rounded-sm mb-2 p-1 h-auto relative overflow-hidden flex items-center justify-center",
@@ -42,6 +44,7 @@ export const ChannelChatVideo = () => {
       />
       <video
         autoPlay
+        muted
         className="h-1/5 object-contain absolute mx-auto bottom-[1%] mb-1 translate-x-[193%]"
         ref={(ref) => {
           if (ref) ref.srcObject = streams.local;
@@ -57,39 +60,53 @@ type ChatMessageHandlerType = SubmitHandler<ChatMessageSchema>;
 type ChatMessageFieldTypes = { message: string };
 
 export const ChannelChatMessages = () => {
-  const messages = useChatStore.use.messages();
-  const waiting = useChatStore.use.waiting();
-  const streamable = useChatStore.use.streamable();
-  const streams = useChatStore.use.streams();
-  const channel = useChatStore.use.channel();
+  const channel = useMessengerStore.use.channel();
+  const waiting = useMessengerStore.use.waiting();
+  const messages = useMessengerStore.use.messages();
+  const streams = channel?.state.streams;
+  const streamable = channel?.state.streamable;
+  const call = channel?.state.call;
 
-  const { startCall, endCall } = chatStoreActions;
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
   });
 
   const onSubmit: ChatMessageHandlerType = async ({ message }: ChatMessageFieldTypes) => {
-    chatStoreActions.sendMessage(message);
+    if (!channel) return;
+    messengerStoreActions.setWaiting(true);
+    channel.message(message);
     setValue('message', '');
     setFocus('message');
+  }
+
+  const startCall = async () => {
+    if (!channel) return;
+    messengerStoreActions.setWaiting(true);
+    await channel.call();
+  }
+
+  const endCall = async () => {
+    if (!channel) return;
+    messengerStoreActions.setWaiting(true);
+    await channel.hangup();
   }
 
   return (
     <div className="flex flex-col gap-3 grow h-1/2 mt-2">
       <div className="overflow-y-auto pr-1 grow">
-        {messages.map((messageData, index) => {
-          const { event: { type }, message } = messageData;
-          const ours = type === ChannelEventType.MESSAGE_CONFIRMATION;
+        {messages.map((event, index) => {
+          const { data, request, response } = event;
+          const message = data;
           return (
             <div
               key={index}
               className={clsxm(
                 "flex flex-col gap-1 p-2 text-sm mb-2 rounded-sm whitespace-pre-wrap break-all",
-                ours && " bg-primary-500 text-fg-200 dark:bg-primary-500 dark:text-fg-200",
-                !ours && " bg-bg-100/70 text-fg-700 dark:bg-bg-800/70 dark:text-fg-200",
+                request && " bg-primary-500 text-fg-200 dark:bg-primary-500 dark:text-fg-200",
+                response && " bg-bg-100/70 text-fg-700 dark:bg-bg-800/70 dark:text-fg-200",
               )}
             >
-              {message as string}
+              {message as unknown as string}
             </div>
           )
         })}
@@ -100,20 +117,20 @@ export const ChannelChatMessages = () => {
           type="text"
           autoFocus
           autoComplete="off"
-          disabled={waiting || channel?.status !== ChannelState.OPENED}
+          disabled={waiting || !channel?.state.open}
           registration={register('message')}
         />
         {streamable ? (
           <Button
             className="h-full"
-            disabled={waiting || channel?.status !== ChannelState.OPENED}
-            onClick={streams ? endCall : startCall}
-            color={streams ? "danger" : "primary"}
+            disabled={waiting || !channel?.state.open}
+            onClick={streams && call ? endCall : startCall}
+            color={streams && call ? "danger" : "primary"}
           >
             <VideoCameraIcon className="w-6 h-6" />
           </Button>
         ) : <></>}
-        <Button className="h-full" type="submit" disabled={waiting || channel?.status !== ChannelState.OPENED}>
+        <Button className="h-full" type="submit" disabled={waiting || !channel?.state.open}>
           <PaperAirplaneIcon className="w-6 h-6" />
         </Button>
       </form>

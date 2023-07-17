@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Card, Input, P } from "sparks-ui";
-import { WebRTC } from "sparks-sdk/channels/WebRTC";
-import { userStore } from "@stores/refactor/userStore";
+import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
+import { userStore } from "@stores/userStore";
 
 interface IProps {
   user: any;
@@ -55,7 +55,6 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
     if (!this.state.address || this.state.connection) return
     this.setState({ waiting: true })
     const conn = new WebRTC({
-      peerIdentifier: this.state.address,
       spark: this.user,
     });
 
@@ -89,13 +88,13 @@ class WebRTCVideo extends React.Component<IProps, IState>  {
   }
 
   componentDidMount() {
-    WebRTC.handleOpenRequests(async ({ resolve }: { resolve: any }) => {
-      const conn = await resolve()
-      conn.onclose = () => this.disconnect(false)
-      this.setState({ connection: conn })
-    }, {
-      spark: this.user,
-    })
+    // WebRTC.receive(async ({ resolve }: { resolve: any }) => {
+    //   const conn = await resolve()
+    //   conn.onclose = () => this.disconnect(false)
+    //   this.setState({ connection: conn })
+    // }, {
+    //   spark: this.user,
+    // })
   }
 
   render() {

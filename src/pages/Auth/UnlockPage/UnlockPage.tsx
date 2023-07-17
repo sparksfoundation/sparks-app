@@ -3,7 +3,7 @@ import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Card, ErrorMsg, H3, Input, Label, P, clsxm } from 'sparks-ui';
 import { useEffect } from "react";
-import { useUserStore, userActions } from "@stores/refactor/userStore";
+import { useUserStore, userActions } from "@stores/userStore";
 
 const formSchema = z.object({
   password: z.string().min(8, { message: 'invalid password' }).max(50),

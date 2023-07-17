@@ -4,9 +4,10 @@ import { LinkIcon, TrashIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
-import { chatStoreActions, useChatStore } from "@stores/refactor/chatStore";
-import { ChannelState, WebRTC } from "sparks-sdk/channels";
-import { channelActions } from "@stores/refactor/channelStore";
+import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
+import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
+import { channelStoreActions } from "@stores/channels";
+import { toast } from "react-toastify";
 
 const MenuLink = forwardRef(({ label, Icon, disabled, ...rest }: any, ref) => {
   return (
@@ -28,28 +29,35 @@ const MenuLink = forwardRef(({ label, Icon, disabled, ...rest }: any, ref) => {
 });
 
 export const MessengerChatMenu = () => {
-  const channel = useChatStore.use.channel() as WebRTC;
-  const waiting = useChatStore.use.waiting();
+  const channel = useMessengerStore.use.channel() as WebRTC;
+  const waiting = useMessengerStore.use.waiting();
 
   if (!channel) return <></>;
 
   async function reconnect() {
     if (!channel) return;
-    await channel.open();
-    await chatStoreActions.startChat(channel);
+    channel.open()
+      .then(() => {
+        messengerStoreActions.setChannel(channel);
+      })
+      .catch(() => {
+        messengerStoreActions.setWaiting(false);
+        toast.error('Connection attempt timed out. Please try again.')
+      })
   }
 
   function deleteChannel() {
     if (!channel) return;
     if (confirm('Are you sure you want to delete this channel?') === false) return;
-    chatStoreActions.closeChat();
-    channelActions.remove(channel)
+    messengerStoreActions.setChannel(null);
+    channelStoreActions.remove(channel)
   }
 
   async function quit() {
     if (channel) {
       await channel.close()
-      chatStoreActions.closeChat();
+        .catch(e => console.error(e))
+      messengerStoreActions.setChannel(null);
     }
   }
 
@@ -81,7 +89,7 @@ export const MessengerChatMenu = () => {
             <MenuLink
               label="Reconnect"
               Icon={LinkIcon}
-              disabled={waiting || channel?.status === ChannelState.OPENED}
+              disabled={waiting || channel.state.open}
               onClick={reconnect}
             />
           </Menu.Item>

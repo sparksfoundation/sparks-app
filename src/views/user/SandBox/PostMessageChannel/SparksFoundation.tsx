@@ -1,7 +1,7 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useState } from "react"
-import { ChannelEventType, PostMessage } from "sparks-sdk/channels"
-import { userStore } from "@stores/refactor/userStore";
+import { userStore } from "@stores/userStore";
+import { PostMessage } from "sparks-sdk/channels/ChannelTransports";
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
   const user = userStore(state => state.user);
@@ -18,12 +18,12 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
 
     const channel = new PostMessage({
       source: source as Window,
-      origin,
+      peer: { origin },
       spark: user,
     })
 
     setTimeout(async () => {
-      channel.on(ChannelEventType.ERROR, (error) => {
+      channel.on(channel.eventTypes.ERROR, (error) => {
         console.log('error', error)
       })
       await channel.open()
@@ -34,20 +34,21 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
       const receipt = event.data.receipt
   
       try {
+        if (!channel?.peer?.publicKeys?.signer) throw new Error('no signer key');
         const opened = await user.signer.open({ signature: receipt, publicKey: channel.peer.publicKeys.signer }) as string;
-        const decrypted = await user.cipher.decrypt({ data: opened, publicKey: channel.sharedKey });
+        const decrypted = await user.cipher.decrypt({ data: opened, publicKey: channel.peer.sharedKey });
         setVerified(!!decrypted)
       } catch (e) {
         setVerified(false)
       }
 
-      channel.on(ChannelEventType.ERROR, () => {
+      channel.on(channel.eventTypes.ERROR, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)
       });
   
-      channel.on(ChannelEventType.CLOSE, () => {
+      channel.on(channel.eventTypes.CLOSE, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)

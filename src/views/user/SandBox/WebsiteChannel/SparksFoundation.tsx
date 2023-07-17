@@ -1,8 +1,8 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useState } from "react"
-import { PostMessage } from "sparks-sdk/channels/PostMessage"
-import { userStore } from "@stores/refactor/userStore";
-import { ChannelEventType } from "sparks-sdk/channels";
+import { PostMessage } from "sparks-sdk/channels/ChannelTransports"
+import { userStore } from "@stores/userStore";
+import { toast } from "react-toastify";
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
   const user = userStore(state => state.user);
@@ -11,44 +11,47 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
   const [waiting, setWaiting] = useState(false)
   const [request, setRequest] = useState(connectionWaiting)
 
-  async function connect({ url }: { url: string }) {
+  async function connect({ url, source: _source, attempt = 0 }: { url: string, source?: Window, attempt?: number }) {
     if (!user) return
-    const source = request && window.opener ? window.opener : window.open(url, '_blank');
+    const source = request && window.opener ? window.opener : _source || window.open(url, '_blank');
     if (!source) return;
+
     const origin = new URL(url).origin;
+    const channel = new PostMessage({ peer: { origin }, spark: user, settings: { timeout: 2000 }});
 
-    const channel = new PostMessage({
-      source: source as Window,
-      origin,
-      spark: user,
-    }) as PostMessage
+    if (source) channel.state.source = source;
 
-    setTimeout(async () => {
-      await channel.open()
+    setWaiting(true);
+    setConnection(null);
+    setVerified(false);
+
+    channel.on(channel.confirmTypes.OPEN_CONFIRM, async () => {
+      await channel.message({ handle: user.agents.profile.handle })
+      setVerified(true)
       setWaiting(false)
       setConnection(channel)
+    });
 
-      const receiptEvent = await channel.message({ handle: user.agents.profile.handle });
-      try {
-        const opened = await user.open({ signature: receiptEvent.data.receipt, publicKey: channel.peer.publicKeys.signer }) as string;
-        const decrypted = await user.decrypt({ data: opened, sharedKey: channel.sharedKey });
-        setVerified(!!decrypted)
-      } catch (e) {
+    channel.on([
+      channel.eventTypes.CLOSE_REQUEST,
+      channel.eventTypes.CLOSE_CONFIRM,
+    ], () => {
+      setVerified(false)
+      setWaiting(false)
+      setConnection(null)
+    })
+
+    await channel.open({ timeout: 1000 }).catch(() => {
+      if (attempt >= 5) {
+        setWaiting(false)
+        setConnection(null)
         setVerified(false)
+        toast.error('Connection timeout please try again');
+      } else {
+        console.log('attempt');
+        connect({ url, source, attempt: attempt + 1 })
       }
-
-      channel.on(ChannelEventType.ERROR, () => {
-        setWaiting(false)
-        setConnection(null)
-        setVerified(false)
-      })
-
-      channel.on(ChannelEventType.ERROR, () => {
-        setWaiting(false)
-        setConnection(null)
-        setVerified(false)
-      })
-    }, 1000)
+    });
   }
 
   async function disconnect() {

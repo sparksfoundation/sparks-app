@@ -2,7 +2,7 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import { Sidenav } from "@components/Sidenav";
 import { H3, NoiseBackground } from "sparks-ui";
 import { Outlet } from "react-router-dom";
-import { sideNavActions } from "@stores/refactor/sideNavStore";
+import { sideNavActions } from "@stores/sideNavStore";
 
 export const PrivateLayoutHeader = ({ title }: { title: string }) => {
   return (

@@ -1,4 +1,4 @@
-import { themeStore } from "@stores/refactor/themeStore"
+import { themeStore } from "@stores/themeStore"
 import { ReactNode } from "react"
 import { clsxm } from "sparks-ui"
 

@@ -2,14 +2,14 @@ import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { PrivateLayoutHeader } from "@layout";
 import { StartChatDialog } from "./StartChatDialog";
 import { MessengerChat } from "./MessengerChat";
-import { modalActions } from "@stores/refactor/modalStore";
+import { modalActions } from "@stores/modalStore";
 import { AvailableChannels } from "./AvailableChannels";
-import { useChatStore } from "@stores/refactor/chatStore";
 import { MessengerChatMenu } from "@components/MessengerChatMenu";
+import { useMessengerStore } from "@stores/messengerStore";
 
 export const NewChatButton = () => {
   const { openModal } = modalActions;
-  const channel = useChatStore.use.channel();
+  const channel = useMessengerStore.use.channel();
   if (channel) return <></>
 
   async function newChat() {
