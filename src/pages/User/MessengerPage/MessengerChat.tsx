@@ -24,10 +24,10 @@ export const MessengerChat = () => {
 
 export const ChannelChatVideo = () => {
   const channel = useMessengerStore.use.channel();
-  const streamable = useMessengerStore.use.streamable();
   const streams = channel?.state?.streams;
+  const streamable = channel?.state.streamable;
 
-  return streamable && streams ? (
+  return streamable && streams && streams.call ? (
     <div
       className={clsxm(
         "bg-bg-100/70 dark:bg-bg-800/70 rounded-sm mb-2 p-1 h-auto relative overflow-hidden flex items-center justify-center",
@@ -59,9 +59,11 @@ type ChatMessageFieldTypes = { message: string };
 export const ChannelChatMessages = () => {
   const channel = useMessengerStore.use.channel();
   const waiting = useMessengerStore.use.waiting();
-  const streamable = useMessengerStore.use.streamable();
   const messages = useMessengerStore.use.messages();
   const streams = channel?.state.streams;
+  const streamable = channel?.state.streamable;
+
+  console.log(streamable);
 
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
@@ -116,9 +118,9 @@ export const ChannelChatMessages = () => {
         {streamable ? (
           <Button
             className="h-full"
-            disabled={waiting}
-            onClick={streams ? endCall : startCall}
-            color={streams ? "danger" : "primary"}
+            disabled={waiting || !channel?.state.open}
+            onClick={streams && streams.call ? endCall : startCall}
+            color={streams && streams.call ? "danger" : "primary"}
           >
             <VideoCameraIcon className="w-6 h-6" />
           </Button>

@@ -2,21 +2,18 @@ import { create } from "zustand";
 import { createSelectors } from "./createSelectors";
 import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 import { channelStoreActions } from "./channels";
-import { ChannelEventLog } from "sparks-sdk/channels";
 
 type Nullable<T> = T | null;
 
 interface MessengerStore {
   channel: Nullable<WebRTC>,
   waiting: boolean,
-  streamable: boolean,
   messages: any[],
 }
 
 export const messengerStore = create<MessengerStore>(() => ({
   channel: null,
   waiting: false,
-  streamable: false,
   messages: [], // decrypted messages
 }));
 
@@ -57,30 +54,25 @@ export const messengerStoreActions = {
     channel.on([
       channel.eventTypes.CLOSE_REQUEST,
       channel.eventTypes.CLOSE_CONFIRM,
-    ], async (event) => {
-      console.log(event);
-      //channel.removeAllListeners();
+    ], async () => {
       messengerStore.setState({ channel: null });
-    })
+    });
+
+    channel.on([
+      channel.eventTypes.CALL_REQUEST,
+      channel.eventTypes.CALL_CONFIRM,
+    ], async () => {
+      console.log('hmmmm');
+      console.log(channel.state.streams.call);
+      messengerStore.setState({ channel: channel });
+    });
+
+    // create a proxy to update the channel if the state.streamable property changes
+    if (channel.state.streamable === null) {
+      await channel.setStreamable();
+    }
 
     const messages = getChannelMessages(channel);
     messengerStore.setState({ channel, messages });
   }
-}
-
-window.addEventListener('load', async () => {
-  const streamable = await isStreamable();
-  messengerStore.setState({ streamable });
-});
-
-async function isStreamable(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-      navigator.mediaDevices.enumerateDevices()
-        .then((devices) => {
-          const hasVideo = devices.some((device) => device.kind === 'videoinput');
-          return resolve(hasVideo);
-        })
-    }
-  });
 }
