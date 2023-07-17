@@ -3,9 +3,9 @@ import { VideoCameraIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { Button, Card, Input, clsxm } from "sparks-ui";
 import { z } from "zod";
-
 
 export const MessengerChat = () => {
   const channel = useMessengerStore.use.channel();
@@ -82,7 +82,11 @@ export const ChannelChatMessages = () => {
   const startCall = async () => {
     if (!channel) return;
     messengerStoreActions.setWaiting(true);
-    await channel.call();
+    await channel.call({ timeout: 25000 })
+      .catch(() => {
+        toast.error('call timed out, try again')
+        messengerStoreActions.setWaiting(false);
+      });
   }
 
   const endCall = async () => {
