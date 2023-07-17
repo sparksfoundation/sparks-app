@@ -1,9 +1,8 @@
 import { InformationCircleIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import React, { Fragment } from "react";
 import { Button, Card, Input, P, clsxm } from "sparks-ui";
-import { WebRTC } from "sparks-sdk/channels/WebRTC";
+import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 import { User, userStore } from "@stores/userStore";
-import { ChannelEventType } from "sparks-sdk/channels";
 
 interface IProps {
   user: User;
@@ -56,13 +55,13 @@ class WebRTCChat extends React.Component<IProps, IState>  {
     this.setState({ waiting: true })
 
     const conn = new WebRTC({
-      peerIdentifier: this.state.peerIdentifier,
+      //peerIdentifier: this.state.peerIdentifier,
       spark: this.user,
     });
 
     await conn.open();
 
-    conn.on(ChannelEventType.MESSAGE, (payload: any) => {
+    conn.on(conn.eventTypes.MESSAGE_REQUEST, (payload: any) => {
       const { timestamp, message, messageId } = payload
       this.setState({
         messages: [...this.state.messages, { timestamp, message, messageId, mine: false }]
@@ -100,13 +99,13 @@ class WebRTCChat extends React.Component<IProps, IState>  {
   componentDidMount() {
     if (this.set) return;
     this.set = true;
-    WebRTC.handleOpenRequests(async ({ resolve }: { resolve: any }) => {
-      const conn = await resolve()
-      conn.onmessage = this.receiveMessage
-      this.setState({ connection: conn })
-    }, {
-      spark: this.user,
-    })
+    // WebRTC.handleOpenRequests(async ({ resolve }: { resolve: any }) => {
+    //   const conn = await resolve()
+    //   conn.onmessage = this.receiveMessage
+    //   this.setState({ connection: conn })
+    // }, {
+    //   spark: this.user,
+    // })
   }
 
   render() {
@@ -129,7 +128,7 @@ class WebRTCChat extends React.Component<IProps, IState>  {
                         })
                       })} />
                       <div className={clsxm("overflow-hidden max-h-0", opened && "mt-4 max-h-none")}>
-                        <P className={clsxm("text-xs overflow-hidden mb-1 text-left text-ellipsis whitespace-nowrap dark:text-fg-900 text-fg-900", !mine && "text-fg-200 dark:text-fg-200")}><span className="font-bold">peer:</span> {this.state.connection?.address}</P>
+                        <P className={clsxm("text-xs overflow-hidden mb-1 text-left text-ellipsis whitespace-nowrap dark:text-fg-900 text-fg-900", !mine && "text-fg-200 dark:text-fg-200")}><span className="font-bold">peer:</span> {''}</P>
                         <P className={clsxm("text-xs overflow-hidden mb-1 text-left text-ellipsis whitespace-nowrap dark:text-fg-900 text-fg-900", !mine && "text-fg-200 dark:text-fg-200")}><span className="font-bold">messageId:</span> {messageId}</P>
                         <P className={clsxm("text-xs overflow-hidden mb-1 text-left text-ellipsis whitespace-nowrap dark:text-fg-900 text-fg-900", !mine && "text-fg-200 dark:text-fg-200")}><span className="font-bold">timestamp:</span> {timestamp}</P>
                         {receipt && (

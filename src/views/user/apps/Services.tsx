@@ -1,6 +1,6 @@
 import { Button, Card, H5, P } from "sparks-ui"
 import { useState } from "react"
-import { ChannelEventType, PostMessage } from "sparks-sdk/channels"
+import { PostMessage } from "sparks-sdk/channels/ChannelTransports"
 import { userStore } from "@stores/userStore"
 
 export const SparksFoundation = ({ connectionWaiting = false }) => {
@@ -17,7 +17,7 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
     const origin = new URL(url).origin;
     const channel = new PostMessage({
       source: source as Window,
-      origin,
+      peer: { origin },
       spark: user,
     })
 
@@ -27,13 +27,13 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
       setConnection(channel)
       await channel.message({ handle: user.agents.profile.handle })
   
-      channel.on(ChannelEventType.ERROR, () => {
+      channel.on(channel.errorTypes.ANY_ERROR, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)
       })
   
-      channel.on(ChannelEventType.CLOSE, () => {
+      channel.on(channel.requestTypes.CLOSE_REQUEST, () => {
         setWaiting(false)
         setConnection(null)
         setVerified(false)

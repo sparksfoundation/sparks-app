@@ -40,7 +40,7 @@ export const MessengerChatMenu = () => {
       .then(() => {
         messengerStoreActions.setChannel(channel);
       })
-      .catch(e => {
+      .catch(() => {
         messengerStoreActions.setWaiting(false);
         toast.error('Connection attempt timed out. Please try again.')
       })

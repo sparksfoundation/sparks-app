@@ -39,7 +39,7 @@ export const StartChatDialog = () => {
 
     const onSubmit: StartChatDialogHandlerType = async (fields: StartChatDialogFieldTypes) => {
         if (!user) return;
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             setStatus('attempting connection...');
             const { identifier } = fields;
             const channel = new WebRTC({

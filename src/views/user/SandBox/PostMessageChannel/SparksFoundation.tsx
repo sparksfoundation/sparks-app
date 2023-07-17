@@ -34,8 +34,9 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
       const receipt = event.data.receipt
   
       try {
+        if (!channel?.peer?.publicKeys?.signer) throw new Error('no signer key');
         const opened = await user.signer.open({ signature: receipt, publicKey: channel.peer.publicKeys.signer }) as string;
-        const decrypted = await user.cipher.decrypt({ data: opened, publicKey: channel.sharedKey });
+        const decrypted = await user.cipher.decrypt({ data: opened, publicKey: channel.peer.sharedKey });
         setVerified(!!decrypted)
       } catch (e) {
         setVerified(false)
