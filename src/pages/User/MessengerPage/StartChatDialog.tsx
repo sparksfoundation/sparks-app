@@ -47,18 +47,20 @@ export const StartChatDialog = () => {
                 spark: user,
             });
 
-            channel.on(channel.errorTypes.REQUEST_TIMEOUT_ERROR, (error) => {
-                if (error.metadata?.eventType === 'OPEN_REQUEST') {
-                    setStatus('peer connection timed out');
-                }
-            });
-
-            await channel.open();
-            setStatus('peer connection accepted');
-            await channelStoreActions.add(channel);
-            await messengerStoreActions.setChannel(channel);
-            closeModal();
-            resolve(void 0);
+            channel.open({ timeout: 20000 })
+                .then(async () => {
+                    setStatus('peer connection accepted');
+                    await channelStoreActions.add(channel);
+                    await messengerStoreActions.setChannel(channel);
+                    closeModal();
+                    resolve(void 0);
+                })
+                .catch(() => {
+                    setStatus('attempt timed out, try again');
+                    setTimeout(() => {
+                        resolve(void 0);
+                    }, 1000)
+                })
         })
     }
 
