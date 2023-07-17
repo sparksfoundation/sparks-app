@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { channelStore, channelStoreActions } from "@stores/channels";
+import { channelStoreActions } from "@stores/channels";
 import { messengerStoreActions } from "@stores/messengerStore";
 import { modalActions } from "@stores/modalStore";
 import { useUserStore } from "@stores/userStore";

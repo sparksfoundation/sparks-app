@@ -1,7 +1,7 @@
 import { PaperAirplaneIcon } from "@heroicons/react/20/solid";
 import { VideoCameraIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMessengerStore } from "@stores/messengerStore";
+import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button, Card, Input, clsxm } from "sparks-ui";
 import { z } from "zod";
@@ -24,10 +24,12 @@ export const MessengerChat = () => {
 
 export const ChannelChatVideo = () => {
   const channel = useMessengerStore.use.channel();
+  const waiting = useMessengerStore.use.waiting();
   const streams = channel?.state?.streams;
   const streamable = channel?.state.streamable;
+  const call = channel?.state.call;
 
-  return streamable && streams && streams.call ? (
+  return streamable && streams && call && !waiting ? (
     <div
       className={clsxm(
         "bg-bg-100/70 dark:bg-bg-800/70 rounded-sm mb-2 p-1 h-auto relative overflow-hidden flex items-center justify-center",
@@ -42,6 +44,7 @@ export const ChannelChatVideo = () => {
       />
       <video
         autoPlay
+        muted
         className="h-1/5 object-contain absolute mx-auto bottom-[1%] mb-1 translate-x-[193%]"
         ref={(ref) => {
           if (ref) ref.srcObject = streams.local;
@@ -62,8 +65,7 @@ export const ChannelChatMessages = () => {
   const messages = useMessengerStore.use.messages();
   const streams = channel?.state.streams;
   const streamable = channel?.state.streamable;
-
-  console.log(streamable);
+  const call = channel?.state.call;
 
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
@@ -71,6 +73,7 @@ export const ChannelChatMessages = () => {
 
   const onSubmit: ChatMessageHandlerType = async ({ message }: ChatMessageFieldTypes) => {
     if (!channel) return;
+    messengerStoreActions.setWaiting(true);
     channel.message(message);
     setValue('message', '');
     setFocus('message');
@@ -78,11 +81,13 @@ export const ChannelChatMessages = () => {
 
   const startCall = async () => {
     if (!channel) return;
+    messengerStoreActions.setWaiting(true);
     await channel.call();
   }
 
   const endCall = async () => {
     if (!channel) return;
+    messengerStoreActions.setWaiting(true);
     await channel.hangup();
   }
 
@@ -119,8 +124,8 @@ export const ChannelChatMessages = () => {
           <Button
             className="h-full"
             disabled={waiting || !channel?.state.open}
-            onClick={streams && streams.call ? endCall : startCall}
-            color={streams && streams.call ? "danger" : "primary"}
+            onClick={streams && call ? endCall : startCall}
+            color={streams && call ? "danger" : "primary"}
           >
             <VideoCameraIcon className="w-6 h-6" />
           </Button>

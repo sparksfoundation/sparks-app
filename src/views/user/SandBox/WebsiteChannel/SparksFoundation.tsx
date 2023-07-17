@@ -11,9 +11,8 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
   const [waiting, setWaiting] = useState(false)
   const [request, setRequest] = useState(connectionWaiting)
 
-  async function connect({ url, source: _source }: { url: string, source?: Window }) {
+  async function connect({ url, source: _source, attempt = 0 }: { url: string, source?: Window, attempt?: number }) {
     if (!user) return
-
     const source = request && window.opener ? window.opener : _source || window.open(url, '_blank');
     if (!source) return;
 
@@ -27,36 +26,32 @@ export const SparksFoundation = ({ connectionWaiting = false }) => {
     setVerified(false);
 
     channel.on(channel.confirmTypes.OPEN_CONFIRM, async () => {
+      await channel.message({ handle: user.agents.profile.handle })
       setVerified(true)
       setWaiting(false)
       setConnection(channel)
     });
 
     channel.on([
-      channel.errorTypes.CONFIRM_TIMEOUT_ERROR,
-    ], (event) => {
-      const isOpen = channel.state.open;
-      const isRequest = event.metadata?.eventType === 'OPEN_REQUEST';
-      if (isOpen || !isRequest) return;
-      channel.removeAllListeners();
-      setWaiting(false);
-      setConnection(null);
-      toast.error('Connection timeout, try again.');
-    });
-
-    channel.on([
       channel.eventTypes.CLOSE_REQUEST,
       channel.eventTypes.CLOSE_CONFIRM,
     ], () => {
-      channel.removeAllListeners()
       setVerified(false)
       setWaiting(false)
       setConnection(null)
     })
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    await channel.open()
-    await channel.message({ handle: user.agents.profile.handle });
+    await channel.open({ timeout: 1000 }).catch(() => {
+      if (attempt >= 5) {
+        setWaiting(false)
+        setConnection(null)
+        setVerified(false)
+        toast.error('Connection timeout please try again');
+      } else {
+        console.log('attempt');
+        connect({ url, source, attempt: attempt + 1 })
+      }
+    });
   }
 
   async function disconnect() {

@@ -7,6 +7,7 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
 import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
 import { channelStoreActions } from "@stores/channels";
+import { toast } from "react-toastify";
 
 const MenuLink = forwardRef(({ label, Icon, disabled, ...rest }: any, ref) => {
   return (
@@ -35,8 +36,14 @@ export const MessengerChatMenu = () => {
 
   async function reconnect() {
     if (!channel) return;
-    await channel.open()
-    await messengerStoreActions.setChannel(channel);
+    channel.open()
+      .then(() => {
+        messengerStoreActions.setChannel(channel);
+      })
+      .catch(e => {
+        messengerStoreActions.setWaiting(false);
+        toast.error('Connection attempt timed out. Please try again.')
+      })
   }
 
   function deleteChannel() {
