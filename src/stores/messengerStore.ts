@@ -70,7 +70,7 @@ export const messengerStoreActions = {
       channel.eventTypes.CALL_CONFIRM,
       channel.eventTypes.HANGUP_REQUEST,  
       channel.eventTypes.HANGUP_CONFIRM,
-    ], async (event) => {
+    ], async () => {
       messengerStore.setState({ channel, call: channel.state.call, waiting: false });
     });
 

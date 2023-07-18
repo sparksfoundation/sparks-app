@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { PostMessage } from "sparks-sdk/channels/ChannelTransports";
-import { Button, Card, H3, H5, H6, P, Pre } from "sparks-ui";
+import { Button, Card, H3, H5, H6, P } from "sparks-ui";
 
 export function Explainer() {
   return (
@@ -50,7 +50,6 @@ export function Explainer() {
 }
 
 export function WebsitePostMessage(params: any) {
-  const [status, setStatus] = useState('not connected');
   const [waiting, setWaiting] = useState(false);
   const [connection, setConnection] = useState<PostMessage | null>(null);
   const user = useUserStore.use.user();
@@ -76,7 +75,6 @@ export function WebsitePostMessage(params: any) {
     if (!user || !source) return;
 
     setWaiting(true);
-    setStatus('connecting');
 
     const channel = new PostMessage({
       peer: { url: params.url },
@@ -102,7 +100,6 @@ export function WebsitePostMessage(params: any) {
         data[path] = value;
       });
       await channel.message(data);
-      setStatus('connected');
       setWaiting(false);
       setConnection(channel);
     });
@@ -110,7 +107,6 @@ export function WebsitePostMessage(params: any) {
   }
 
   const clearChannel = () => {
-    setStatus('');
     setConnection(null);
     setWaiting(false);
   }
