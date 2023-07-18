@@ -1,10 +1,11 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { Sidenav } from "@components/Sidenav";
-import { H3, NoiseBackground } from "sparks-ui";
+import { NoiseBackground } from "sparks-ui";
 import { Outlet } from "react-router-dom";
 import { sideNavActions } from "@stores/sideNavStore";
+import { ReactNode } from "react";
 
-export const PrivateLayoutHeader = ({ title }: { title: string }) => {
+export const PrivateLayoutHeader = ({ children }: { children: ReactNode }) => {
   return (
     <header className="flex items-center justify-stretch h-16">
       <button
@@ -15,7 +16,7 @@ export const PrivateLayoutHeader = ({ title }: { title: string }) => {
         <span className="sr-only">Open sidebar</span>
         <Bars3Icon className="h-6 w-6" aria-hidden="true" />
       </button>
-      <H3 className="text-center grow">{title}</H3>
+      {children}
     </header>
   )
 };

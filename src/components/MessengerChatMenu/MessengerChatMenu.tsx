@@ -36,7 +36,7 @@ export const MessengerChatMenu = () => {
 
   async function reconnect() {
     if (!channel) return;
-    channel.open()
+    channel.open({ timeout: 20000 })
       .then(() => {
         messengerStoreActions.setChannel(channel);
       })

@@ -6,6 +6,7 @@ import { modalActions } from "@stores/modalStore";
 import { AvailableChannels } from "./AvailableChannels";
 import { MessengerChatMenu } from "@components/MessengerChatMenu";
 import { useMessengerStore } from "@stores/messengerStore";
+import { H3 } from "sparks-ui";
 
 export const NewChatButton = () => {
   const { openModal } = modalActions;
@@ -34,7 +35,9 @@ export const NewChatButton = () => {
 export const MessengerPage = () => {
   return (
     <>
-      <PrivateLayoutHeader title="Messenger" />
+      <PrivateLayoutHeader>
+        <H3 className="text-center grow">Messenger</H3>
+      </PrivateLayoutHeader>
       <div className="relative h-full flex flex-col max-w-4xl mx-auto w-full overflow-hidden">
         <MessengerChat />
         <AvailableChannels />
