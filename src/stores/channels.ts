@@ -14,6 +14,8 @@ import { messengerStoreActions } from "./messengerStore";
 import { WebRTCParams } from "node_modules/sparks-sdk/dist/channels/ChannelTransports/WebRTC/types";
 import { PostMessageParams } from "node_modules/sparks-sdk/dist/channels/ChannelTransports/PostMessage/types";
 import { HttpFetchParams } from "node_modules/sparks-sdk/dist/channels/ChannelTransports/HttpFetch/types";
+import { postMessageOpenToaster } from "@components/Toast";
+import { toast } from "react-toastify";
 
 type Channel = WebRTC | PostMessage | HttpFetch;
 
@@ -122,6 +124,23 @@ userStore.persist.onFinishHydration(() => {
         resolve: addAndResolve,
       });
     }, { spark: user });
+
+    PostMessage.receive(async ({ event, confirmOpen, rejectOpen }) => {
+      const signonPath = `${Paths.USER_APPS}/single-signon`
+      const currentPath = history.location.pathname;
+      history.navigate(signonPath, { state: { event } });
+
+      postMessageOpenToaster({
+        event: event as ChannelRequestEvent,
+        resolve: async () => {
+          const channel = await confirmOpen() as any;
+        },
+        reject: async () => {
+          rejectOpen();
+          history.navigate(currentPath);
+        }
+      })
+    }, { spark: user })
 
     unSubUser();
   });

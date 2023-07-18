@@ -11,5 +11,6 @@ export enum Paths {
   USER_MESSENGER = "/user/messenger",
   USER_SANDBOX = "/user/sandbox",
   USER_SETTINGS = "/user/settings",
+  APP_LOGIN = "/login",
 }
 

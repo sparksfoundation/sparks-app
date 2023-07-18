@@ -2,6 +2,7 @@ import { PrivateLayoutHeader } from "@layout";
 import apps from './apps';
 import { useParams } from "react-router-dom";
 import { Card, H3 } from "sparks-ui";
+import { AppCard } from "@components/AppCard";
 
 export default function Placholder() {
   return (
@@ -12,7 +13,7 @@ export default function Placholder() {
 
 export const AppsPage = () => {
   const { appName } = useParams();
-  const activeApp = appName && apps.find(app => app.name === appName);
+  const activeApp = appName && apps.find(app => app.card.name === appName);
   if (activeApp) return <activeApp.page />
 
   return (
@@ -20,9 +21,12 @@ export const AppsPage = () => {
       <PrivateLayoutHeader>
         <H3 className="text-center grow">Apps & Services</H3>
       </PrivateLayoutHeader>
-      <div className="flex gap-4 px-3 w-full h-full overflow-auto items-start justify-center flex-wrap">
+      <div className="flex gap-4 px-3 w-full h-full overflow-auto content-start justify-center flex-wrap">
         {apps.map((app) => (
-          <app.card key={app.name} />
+          <AppCard
+            key={app.card.name}
+            {...app.card}
+          />
         ))}
         {apps.length % 2 !== 0 && <Placholder />}
       </div>

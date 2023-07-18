@@ -1,4 +1,4 @@
-import { Location, NavigateFunction, useLocation, useNavigate, useRoutes } from "react-router-dom";
+import { Location, Navigate, NavigateFunction, NavigateProps, generatePath, useLocation, useNavigate, useParams, useRoutes, useSearchParams } from "react-router-dom";
 import { Forward } from "./Forward";
 import { PublicLayout, PrivateLayout } from "@layout";
 
@@ -15,6 +15,20 @@ import { Settings } from "@views/user/settings";
 import { SandBox } from "@views/user/SandBox/SandBox";
 import { Paths } from "./paths";
 
+interface Props extends NavigateProps {
+  to: string;
+}
+const NavigateWithParams: React.FC<Props> = ({ to, ...props }) => {
+  const params = useParams();
+  const [searchParams] = useSearchParams();
+  const search = Object.fromEntries(searchParams.entries());
+  const state = useLocation().state || {};
+  Object.keys(search).forEach(key => {
+    try { search[key] = JSON.parse(search[key]) } catch (error) {}
+  });
+  return <Navigate {...props} to={generatePath(to, params)} state={{ ...state, search: search || null }}  />;
+};
+
 const routes = [
   {
     element: <PublicLayout />, children: [
@@ -29,6 +43,7 @@ const routes = [
       { path: Paths.USER_CREDENTIALS, element: <Forward Component={CredentialsPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_MESSENGER, element: <Forward Component={MessengerPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_APPS, element: <Forward Component={AppsPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
+      { path: `${Paths.APP_LOGIN}`, element: <NavigateWithParams to={`${Paths.USER_APPS}/single-signon`} /> },
       { path: `${Paths.USER_APPS}/:appName`, element: <Forward Component={AppsPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_WORKBENCH, element: <Forward Component={WorkBenchPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_SANDBOX, element: <Forward Component={() => <SandBox />} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
