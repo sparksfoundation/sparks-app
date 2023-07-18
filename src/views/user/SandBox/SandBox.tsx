@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RelayService } from "./Workbench/RelayService";
 import { WebsiteChannels } from "./WebsiteChannel";
-import { clsxm, P } from "sparks-ui";
+import { clsxm, H3, P } from "sparks-ui";
 import { PrivateLayoutHeader } from "@layout";
 
 export const SandBox = () => {
@@ -15,7 +15,9 @@ export const SandBox = () => {
 
   return (
     <>
-      <PrivateLayoutHeader title="Dashboard" />
+      <PrivateLayoutHeader>
+        <H3>Dashboard</H3>
+      </PrivateLayoutHeader>
       <div className="w-full h-full flex flex-col">
         <section className="mb-4">{tabs.map((item, index) => (
           <div

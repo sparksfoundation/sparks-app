@@ -32,7 +32,12 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['fonts/*.ttf', '*.svg'],
+      includeAssets: [
+        "**/*",
+      ],
+      workbox: {
+        globPatterns: ["**/*"],
+      },
       manifest: {
         name: 'sparks-id',
         short_name: 'sparks-id',
