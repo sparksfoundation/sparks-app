@@ -2,6 +2,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/20/solid";
 import { VideoCameraIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
+import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { Button, Card, Input, clsxm } from "sparks-ui";
@@ -24,12 +25,11 @@ export const MessengerChat = () => {
 
 export const ChannelChatVideo = () => {
   const channel = useMessengerStore.use.channel();
-  const waiting = useMessengerStore.use.waiting();
+  const call = useMessengerStore.use.call();
   const streams = channel?.state?.streams;
   const streamable = channel?.state.streamable;
-  const call = channel?.state.call;
 
-  return streamable && streams && call && !waiting ? (
+  return streamable && streams && call ? (
     <div
       className={clsxm(
         "bg-bg-100/70 dark:bg-bg-800/70 rounded-sm mb-2 p-1 h-auto relative overflow-hidden flex items-center justify-center",
@@ -76,8 +76,11 @@ export const ChannelChatMessages = () => {
     messengerStoreActions.setWaiting(true);
     channel.message(message);
     setValue('message', '');
-    setFocus('message');
   }
+
+  useEffect(() => {
+    setFocus('message');
+  })
 
   const startCall = async () => {
     if (!channel) return;

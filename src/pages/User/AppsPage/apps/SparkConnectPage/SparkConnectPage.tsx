@@ -5,25 +5,51 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { PostMessage } from "sparks-sdk/channels/ChannelTransports";
-import { Button, Card, H3, H6, P } from "sparks-ui";
+import { Button, Card, H3, H5, H6, P, Pre } from "sparks-ui";
 
 export function Explainer() {
   return (
     <>
       <PrivateLayoutHeader>
-        <H3 className="text-center grow">Single SignOn</H3>
-        <Link to="/user/apps" className="flex items-center mr-2">
-          <ArrowLeftIcon className="h-5 w-5 mr-1" />
-          <span>Back</span>
+        <H3 className="text-center grow">Spark Connect</H3>
+        <Link to="/user/apps" className="flex items-center mr-4 absolute right-0">
+          <P className="flex items-center"><ArrowLeftIcon className="h-5 w-5 mr-1" /> Back</P>
         </Link>
       </PrivateLayoutHeader>
-      <Card className="w-full h-full">
-      </Card>
+      <div className="flex justify-center items-start gap-4">
+        <Card shade="light" className="w-full max-w-md">
+          <H5 className="mb-2">PostMessage (PoC Complete)</H5>
+          <P className="mb-4 text-justify">
+            Connect your front end website to a SPARK user and request data and credentials to provide a tailored user experience, no server side code required. 
+          </P>
+          <P>
+            Visit <Link to="https://sparks.foundation"><P className="inline" color="primary">Sparks Foundation</P></Link> and connect via bottom right to try it out.
+          </P>
+        </Card>
+        <Card shade="light" className="w-full max-w-md">
+          <H5 className="mb-2">RestAPI</H5>
+          <P className="mb-4 text-justify">
+            Connect your backend to a SPARK user to receive and verify user information. This provides a more secure connection and allows you to do things like gate content access. 
+          </P>
+          <P>
+            Channel functionality complete, SPARK connect integration in planning.
+          </P>
+        </Card>
+        <Card shade="light" className="w-full max-w-md">
+          <H5 className="mb-2">WebRTC</H5>
+          <P className="mb-4 text-justify">
+            Connect a stream to a SPARK user for real-time text and video chat. This provide a direct communication channel and allows you to exchange data and credentials in real-time.
+          </P>
+          <P>
+            Channel functionality complete, SPARK connect integration in planning.
+          </P>
+        </Card>
+      </div>
     </>
   )
 }
 
-export function Website(params: any) {
+export function WebsitePostMessage(params: any) {
   const [status, setStatus] = useState('not connected');
   const [waiting, setWaiting] = useState(false);
   const [connection, setConnection] = useState<PostMessage | null>(null);
@@ -80,7 +106,6 @@ export function Website(params: any) {
       setWaiting(false);
       setConnection(channel);
     });
-
     channel.open();
   }
 
@@ -100,8 +125,8 @@ export function Website(params: any) {
   return (
     <>
       <PrivateLayoutHeader>
-        <H3 className="text-center grow">Single Sign On</H3>
-        <Link to="/user/apps" className="flex items-center mr-2 absolute right-0">
+        <H3 className="text-center grow">Spark Connect</H3>
+        <Link to="/user/apps" className="flex items-center mr-4 absolute right-0">
           <P className="flex items-center"><ArrowLeftIcon className="h-5 w-5 mr-1" /> Back</P>
         </Link>
       </PrivateLayoutHeader>
@@ -111,13 +136,11 @@ export function Website(params: any) {
           <div className="p-4">
             <P>{params.description}</P>
             <H6 className="mt-4 mb-2">Requesting Data</H6>
-            <P>
-              <ul className="list-disc list-inside">
-                {dataQuery.map((path: string) => (
-                  <li key={path}>{path.split('.').pop()}</li>
-                ))}
-              </ul>
-            </P>
+            <ul className="list-disc list-inside">
+              {dataQuery.map((path: string) => (
+                <P key={path}>{path.split('.').pop()}</P>
+              ))}
+            </ul>
             <Button
               onClick={connection ? disconnect : connect}
               className='flex mt-6 justify-center items-center'
@@ -134,11 +157,12 @@ export function Website(params: any) {
   )
 }
 
-export default function SingleSignOnPage() {
+export default function SparkConnectPage() {
   const location = useLocation();
   const search = location.state?.search;
+  console.log(search);
   return search && search.origin ? (
-    <Website {...search} />
+    <WebsitePostMessage {...search} />
   ) : (
     <Explainer />
   );

@@ -43,7 +43,7 @@ const routes = [
       { path: Paths.USER_CREDENTIALS, element: <Forward Component={CredentialsPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_MESSENGER, element: <Forward Component={MessengerPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_APPS, element: <Forward Component={AppsPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
-      { path: `${Paths.APP_LOGIN}`, element: <NavigateWithParams to={`${Paths.USER_APPS}/single-signon`} /> },
+      { path: `${Paths.APP_CONNECT}`, element: <NavigateWithParams to={`${Paths.USER_APPS}/spark-connect`} /> },
       { path: `${Paths.USER_APPS}/:appName`, element: <Forward Component={AppsPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_WORKBENCH, element: <Forward Component={WorkBenchPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_SANDBOX, element: <Forward Component={() => <SandBox />} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },

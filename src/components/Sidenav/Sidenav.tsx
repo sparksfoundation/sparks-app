@@ -26,26 +26,21 @@ const navigation = [
     href: Paths.USER_CREDENTIALS,
     icon: IdentificationIcon,
   },
-  {
-    name: "Apps & Services",
-    href: Paths.USER_APPS,
-    icon: RocketLaunchIcon,
-  },
   { 
     name: "Messenger",
     href: Paths.USER_MESSENGER,
     icon: EnvelopeIcon,
   },
   {
+    name: "Apps & Services",
+    href: Paths.USER_APPS,
+    icon: RocketLaunchIcon,
+  },
+  {
     name: "Work Bench",
     href: Paths.USER_WORKBENCH,
     icon: WrenchScrewdriverIcon,
-  },
-  {
-    name: "Sandbox",
-    href: Paths.USER_SANDBOX,
-    icon: RocketLaunchIcon,
-  },
+  }
 ];
 
 export const Sidenav = () => {

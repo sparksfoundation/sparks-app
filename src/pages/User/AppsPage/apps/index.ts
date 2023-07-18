@@ -1,9 +1,11 @@
-import * as SingleSignOn from './SingleSignOn';
+import * as SparkConnect from './SparkConnectPage';
+import * as TrustedMessenger from './TrustedMessenger';
 import * as SparksRaffle from './TrustedRaffle';
-import * as CommunityBot from './CommunityBot';
+import * as CommunityManager from './CommunityManager';
 
 export default [
-  SingleSignOn,
+  SparkConnect,
+  TrustedMessenger,
   SparksRaffle,
-  CommunityBot,
+  CommunityManager,
 ]
