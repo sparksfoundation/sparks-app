@@ -7,6 +7,8 @@ import { CreatePage } from "@pages/Auth/CreatePage";
 import { UnlockPage } from "@pages/Auth/UnlockPage";
 import { DashboardPage } from "@pages/User/DashboardPage";
 import { CredentialsPage } from "@pages/User/CredentialsPage";
+import { AppsPage } from "@pages/User/AppsPage";
+import { WorkBenchPage } from "@pages/User/WorkBenchPage";
 import { MessengerPage } from "@pages/User/MessengerPage";
 
 import { Settings } from "@views/user/settings";
@@ -25,9 +27,11 @@ const routes = [
     element: <PrivateLayout />, children: [
       { path: Paths.USER, element: <Forward Component={DashboardPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_CREDENTIALS, element: <Forward Component={CredentialsPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
-      { path: Paths.USER_SETTINGS, element: <Forward Component={Settings} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_MESSENGER, element: <Forward Component={MessengerPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
+      { path: Paths.USER_APPS, element: <Forward Component={AppsPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
+      { path: Paths.USER_WORKBENCH, element: <Forward Component={WorkBenchPage} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
       { path: Paths.USER_SANDBOX, element: <Forward Component={() => <SandBox />} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
+      { path: Paths.USER_SETTINGS, element: <Forward Component={Settings} guestsTo={Paths.AUTH_CREATE} membersTo={Paths.AUTH_UNLOCK} /> },
     ]
   }
 ]

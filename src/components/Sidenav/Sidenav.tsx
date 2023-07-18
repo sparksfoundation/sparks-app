@@ -8,6 +8,7 @@ import {
   HomeModernIcon,
   IdentificationIcon,
   RocketLaunchIcon,
+  WrenchScrewdriverIcon,
 } from "@heroicons/react/24/solid";
 import { ProfileMenu } from "@components/ProfileMenu";
 import { Paths } from "@routes/paths";
@@ -25,10 +26,20 @@ const navigation = [
     href: Paths.USER_CREDENTIALS,
     icon: IdentificationIcon,
   },
+  {
+    name: "Apps & Services",
+    href: Paths.USER_APPS,
+    icon: RocketLaunchIcon,
+  },
   { 
     name: "Messenger",
     href: Paths.USER_MESSENGER,
     icon: EnvelopeIcon,
+  },
+  {
+    name: "Work Bench",
+    href: Paths.USER_WORKBENCH,
+    icon: WrenchScrewdriverIcon,
   },
   {
     name: "Sandbox",
