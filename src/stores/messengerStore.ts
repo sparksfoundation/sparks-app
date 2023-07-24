@@ -78,11 +78,11 @@ export const messengerStoreActions = {
       messengerStore.setState({ channel, call: channel.state.call, waiting: false });
     });
 
-    channel.handleCallRequest = async (request) => {
+    channel.handleCallRequest = async () => {
       messengerStore.setState({ waiting: true });
       return new Promise(async (resolve, reject) => {
         webRTCCallToaster({
-          event: request,
+          identifier: channel.peer.identifier,
           resolve,
           reject,
         });

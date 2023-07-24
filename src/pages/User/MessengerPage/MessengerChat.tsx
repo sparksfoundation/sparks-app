@@ -63,9 +63,9 @@ export const ChannelChatMessages = () => {
   const channel = useMessengerStore.use.channel();
   const waiting = useMessengerStore.use.waiting();
   const messages = useMessengerStore.use.messages();
+  const call = useMessengerStore.use.call();
   const streams = channel?.state.streams;
   const streamable = channel?.state.streamable;
-  const call = channel?.state.call;
 
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
