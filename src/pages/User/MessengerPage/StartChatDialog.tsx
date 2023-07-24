@@ -5,7 +5,7 @@ import { modalActions } from "@stores/modalStore";
 import { useUserStore } from "@stores/userStore";
 import { useState } from "react";
 import { FieldErrors, SubmitHandler, UseFormRegister, useForm } from "react-hook-form";
-import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
+import { WebRTC } from "sparks-sdk/channels/WebRTC";
 import { Button, ErrorMsg, Input, Label, P } from "sparks-ui";
 import { z } from "zod";
 
@@ -47,7 +47,7 @@ export const StartChatDialog = () => {
                 spark: user,
             });
 
-            channel.open({ timeout: 20000 })
+            channel.open({}, { timeout: 20000 })
                 .then(async () => {
                     setStatus('peer connection accepted');
                     await channelStoreActions.add(channel);

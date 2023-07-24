@@ -3,23 +3,19 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { indexedDBStorage } from "./IndexedDB";
 import { createSelectors } from "./createSelectors";
 import { userStore } from "./userStore";
-import { WebRTC, PostMessage, HttpFetch } from "sparks-sdk/channels/ChannelTransports";
-import { ChannelId } from "sparks-sdk/channels";
-import { EncryptedData } from "node_modules/sparks-sdk/dist/ciphers/types";
+import { WebRTC } from "sparks-sdk/channels/WebRTC";
+import { PostMessage } from "sparks-sdk/channels/PostMessage";
+import { HttpFetch } from "sparks-sdk/channels/HttpFetch";
 import { webRTCOpenToaster } from "@components/Toast/WebRTCOpen";
-import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
 import { Paths } from "@routes/paths";
 import { history } from "@routes";
 import { messengerStoreActions } from "./messengerStore";
-import { WebRTCParams } from "node_modules/sparks-sdk/dist/channels/ChannelTransports/WebRTC/types";
-import { PostMessageParams } from "node_modules/sparks-sdk/dist/channels/ChannelTransports/PostMessage/types";
-import { HttpFetchParams } from "node_modules/sparks-sdk/dist/channels/ChannelTransports/HttpFetch/types";
 
 type Channel = WebRTC | PostMessage | HttpFetch;
 
 interface ChannelStore {
-  channels: { [key: ChannelId]: Channel };
-  _exports: { [key: ChannelId]: string };
+  channels: { [key: string]: Channel };
+  _exports: { [key: string]: string };
 }
 
 export const channelStore = create<ChannelStore>()(
@@ -28,7 +24,7 @@ export const channelStore = create<ChannelStore>()(
     _exports: {},
   }), {
     name: 'channels',
-    version: 1,
+    version: 2,
     storage: createJSONStorage(() => indexedDBStorage),
     partialize: (state) => ({
       _exports: state._exports,
@@ -72,7 +68,7 @@ export const channelStoreActions = {
       },
     });
   },
-  async import(data: EncryptedData) {
+  async import(data: string) {
     const user = userStore.getState().user;
     if (!user) throw new Error('User not logged in');
     const decrypted = await user.decrypt({ data }) as any;
@@ -81,13 +77,13 @@ export const channelStoreActions = {
     let channel;
     switch (decrypted.type) {
       case 'WebRTC':
-        channel = new WebRTC({ spark: user, ...decrypted } as WebRTCParams);
+        channel = new WebRTC({ spark: user, ...decrypted });
         break;
       case 'PostMessage':
-        channel = new PostMessage({ spark: user, ...decrypted } as PostMessageParams);
+        channel = new PostMessage({ spark: user, ...decrypted });
         break;
       case 'HttpFetch':
-        channel = new HttpFetch({ spark: user, ...decrypted } as HttpFetchParams);
+        channel = new HttpFetch({ spark: user, ...decrypted });
         break;
       default:
         throw new Error('Unknown channel type');
@@ -118,7 +114,7 @@ userStore.persist.onFinishHydration(() => {
       }
 
       webRTCOpenToaster({
-        event: event as ChannelRequestEvent,
+        event: event,
         resolve: addAndResolve,
       });
     }, { spark: user });

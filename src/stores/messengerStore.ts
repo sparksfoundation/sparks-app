@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import { createSelectors } from "./createSelectors";
-import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
+import { WebRTC } from "sparks-sdk/channels/WebRTC";
 import { channelStoreActions } from "./channels";
-import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
 import { webRTCCallToaster } from "@components/Toast";
 
 type Nullable<T> = T | null;
@@ -23,13 +22,18 @@ export const messengerStore = create<MessengerStore>(() => ({
 
 export const useMessengerStore = createSelectors(messengerStore)
 
-function getChannelMessages(channel: WebRTC) {
-  return channel.eventLog
-    .filter(event => {
-      const isOurs = event.type === channel.eventTypes.MESSAGE_REQUEST && event.request;
-      const isTheirs = event.type === channel.eventTypes.MESSAGE_REQUEST && event.response;
+async function getChannelMessages(channel: WebRTC) {
+  const messageEvents = channel.eventLog
+    .filter(({ event, request, response }) => {
+      const isOurs = event.type === channel.eventTypes.MESSAGE_REQUEST && request;
+      const isTheirs = event.type === channel.eventTypes.MESSAGE_REQUEST && response;
       return isOurs || isTheirs;
-    })
+    });
+
+  return Promise.all(messageEvents.map(async ({ event, request, response }) => {
+    const data = await channel.getEventData(event, !!request);
+    return { message: data.message, request, response }
+  }));
 }
 
 export const messengerStoreActions = {
@@ -53,7 +57,7 @@ export const messengerStoreActions = {
       channel.eventTypes.MESSAGE_REQUEST,
       channel.eventTypes.MESSAGE_CONFIRM,
     ], async () => {
-      const messages = getChannelMessages(channel);
+      const messages = await getChannelMessages(channel);
       messengerStore.setState({ messages, waiting: false });
       await channelStoreActions.save(channel);
     })
@@ -68,17 +72,17 @@ export const messengerStoreActions = {
     channel.on([
       channel.eventTypes.CALL_REQUEST,
       channel.eventTypes.CALL_CONFIRM,
-      channel.eventTypes.HANGUP_REQUEST,  
+      channel.eventTypes.HANGUP_REQUEST,
       channel.eventTypes.HANGUP_CONFIRM,
     ], async () => {
       messengerStore.setState({ channel, call: channel.state.call, waiting: false });
     });
 
-    channel.handleCallRequest = async (request) => {
+    channel.handleCallRequest = async () => {
       messengerStore.setState({ waiting: true });
       return new Promise(async (resolve, reject) => {
         webRTCCallToaster({
-          event: request as ChannelRequestEvent,
+          identifier: channel.peer.identifier,
           resolve,
           reject,
         });
@@ -89,7 +93,7 @@ export const messengerStoreActions = {
       await channel.setStreamable();
     }
 
-    const messages = getChannelMessages(channel);
+    const messages = await getChannelMessages(channel);
     messengerStore.setState({ channel, messages });
   }
 }

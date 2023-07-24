@@ -4,7 +4,7 @@ import { LinkIcon, TrashIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
-import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
+import { WebRTC } from "sparks-sdk/channels/WebRTC";
 import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
 import { channelStoreActions } from "@stores/channels";
 import { toast } from "react-toastify";
@@ -36,7 +36,7 @@ export const MessengerChatMenu = () => {
 
   async function reconnect() {
     if (!channel) return;
-    channel.open({ timeout: 20000 })
+    channel.open({}, { timeout: 20000 })
       .then(() => {
         messengerStoreActions.setChannel(channel);
       })
@@ -56,7 +56,6 @@ export const MessengerChatMenu = () => {
   async function quit() {
     if (channel) {
       await channel.close()
-        .catch(e => console.error(e))
       messengerStoreActions.setChannel(null);
     }
   }

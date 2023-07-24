@@ -1,10 +1,9 @@
 import { toast } from "react-toastify";
-import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
 import { Button, P } from "sparks-ui";
 
-export const WebRTCCall = ({ event, resolve, reject }: { event: any, resolve: Function, reject: Function }) => {
-  if (!event?.data?.identifier) return null;
-  const peerId = `${event.data.identifier.slice(0, 6)}...${event.data.identifier.slice(-6)}`;
+export const WebRTCCall = ({ identifier, resolve, reject }: { identifier: any, resolve: Function, reject: Function }) => {
+  if (!identifier) return null;
+  const peerId = `${identifier.slice(0, 6)}...${identifier.slice(-6)}`;
 
   return (
     <>
@@ -19,13 +18,13 @@ export const WebRTCCall = ({ event, resolve, reject }: { event: any, resolve: Fu
 }
 
 export const webRTCCallToaster = ({
-  event,
+  identifier,
   resolve,
   reject,
-}: { event: ChannelRequestEvent, resolve: ()=>void, reject?: ()=>void }) => {
+}: { identifier: any, resolve: ()=>void, reject?: ()=>void }) => {
   toast(({ closeToast }) =>
     <WebRTCCall
-      event={event as ChannelRequestEvent}
+      identifier={identifier}
       resolve={() => {
         resolve();
         if (closeToast) closeToast();

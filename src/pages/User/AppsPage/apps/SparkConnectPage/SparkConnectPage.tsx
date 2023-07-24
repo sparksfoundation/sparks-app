@@ -4,7 +4,7 @@ import { useUserStore } from "@stores/userStore";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { PostMessage } from "sparks-sdk/channels/ChannelTransports";
+import { PostMessage } from "sparks-sdk/channels/PostMessage";
 import { Button, Card, H3, H5, H6, P } from "sparks-ui";
 
 export function Explainer() {
@@ -83,13 +83,13 @@ export function WebsitePostMessage(params: any) {
     })
 
     channel.on([
-      channel.requestTypes.CLOSE_REQUEST,
-      channel.confirmTypes.CLOSE_CONFIRM,
+      channel.eventTypes.CLOSE_REQUEST,
+      channel.eventTypes.CLOSE_CONFIRM,
     ], () => {
       clearChannel();
     })
 
-    channel.on(channel.confirmTypes.OPEN_CONFIRM, async () => {
+    channel.on(channel.eventTypes.OPEN_CONFIRM, async () => {
       const data = {} as { [key: string]: any };
       const dataQuery = params?.query?.data || [];
       dataQuery.forEach((path: string) => {

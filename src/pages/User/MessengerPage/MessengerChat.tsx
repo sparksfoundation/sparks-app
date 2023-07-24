@@ -63,9 +63,9 @@ export const ChannelChatMessages = () => {
   const channel = useMessengerStore.use.channel();
   const waiting = useMessengerStore.use.waiting();
   const messages = useMessengerStore.use.messages();
+  const call = useMessengerStore.use.call();
   const streams = channel?.state.streams;
   const streamable = channel?.state.streamable;
-  const call = channel?.state.call;
 
   const { register, handleSubmit, setFocus, setValue } = useForm<ChatMessageSchema>({
     resolver: zodResolver(formSchema)
@@ -85,7 +85,7 @@ export const ChannelChatMessages = () => {
   const startCall = async () => {
     if (!channel) return;
     messengerStoreActions.setWaiting(true);
-    await channel.call({ timeout: 25000 })
+    await channel.call({}, { timeout: 25000 })
       .catch(() => {
         toast.error('call timed out, try again')
         messengerStoreActions.setWaiting(false);
@@ -101,9 +101,7 @@ export const ChannelChatMessages = () => {
   return (
     <div className="flex flex-col gap-3 grow h-1/2 mt-2">
       <div className="overflow-y-auto pr-1 grow">
-        {messages.map((event, index) => {
-          const { data, request, response } = event;
-          const message = data;
+        {messages.map(({ message, request, response }, index) => {
           return (
             <div
               key={index}

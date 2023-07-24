@@ -1,8 +1,7 @@
 import { toast } from "react-toastify";
-import { ChannelRequestEvent } from "sparks-sdk/channels/ChannelEvent";
 import { Button, P } from "sparks-ui";
 
-export const PostMessageOpen = ({ event, resolve, reject }: { event: ChannelRequestEvent, resolve: () => void, reject: () => void }) => {
+export const PostMessageOpen = ({ event, resolve, reject }: { event: any, resolve: () => void, reject: () => void }) => {
   const peerOrigin = event.data.origin;
   return (
     <>
@@ -20,10 +19,10 @@ export const postMessageOpenToaster = ({
   event,
   resolve,
   reject,
-}: { event: ChannelRequestEvent, resolve: ()=>void, reject?: ()=>void }) => {
+}: { event: any, resolve: ()=>void, reject?: ()=>void }) => {
   return toast(({ closeToast }) =>
     <PostMessageOpen
-      event={event as ChannelRequestEvent}
+      event={event as any}
       resolve={() => {
         if (resolve) resolve();
         if (closeToast) closeToast();
