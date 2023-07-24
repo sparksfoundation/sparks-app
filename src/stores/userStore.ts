@@ -81,6 +81,9 @@ export const userActions = {
   create: async ({ handle, password }: { handle: string, password: string }) => {
     const user = sparkInstance();
     await user.incept({ password });
+
+    console.log(user);
+
     user.agents.profile.handle = handle;
     user.agents.profile.avatar = avatar;
   

@@ -18,6 +18,9 @@ export default defineConfig({
   base: '/',
   publicDir: 'public',
   envPrefix: 'SPARKS_',
+  esbuild: {
+    "keepNames": true,
+  },
   plugins: [
     react(),
     nodePolyfills({
