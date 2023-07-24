@@ -24,7 +24,7 @@ export const channelStore = create<ChannelStore>()(
     _exports: {},
   }), {
     name: 'channels',
-    version: 2,
+    version: 3,
     storage: createJSONStorage(() => indexedDBStorage),
     partialize: (state) => ({
       _exports: state._exports,

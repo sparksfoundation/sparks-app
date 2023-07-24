@@ -49,7 +49,7 @@ export const userStore = create<UserStore>()(
     },
   }), {
     name: 'user',
-    version: 1,
+    version: 2,
     storage: createJSONStorage(() => indexedDBStorage),
     partialize: (state) => ({
       _data: state._data,
