@@ -1,12 +1,14 @@
 import { PrivateLayoutHeader } from "@layout";
-import { Card, H3 } from "sparks-ui";
+import { H3 } from "sparks-ui";
+import { AddCredentialCard, CredentialCard } from "@components/CredentialCard";
 
 export const CredentialsPage = () => (
   <>
     <PrivateLayoutHeader>
       <H3 className="text-center grow">Credentials</H3>
     </PrivateLayoutHeader>
-    <Card className="w-full h-full">
-    </Card>
+    <div className="flex flex-wrap justify-start gap-4">
+      <AddCredentialCard />
+    </div>
   </>
 )

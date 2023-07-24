@@ -16,7 +16,7 @@ export const NewChatButton = () => {
   async function newChat() {
     openModal({
       title: 'Start Chat',
-      content: <StartChatDialog />
+      content: StartChatDialog
     });
   }
 

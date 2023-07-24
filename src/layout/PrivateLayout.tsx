@@ -27,7 +27,7 @@ export const PrivateLayout = () => {
       <NoiseBackground />
       <Sidenav />
       <div className="lg:pl-72 h-full w-full overflow-hidden absolute">
-        <div className="top-0 left-0 w-full h-full relative flex flex-col p-2">
+        <div className="top-0 left-0 w-full h-full relative flex flex-col p-4">
             <Outlet />
         </div>
       </div>
