@@ -85,7 +85,7 @@ export const ChannelChatMessages = () => {
   const startCall = async () => {
     if (!channel) return;
     messengerStoreActions.setWaiting(true);
-    await channel.call({ timeout: 25000 })
+    await channel.call({}, { timeout: 25000 })
       .catch(() => {
         toast.error('call timed out, try again')
         messengerStoreActions.setWaiting(false);
@@ -101,9 +101,7 @@ export const ChannelChatMessages = () => {
   return (
     <div className="flex flex-col gap-3 grow h-1/2 mt-2">
       <div className="overflow-y-auto pr-1 grow">
-        {messages.map((event, index) => {
-          const { data, request, response } = event;
-          const message = data;
+        {messages.map(({ message, request, response }, index) => {
           return (
             <div
               key={index}

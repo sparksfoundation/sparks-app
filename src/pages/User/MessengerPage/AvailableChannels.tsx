@@ -1,7 +1,7 @@
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 import { useChannelStore } from "@stores/channels";
 import { messengerStoreActions, useMessengerStore } from "@stores/messengerStore";
-import { WebRTC } from "sparks-sdk/channels/ChannelTransports";
+import { WebRTC } from "sparks-sdk/channels/WebRTC";
 import { Card, P } from "sparks-ui";
 
 export const AvailableChannels = () => {

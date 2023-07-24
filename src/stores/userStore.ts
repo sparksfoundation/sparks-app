@@ -2,12 +2,12 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { indexedDBStorage } from "./IndexedDB";
 import { Spark } from "sparks-sdk";
-import { Profile } from "sparks-sdk/agents";
+import { Profile } from "sparks-sdk/agents/Profile";
 import { avatar } from "@assets/avatar";
-import { X25519SalsaPolyPassword } from "sparks-sdk/ciphers";
-import { Basic } from "sparks-sdk/controllers";
-import { Blake3 } from "sparks-sdk/hashers";
-import { Ed25519Password } from "sparks-sdk/signers";
+import { X25519SalsaPolyPassword } from "sparks-sdk/ciphers/X25519SalsaPolyPassword";
+import { Basic } from "sparks-sdk/controllers/Basic";
+import { Blake3 } from "sparks-sdk/hashers/Blake3";
+import { Ed25519Password } from "sparks-sdk/signers/Ed25519Password";
 import { Buffer } from "buffer";
 import { createSelectors } from "./createSelectors";
 
