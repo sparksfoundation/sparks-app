@@ -1,6 +1,6 @@
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { modalActions } from "@stores/modalStore";
-import { Button, Card, H5, H6, P } from "sparks-ui";
+import { Button, Card, H5, P } from "sparks-ui";
 
 export const AddCredentialCard = () => {
 
