@@ -5,7 +5,7 @@ type Nullable<T> = T | null;
 
 interface ModalStore {
   open: boolean,
-  title: Nullable<string>,
+  title?: Nullable<string>,
   content: Nullable<any>,
 }
 
@@ -18,7 +18,7 @@ export const modalStore = create<ModalStore>(() => ({
 export const useModalStore = createSelectors(modalStore);
 
 export const modalActions = {
-  openModal: ({ title, content }: { title: string, content: any }) => {
+  openModal: ({ title, content }: { title?: string, content: any }) => {
     modalStore.setState({ 
       title, 
       content, 

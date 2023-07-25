@@ -1,24 +1,12 @@
+import { AvailableCredentials } from "@components/AddCredentialDialog";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { modalActions } from "@stores/modalStore";
-import { Button, Card, H5, P } from "sparks-ui";
+import { Card, H5 } from "sparks-ui";
 
 export const AddCredentialCard = () => {
-
     function addCredential() {
         modalActions.openModal({
-            title: "Add Credential",
-            content: () => (
-                <div className="w-full max-w-lg">
-                    <P className="text-sm mb-2">Choose from available credentials (in development)</P>
-                    <Card className="p-2 mb-4" shade="light"><P>Ethereum</P></Card>
-                    <Card className="p-2 mb-4" shade="light"><P>Email</P></Card>
-                    <Card className="p-2 mb-4" shade="light"><P>Twitter</P></Card>
-                    <Card className="p-2 mb-4" shade="light"><P>YouTube</P></Card>
-                    <Card className="p-2 mb-4" shade="light"><P>GitHub</P></Card>
-                    <Card className="p-2 mb-4" shade="light"><P>Medium</P></Card>
-                    <Button className="w-full" onClick={() => modalActions.closeModal()}>close</Button>
-                </div>
-            ),
+            content: AvailableCredentials
         });
     }
 
