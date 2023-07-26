@@ -116,7 +116,6 @@ export const userActions = {
     const { user, _handle, _salts } = userStore.getState();
     if (!user || !_salts) return; 
     const data = await user.export();
-    console.log('aving')
     return userStore.setState({ user: user, _data: data, _handle, _salts })
   },
   logout: () => {
