@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { indexedDBStorage } from "./IndexedDB";
 import { Spark } from "sparks-sdk";
 import { Profile } from "sparks-sdk/agents/Profile";
+import { Presenter } from "sparks-sdk/agents/Presenter";
 import { avatar } from "@assets/avatar";
 import { X25519SalsaPolyPassword } from "sparks-sdk/ciphers/X25519SalsaPolyPassword";
 import { Basic } from "sparks-sdk/controllers/Basic";
@@ -11,22 +12,37 @@ import { Ed25519Password } from "sparks-sdk/signers/Ed25519Password";
 import { Buffer } from "buffer";
 import { createSelectors } from "./createSelectors";
 
-export type User = Spark<[Profile], X25519SalsaPolyPassword, Basic, Blake3, Ed25519Password>;
+export type User = Spark<[Profile, Presenter], X25519SalsaPolyPassword, Basic, Blake3, Ed25519Password>;
 
-function sparkInstance(): User {
+function sparkInstance(): User & {
+  agents: {
+    profile: Profile,
+    presenter: Presenter,
+  }
+} {
   return new Spark({
-    agents: [Profile],
+    agents: [Profile, Presenter],
     signer: Ed25519Password,
     cipher: X25519SalsaPolyPassword,
     hasher: Blake3,
     controller: Basic,
-  });
+  }) as User & {
+    agents: {
+      profile: Profile,
+      presenter: Presenter,
+    }
+  };
 }
 
 type Nullable<T> = T | null;
 
 interface UserStore {
-  user: Nullable<User>,             // the user instance
+  user: Nullable<User & {
+    agents: {
+      profile: Profile,
+      presenter: Presenter,
+    }
+  }>,// the user instance
   _data: Nullable<string>,          // encrypted data 
   _handle: Nullable<string>,        // the user name
   _salts: Nullable<{
@@ -65,55 +81,63 @@ export const userActions = {
   login: async ({ password }: { password: string }) => {
     const user = sparkInstance();
     const { _data, _salts } = userStore.getState();
-  
+
     if (!_data || !_salts) {
       throw new Error('No user data found');
     }
-  
+
     await user.import({
       data: _data,
       cipher: { password, salt: _salts.cipher },
       signer: { password, salt: _salts.signer },
     });
-  
+
     return userStore.setState({ user: user })
   },
   create: async ({ handle, password }: { handle: string, password: string }) => {
     const user = sparkInstance();
+
     await user.incept({ password });
 
     user.agents.profile.handle = handle;
     user.agents.profile.avatar = avatar;
-  
+
     const salts = {
       cipher: user.keyPairs.cipher.salt,
       signer: user.keyPairs.signer.salt,
     };
-  
+
     const data = await user.export();
     const _handle = Buffer.from(handle).toString('base64');
-  
+
     return userStore.setState({ user: user, _data: data, _handle, _salts: salts })
+  },
+  save: async () => {
+    const { user, _handle, _salts } = userStore.getState();
+    if (!user || !_salts) return; 
+    const data = await user.export();
+    console.log('aving')
+    return userStore.setState({ user: user, _data: data, _handle, _salts })
   },
   logout: () => {
     return userStore.setState({ user: null })
   },
   destroy: async ({ password }: { password: string }) => {
     const { user, _salts, _data } = userStore.getState();
-  
+
     if (!user || !_salts || !_data) {
       throw new Error('No user data found');
     }
-  
+
     const cipher = await user.cipher.generateKeyPair({ password, salt: _salts.cipher });
     const signer = await user.signer.generateKeyPair({ password, salt: _salts.signer });
     const cipherMatch = user.publicKeys.cipher === cipher.publicKey;
     const signerMatch = user.publicKeys.signer === signer.publicKey;
-  
+
     if (!cipherMatch || !signerMatch) {
       throw new Error('Invalid password');
     }
-  
+
     userStore.setState({
       user: null,
       _data: null,

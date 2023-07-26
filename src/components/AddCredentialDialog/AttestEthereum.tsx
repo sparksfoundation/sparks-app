@@ -1,7 +1,7 @@
 import { createSelectors } from "@stores/createSelectors";
 import { useCredentialStore } from "@stores/credentialStore";
 import { modalActions } from "@stores/modalStore";
-import { useUserStore } from "@stores/userStore";
+import { useUserStore, userActions } from "@stores/userStore";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { Button, H3, H4, P, Pre } from "sparks-ui";
@@ -32,14 +32,13 @@ const flowActions = {
   setChallenge: (challenge: string) => flowStore.setState({ challenge }),
   setSignature: (signature: string) => flowStore.setState({ signature }),
   setCredential: (credential: Record<string, any>) => flowStore.setState({ credential }),
-  reset: () => flowStore.setState({ 
-    challenge: null, 
+  reset: () => flowStore.setState({
+    challenge: null,
     signature: null,
     credential: null,
     error: null,
   }),
 }
-
 
 function GetChallenge() {
   const { address } = useAccount();
@@ -97,6 +96,8 @@ function SignChallenge() {
 
   useEffect(() => {
     ; (async () => {
+      if (!challenge || !address) return;
+
       if (variables?.message && data) {
         const recoveredAddress = await recoverMessageAddress({
           message: variables?.message,
@@ -108,7 +109,7 @@ function SignChallenge() {
         }
       }
     })()
-  })
+  }, [data, variables, address])
 
   async function signCode() {
     if (!challenge) return;
@@ -133,10 +134,11 @@ function ClaimCredential() {
   const signature = useFlowStore.use.signature();
   const challenge = useFlowStore.use.challenge();
   const credential = useFlowStore.use.credential();
+  const user = useUserStore.use.user();
 
   useEffect(() => {
-    ;(async () => {
-      if ((!signature || !challenge) || credential) return;        
+    ; (async () => {
+      if ((!signature || !challenge) || credential || !user) return;
 
       const path = `${import.meta.env.SPARKS_ATTESTER}/${attesting}/claim`
       const result = await fetch(path, {
@@ -148,12 +150,15 @@ function ClaimCredential() {
         credentials: 'include'
       });
 
+      if (result.status !== 200) {
+        flowActions.reset();
+        return
+      }
+
       const cred = await result.json();
-      setTimeout(() => {
-        flowActions.setCredential(cred);
-      }, 1000)
+      flowActions.setCredential(cred);
     })()
-  })
+  }, [signature, challenge, credential, user])
 
   if (credential) return <></>
 
@@ -171,13 +176,20 @@ export function AttestEthereum() {
   const signature = useFlowStore.use.signature();
   const error = useFlowStore.use.error();
   const credential = useFlowStore.use.credential();
+  const user = useUserStore.use.user();
 
   useEffect(() => {
-    if (credential) {
-      //flowActions.reset();
-      //modalActions.closeModal();
-      //toast.success("Credential added");
-    }
+    ; (async () => {
+      if (credential && user) {
+        flowActions.reset();
+        modalActions.closeModal();
+        toast.success("Credential added", {
+          autoClose: 2000,
+        });
+        user.agents.presenter.addCredential(credential);
+        await userActions.save();
+      }
+    })()
   }, [credential])
 
   if (!!error) return <div>{error}</div>;
@@ -187,13 +199,6 @@ export function AttestEthereum() {
   if (!challenge) return <GetChallenge />;
 
   if (!signature) return <SignChallenge />;
-
-  if (credential) return (
-    <div>
-      <H3 className="mb-4 text-center">Credential Claimed!</H3>
-      <Pre className="overflow-hidden">{JSON.stringify(credential, null, 2)}</Pre>
-    </div>
-  )
 
   return <ClaimCredential />;
 }

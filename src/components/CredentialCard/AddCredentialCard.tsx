@@ -12,7 +12,7 @@ export const AddCredentialCard = () => {
 
     return (
         <Card
-            className="w-full h-full max-w-md p-6 cursor-pointer"
+            className="w-full h-full max-w-sm p-6 cursor-pointer"
             onClick={addCredential}
         >
             <div className="flex flex-col justify-center items-center h-full">

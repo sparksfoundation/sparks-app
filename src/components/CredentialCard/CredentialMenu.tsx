@@ -4,6 +4,7 @@ import { LinkIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
+import { useUserStore, userActions } from "@stores/userStore";
 
 const MenuLink = forwardRef(({ label, Icon, disabled, ...rest }: any, ref) => {
   return (
@@ -24,7 +25,14 @@ const MenuLink = forwardRef(({ label, Icon, disabled, ...rest }: any, ref) => {
   );
 });
 
-export const CredentialCardMenu = () => {
+export const CredentialCardMenu = ({credential}: { credential: Record<string, any> }) => {
+  const user = useUserStore.use.user();
+
+  async function deleteCredential() {
+    if (!user) return;
+    user.agents.presenter.removeCredential(credential);
+    await userActions.save();
+  }
 
   return (
     <Menu as="div" className="relative z-50">
@@ -62,7 +70,7 @@ export const CredentialCardMenu = () => {
             <MenuLink
               label="Delete Credential"
               Icon={TrashIcon}
-              onClick={() => {}}
+              onClick={() => deleteCredential()}
             />
           </Menu.Item>
         </Menu.Items>
