@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { createSelectors } from "./createSelectors";
 
 type Nullable<T> = T | null;
 
@@ -14,35 +13,50 @@ interface CredentialStore {
     attesting: Nullable<string>;
 }
 
+async function getAvailable() {
+    const path = import.meta.env.SPARKS_ATTESTER
+    const response = await fetch(path);
+    const ids = await response.json();
+    const available = [] as Credential[];
+
+    // get each schema
+    await Promise.all(ids.map(async (id: string) => {
+        const uri = `${path}/${id}/schema`;
+        const response = await fetch(uri);
+        const schema = await response.json();
+        available.push({ id, schema, uri });
+    }));
+
+    return available;
+}
+
 export const credentialStore = create<CredentialStore>(() => ({
     available: [],
     attesting: null,
 }));
 
-export const useCredentialStore = createSelectors(credentialStore);
+export const useCredentialStore = {
+    use: {
+        attesting: () => credentialStore(state => {
+            return state.attesting;   
+        }),
+        available: () => credentialStore(state => {
+            if (state.available.length === 0) {
+                getAvailable()
+                    .then((available) => {
+                        credentialStore.setState({ available });   
+                    });
+            }
+            return state.available;
+        })
+    }
+}
 
 export const credentialStoreActions = {
-    initialize: async () => {
-        const path = import.meta.env.SPARKS_ATTESTER
-        const response = await fetch(path);
-        const ids = await response.json();
-        const available = [] as Credential[];
-
-        // get each schema
-        await Promise.all(ids.map(async (id: string) => {
-            const uri = `${path}/${id}/schema`;
-            const response = await fetch(uri);
-            const schema = await response.json();
-            available.push({ id, schema, uri});
-        }));
-
-        credentialStore.setState({ available });
-    },
     startFlow: (id: string) => {
         credentialStore.setState({ attesting: id });
     },
+    stopFlow: () => {
+        credentialStore.setState({ attesting: null });
+    },
 }
-
-window.addEventListener("load", async () => {
-    credentialStoreActions.initialize();
-});

@@ -5,7 +5,8 @@ import { useUserStore } from "@stores/userStore";
 
 export const CredentialsPage = () => {
   const user = useUserStore.use.user();
-  const _ = useUserStore.use._data(); // update when data saved
+  // bring in to force update when data saved
+  useUserStore.use._data(); 
   const creds = user?.agents?.presenter?.credentials;
 
   return (

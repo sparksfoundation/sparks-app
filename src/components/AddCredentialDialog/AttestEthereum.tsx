@@ -1,10 +1,10 @@
 import { createSelectors } from "@stores/createSelectors";
-import { useCredentialStore } from "@stores/credentialStore";
+import { credentialStoreActions, useCredentialStore } from "@stores/credentialStore";
 import { modalActions } from "@stores/modalStore";
 import { useUserStore, userActions } from "@stores/userStore";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import { Button, H3, H4, P, Pre } from "sparks-ui";
+import { Button, H3, P } from "sparks-ui";
 import { recoverMessageAddress } from "viem";
 import { useAccount, useConnect, useSignMessage } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
@@ -182,6 +182,7 @@ export function AttestEthereum() {
     ; (async () => {
       if (credential && user) {
         flowActions.reset();
+        credentialStoreActions.stopFlow();
         modalActions.closeModal();
         toast.success("Credential added", {
           autoClose: 2000,

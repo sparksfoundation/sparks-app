@@ -58,14 +58,14 @@ export const CredentialCardMenu = ({credential}: { credential: Record<string, an
             "focus:outline-none top-full"
           )}
         >
-          <Menu.Item>
+          {/* <Menu.Item>
             <MenuLink
               label="Update Credential"
               Icon={LinkIcon}
               disabled={false}
               onClick={() => {}}
             />
-          </Menu.Item>
+          </Menu.Item> */}
           <Menu.Item>
             <MenuLink
               label="Delete Credential"
