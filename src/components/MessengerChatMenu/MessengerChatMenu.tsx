@@ -36,7 +36,7 @@ export const MessengerChatMenu = () => {
 
   async function reconnect() {
     if (!channel) return;
-    channel.open({}, { timeout: 20000 })
+    channel.open()
       .then(() => {
         messengerStoreActions.setChannel(channel);
       })
@@ -56,6 +56,7 @@ export const MessengerChatMenu = () => {
   async function quit() {
     if (channel) {
       await channel.close()
+        .catch((e: any) => console.error(e))
       messengerStoreActions.setChannel(null);
     }
   }

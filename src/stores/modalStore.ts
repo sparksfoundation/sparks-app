@@ -5,23 +5,26 @@ type Nullable<T> = T | null;
 
 interface ModalStore {
   open: boolean,
-  title: Nullable<string>,
+  title?: Nullable<string>,
   content: Nullable<any>,
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full' | 'auto',
 }
 
 export const modalStore = create<ModalStore>(() => ({
   open: false,
   title: null,
   content: null,
+  size: 'md',
 }));
 
 export const useModalStore = createSelectors(modalStore);
 
 export const modalActions = {
-  openModal: ({ title, content }: { title: string, content: any }) => {
+  openModal: ({ title, content, size = 'md' }: { title?: string, content: any, size?: ModalStore['size'] }) => {
     modalStore.setState({ 
       title, 
       content, 
+      size,
       open: true 
     })
   },
@@ -29,6 +32,7 @@ export const modalActions = {
     modalStore.setState({ 
       title: null, 
       content: null, 
+      size: 'md',
       open: false 
     })
   },

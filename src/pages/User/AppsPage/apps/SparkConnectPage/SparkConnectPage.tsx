@@ -156,7 +156,6 @@ export function WebsitePostMessage(params: any) {
 export default function SparkConnectPage() {
   const location = useLocation();
   const search = location.state?.search;
-  console.log(search);
   return search && search.origin ? (
     <WebsitePostMessage {...search} />
   ) : (
