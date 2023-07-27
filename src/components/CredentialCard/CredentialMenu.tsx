@@ -1,6 +1,6 @@
 import { Fragment, forwardRef } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { LinkIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { clsxm } from "sparks-ui";
 import { Link } from "react-router-dom";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
