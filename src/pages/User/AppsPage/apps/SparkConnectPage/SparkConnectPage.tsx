@@ -20,7 +20,7 @@ export function Explainer() {
         <Card shade="light" className="w-full max-w-md">
           <H5 className="mb-2">PostMessage (PoC Complete)</H5>
           <P className="mb-4 text-justify">
-            Connect your front end website to a SPARK user and request data and credentials to provide a tailored user experience, no server side code required. 
+            Connect your front end website to a SPARK user and request data and credentials to provide a tailored user experience, no server side code required.
           </P>
           <P>
             Visit <Link to="https://sparks.foundation"><P className="inline" color="primary">Sparks Foundation</P></Link> and connect via bottom right to try it out.
@@ -29,7 +29,7 @@ export function Explainer() {
         <Card shade="light" className="w-full max-w-md">
           <H5 className="mb-2">RestAPI</H5>
           <P className="mb-4 text-justify">
-            Connect your backend to a SPARK user to receive and verify user information. This provides a more secure connection and allows you to do things like gate content access. 
+            Connect your backend to a SPARK user to receive and verify user information. This provides a more secure connection and allows you to do things like gate content access.
           </P>
           <P>
             Channel functionality complete, SPARK connect integration in planning.
@@ -63,7 +63,35 @@ export function WebsitePostMessage(params: any) {
   const data = {} as { [key: string]: any };
   const dataQuery = params?.query?.data || [];
   dataQuery.forEach((path: string) => {
-    const value = path.split('.').reduce((acc: any, key: string) => {
+    if (path.startsWith('credential')) {
+      const [_, type, prop ] = path.split('.')
+      const creds = user.agents.presenter.credentials.filter((cred: any) => {
+        return cred['@context'].filter((context: string) => context.endsWith(`${type}/schema`)).length > 0;
+      });
+
+      if (!prop) {
+        data[path] = creds;
+        return;
+      }
+
+      data[path] = creds.map((cred: any) => {
+        const share = { ...cred.credentialSubject };
+        Object.keys(cred.credentialSubject).forEach((key: string) => {
+          if (key === prop) return;
+          delete share[key];
+        });
+
+        return {
+          ...cred,
+          credentialSubject: share
+        }
+      });
+      
+      return;
+    }
+    
+    const fullPath = 'agents.profile.' + path;
+    const value = fullPath.split('.').reduce((acc: any, key: string) => {
       if (acc) return acc[key];
       return null;
     }, user);
@@ -90,15 +118,8 @@ export function WebsitePostMessage(params: any) {
     })
 
     channel.on(channel.eventTypes.OPEN_CONFIRM, async () => {
-      const data = {} as { [key: string]: any };
-      const dataQuery = params?.query?.data || [];
-      dataQuery.forEach((path: string) => {
-        const value = path.split('.').reduce((acc: any, key: string) => {
-          if (acc) return acc[key];
-          return null;
-        }, user);
-        data[path] = value;
-      });
+      console.log(data);
+
       await channel.message(data);
       setWaiting(false);
       setConnection(channel);
