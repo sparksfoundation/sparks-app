@@ -2,9 +2,9 @@ import { createSelectors } from "@stores/createSelectors";
 import { credentialStoreActions, useCredentialStore } from "@stores/credentialStore";
 import { modalActions } from "@stores/modalStore";
 import { useUserStore, userActions } from "@stores/userStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Button, H3, P } from "sparks-ui";
+import { Button, Checkbox, H3, Label, P } from "sparks-ui";
 import { recoverMessageAddress } from "viem";
 import { useAccount, useConnect, useSignMessage } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
@@ -16,6 +16,7 @@ interface FlowStore {
   challenge: Nullable<string>;
   signature: Nullable<string>;
   credential: Nullable<Record<string, any>>;
+  holdings: Nullable<string[]>;
   error: Nullable<string>;
 }
 
@@ -23,6 +24,7 @@ const flowStore = create<FlowStore>(() => ({
   challenge: null,
   signature: null,
   credential: null,
+  holdings: null,
   error: null,
 }));
 
@@ -32,10 +34,12 @@ const flowActions = {
   setChallenge: (challenge: string) => flowStore.setState({ challenge }),
   setSignature: (signature: string) => flowStore.setState({ signature }),
   setCredential: (credential: Record<string, any>) => flowStore.setState({ credential }),
+  setHoldings: (holdings: string[]) => flowStore.setState({ holdings }),
   reset: () => flowStore.setState({
     challenge: null,
     signature: null,
     credential: null,
+    holdings: null,
     error: null,
   }),
 }
@@ -129,11 +133,72 @@ function SignChallenge() {
   )
 }
 
+function ChooseHoldings() {
+  const [holdings, setHoldings] = useState<Record<string, any>[] | null>(null);
+
+  useEffect(() => {
+    ; (async () => {
+      if (!!holdings) return;
+
+      const path = `${import.meta.env.SPARKS_ATTESTER}/ethereum/holdings`
+      const result = await fetch(path, {
+        method: "GET",
+        credentials: 'include'
+      });
+
+      if (result.status !== 200) {
+        flowActions.reset();
+        return
+      }
+
+      const json = await result.json();
+      setHoldings(json);
+
+    })()
+  }, [holdings]);
+
+  function handleSubmit(e: any) {
+    e.preventDefault();
+    
+    const selectedHoldings = Array.from(e.target.elements)
+      .filter((el: any) => el.checked)
+      .map((el: any) => el.id);
+
+    flowActions.setHoldings(selectedHoldings);
+    setHoldings(null);
+  }
+
+  return (
+    <div>
+      <H3 className="mb-4 text-center">Choose Holdings</H3>
+      {holdings ? (
+        <P className="mb-4">Select the holdings you'd like on your credential.</P>
+      ) : (
+        <P className="mb-4">Loading available holdings...</P>
+      )}
+      {
+        <form onSubmit={handleSubmit}>
+          {holdings?.map((holding) => {
+            return (
+              <div key={holding.address}>
+                <Checkbox id={holding.symbol} />
+                <Label className="overflow-hidden whitespace-nowrap text-ellipsis" htmlFor={holding.symbol}>{' ' + holding.symbol}</Label>
+              </div>
+            )
+          })}
+          <Button type="submit" className="w-full mt-4">Submit</Button>
+        </form>
+      }
+    </div>
+  )
+}
+
 function ClaimCredential() {
   const attesting = useCredentialStore.use.attesting();
   const signature = useFlowStore.use.signature();
   const challenge = useFlowStore.use.challenge();
   const credential = useFlowStore.use.credential();
+  const holdings = useFlowStore.use.holdings();
   const user = useUserStore.use.user();
 
   useEffect(() => {
@@ -146,7 +211,10 @@ function ClaimCredential() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ signature }),
+        body: JSON.stringify({ 
+          signature,
+          holdings,
+        }),
         credentials: 'include'
       });
 
@@ -174,6 +242,7 @@ export function AttestEthereum() {
   const { isConnected } = useAccount()
   const challenge = useFlowStore.use.challenge();
   const signature = useFlowStore.use.signature();
+  const holdings = useFlowStore.use.holdings();
   const error = useFlowStore.use.error();
   const credential = useFlowStore.use.credential();
   const user = useUserStore.use.user();
@@ -200,6 +269,8 @@ export function AttestEthereum() {
   if (!challenge) return <GetChallenge />;
 
   if (!signature) return <SignChallenge />;
+
+  if (!holdings) return <ChooseHoldings />;
 
   return <ClaimCredential />;
 }
